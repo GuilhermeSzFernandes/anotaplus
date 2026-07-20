@@ -8,8 +8,12 @@
         android:theme="@style/Theme.AnotaPlus">
 
         <!--
-            Activity principal: é a que o gesto "Toque duas vezes na traseira"
-            do Moto Actions vai abrir (mesma que o ícone do app abre).
+            Activity principal (única LAUNCHER do app): tanto o ícone quanto o
+            gesto "Toque duas vezes na traseira" do Moto Actions chegam aqui,
+            já que os dois disparam o mesmo intent MAIN/LAUNCHER. No onCreate,
+            ela decide pra onde ir: se o intent tem sourceBounds (toque no
+            ícone da tela inicial) abre o Histórico; senão (gesto do Moto,
+            que não vem de um toque na tela) mostra o modal de captura.
             Tema translúcido para se comportar como um modal por cima da tela atual.
             noHistory + excludeFromRecents evitam que ela fique "presa" nos recentes
             e fazem a transição de volta ser instantânea ao fechar.

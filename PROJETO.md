@@ -20,8 +20,18 @@ digita e salva sem sair do que estava fazendo.
 
 ## Como o "modal" funciona (parte mais importante da arquitetura)
 
-- `QuickCaptureActivity` é a **única Activity `MAIN/LAUNCHER`** do app — é ela
-  que tanto o ícone quanto o gesto Moto abrem.
+- `QuickCaptureActivity` é a **única Activity `MAIN/LAUNCHER`** do app — tanto
+  o ícone quanto o gesto Moto disparam o mesmo intent MAIN/LAUNCHER, então os
+  dois caem nela.
+- Pra separar as duas origens, ela olha `intent.sourceBounds` no `onCreate`:
+  toque no ícone da tela inicial sempre chega com `sourceBounds` preenchido
+  (posição do ícone, usada na animação do launcher); o gesto do Moto Actions
+  não vem de um toque na tela, então nunca tem `sourceBounds`. Com
+  `sourceBounds != null` ela redireciona pra `HistoryActivity`; senão, segue
+  mostrando o modal de captura. É uma heurística (não existe um jeito
+  oficial de diferenciar as duas origens), funciona bem com launchers
+  AOSP-like (caso do Moto), mas vale confirmar no aparelho depois de
+  instalar.
 - Usa um tema translúcido customizado (`Theme.AnotaPlus.Modal`, em
   `res/values/themes.xml`): `windowIsTranslucent`, sem título, fundo
   transparente, sem animação de tela cheia.
@@ -29,6 +39,12 @@ digita e salva sem sair do que estava fazendo.
   `android:excludeFromRecents="true"` — assim ela não fica "presa" nos apps
   recentes e a transição de fechar é instantânea (volta pra tela de trás sem
   parecer que "saiu de um app").
+- Chama `setShowWhenLocked(true)` + `setTurnScreenOn(true)` (com fallback via
+  `WindowManager.LayoutParams` pra API < 27) no início do `onCreate` do modal
+  de captura, pra abrir por cima da tela de bloqueio sem exigir desbloqueio —
+  igual o atalho da câmera. Só a `QuickCaptureActivity` tem isso; o
+  `HistoryActivity` continua exigindo desbloqueio normal, porque mostra dados
+  sensíveis.
 - Tocar fora do card (no scrim escurecido) ou salvar fecha a activity
   (`finish()`).
 

@@ -1,6 +1,7 @@
 package com.guilherme.anotaplus
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
@@ -21,6 +22,33 @@ class QuickCaptureActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Ícone da tela inicial sempre chega com sourceBounds (a posição do
+        // ícone na tela, usada na animação de abertura do launcher). O gesto
+        // do Moto Actions dispara o mesmo intent de LAUNCHER, mas não vem de
+        // um toque na tela, então nunca tem sourceBounds. É essa diferença
+        // que usamos pra separar as duas origens sem precisar mexer na
+        // configuração do gesto no aparelho.
+        if (intent.sourceBounds != null) {
+            startActivity(Intent(this, HistoryActivity::class.java))
+            finish()
+            return
+        }
+
+        // Permite abrir por cima da tela de bloqueio (sem desbloquear o
+        // aparelho) e acordar a tela se estiver apagada, do mesmo jeito que
+        // o atalho da câmera funciona no lock screen.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true)
+            setTurnScreenOn(true)
+        } else {
+            @Suppress("DEPRECATION")
+            window.addFlags(
+                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+                    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+            )
+        }
+
         binding = ActivityQuickCaptureBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
