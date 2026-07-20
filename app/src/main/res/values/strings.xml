@@ -42,6 +42,8 @@
     <string name="btn_sair">Sair</string>
     <string name="conta_nao_logado">Faça login pra ativar o backup na nuvem (em breve).</string>
     <string name="conta_logado_como">Conectado como %s</string>
+    <string name="conta_entrando">Entrando…</string>
     <string name="login_sucesso">Login feito: %s</string>
     <string name="login_erro">Não deu pra fazer login. Tenta de novo.</string>
+    <string name="login_erro_detalhe">Erro no login: %s</string>
 </resources>

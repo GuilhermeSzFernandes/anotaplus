@@ -8,9 +8,11 @@ import java.util.concurrent.TimeUnit
 
 object ApiClient {
     val api: AnotaApi by lazy {
+        // Timeout generoso: o Render (plano free) "dorme" o serviço depois de
+        // inatividade e pode levar 30-60s pra acordar na primeira chamada.
         val client = OkHttpClient.Builder()
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .readTimeout(15, TimeUnit.SECONDS)
+            .connectTimeout(45, TimeUnit.SECONDS)
+            .readTimeout(45, TimeUnit.SECONDS)
             .build()
 
         Retrofit.Builder()

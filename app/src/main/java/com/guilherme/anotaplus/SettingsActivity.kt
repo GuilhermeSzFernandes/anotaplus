@@ -105,6 +105,12 @@ class SettingsActivity : AppCompatActivity() {
             .addCredentialOption(googleIdOption)
             .build()
 
+        binding.btnEntrarGoogle.isEnabled = false
+        // Fica visível até a próxima tentativa (em vez de um Toast rápido
+        // que passa despercebido) — o backend no Render pode levar bem mais
+        // que alguns segundos pra responder se estiver "dormindo".
+        binding.textContaStatus.text = getString(R.string.conta_entrando)
+
         try {
             val result = CredentialManager.create(this).getCredential(this, request)
             val credential = result.credential
@@ -112,7 +118,7 @@ class SettingsActivity : AppCompatActivity() {
             if (credential !is CustomCredential ||
                 credential.type != GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
             ) {
-                mostrarErroLogin()
+                mostrarErroLogin(getString(R.string.login_erro))
                 return
             }
 
@@ -125,7 +131,11 @@ class SettingsActivity : AppCompatActivity() {
         } catch (e: Exception) {
             // Cobre tanto falha no picker de contas (GetCredentialException,
             // inclusive o usuário cancelando) quanto erro de rede pro backend.
-            mostrarErroLogin()
+            // Mostra a mensagem real da exceção pra dar pra diagnosticar sem
+            // precisar de logcat.
+            mostrarErroLogin(e.message ?: e.toString())
+        } finally {
+            binding.btnEntrarGoogle.isEnabled = true
         }
     }
 
@@ -135,7 +145,8 @@ class SettingsActivity : AppCompatActivity() {
         atualizarUiConta()
     }
 
-    private fun mostrarErroLogin() {
-        Toast.makeText(this, R.string.login_erro, Toast.LENGTH_SHORT).show()
+    private fun mostrarErroLogin(detalhe: String) {
+        binding.textContaStatus.text = getString(R.string.login_erro_detalhe, detalhe)
+        Toast.makeText(this, R.string.login_erro, Toast.LENGTH_LONG).show()
     }
 }
