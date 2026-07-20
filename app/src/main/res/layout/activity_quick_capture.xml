@@ -183,9 +183,11 @@
                     style="@style/Widget.AnotaPlus.Button.Link"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
                     android:paddingHorizontal="0dp"
-                    app:insetLeft="0dp"
-                    app:insetRight="0dp"
                     android:text="@string/link_historico" />
 
                 <View
