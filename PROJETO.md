@@ -124,14 +124,17 @@ implementado).
   `GET/POST/DELETE` de `/entries` e `/categories` protegidos por esse JWT.
 - **No app Android**: login com Google via Credential Manager (API atual do
   Google, não usa `google-services.json` nem a `GoogleSignInClient` antiga).
-  Tela de login fica em Configurações (seção "Conta", topo da tela) — mostra
-  "Entrar com Google" ou "Conectado como {email}" + "Sair". O `accessToken`
-  retornado pelo backend fica salvo em `SessionPrefs.kt` (SharedPreferences
-  simples, sem criptografia — aceitável por enquanto, dado que é só uma
-  sessão de app, não a senha do Google).
+  `AuthHelper.kt` concentra o fluxo (pegar credencial do Google → trocar por
+  sessão no backend → salvar em `SessionPrefs.kt`), usado tanto pela tela de
+  login quanto por Configurações — os dois só cuidam da própria UI
+  (loading/erro). Token fica em `SessionPrefs.kt` (SharedPreferences simples,
+  sem criptografia — aceitável por enquanto, é só sessão de app, não senha
+  do Google).
   - `network/ApiClient.kt` + `network/AnotaApi.kt` (Retrofit + OkHttp +
     Gson) — primeira vez que o app faz qualquer chamada de rede; precisou
-    adicionar `INTERNET` permission no manifest.
+    adicionar `INTERNET` permission no manifest. Timeout de 45s no OkHttp
+    porque o Render (plano free) dorme e demora a acordar na primeira
+    chamada depois de inatividade.
   - `BuildConfig.API_BASE_URL` e `BuildConfig.GOOGLE_WEB_CLIENT_ID` vêm de
     `buildConfigField` no `build.gradle.kts` (valores fixos por enquanto,
     não variam por build type ainda).
@@ -140,6 +143,40 @@ implementado).
   (auth) pronta pra construir isso em cima.
 - Ver `README.md` do repo do backend pra detalhes de setup/deploy — aqui só
   o resumo do lado Android.
+
+## Onboarding (primeira abertura) e tela de Planos
+
+- **Fluxo**: `QuickCaptureActivity` (ícone ou gesto, o que abrir primeiro)
+  → `GestureGuideActivity` → `LoginActivity` → destino normal (Histórico ou
+  captura, dependendo de qual dos dois foi usado pra abrir o app). Controlado
+  por `Prefs.isOnboardingConcluido()` — só acontece uma vez, na vida do
+  app instalado; depois disso o app abre direto no fluxo normal.
+  - Os extras `GestureGuideActivity.EXTRA_ONBOARDING` /
+    `EXTRA_ABRIR_HISTORICO` viajam entre as três activities pra saber (a)
+    se está dentro da sequência de onboarding (decide se avança pra próxima
+    tela ou só fecha) e (b) qual era o destino original antes do desvio.
+  - Cada tela também pode ser aberta isoladamente depois (fora do
+    onboarding) a partir de Configurações — "ver planos" e "como configurar
+    o gesto" — nesse caso os extras não são passados e a tela só fecha ao
+    concluir, sem redirecionar pra mais nada.
+- **GestureGuideActivity**: explica o gesto "toque duas vezes na traseira"
+  com passo a passo numerado (a numeração aqui faz sentido — é uma sequência
+  real de ações) + botão que tenta abrir o app `com.motorola.actions`
+  direto (`packageManager.getLaunchIntentForPackage`), caindo pra
+  `Settings.ACTION_SETTINGS` se não encontrar ou falhar. Não existe uma API
+  pública pra linkar direto na tela específica do gesto — o guia escrito
+  cobre esse gap.
+- **LoginActivity**: tela cheia (não é o modal translúcido), usa
+  `AuthHelper` pro login, com opção "Continuar sem conta" (o app funciona
+  100% local sem login) e link pra `PlansActivity`.
+- **PlansActivity**: comparação Free vs Premium, cards com
+  `bg_card_free.xml` / `bg_card_premium.xml` (borda em latão no Premium).
+  Preço e features são **placeholder** — plano de verdade e Google Play
+  Billing ainda não existem, o botão "Assinar" fica desabilitado
+  ("Em breve") de propósito, pra não passar a impressão de que já é
+  possível comprar.
+
+## Build sem Android Studio
 
 ## Build sem Android Studio
 
@@ -170,7 +207,10 @@ para instalar SDK e Gradle no runner (não depende de wrapper local).
   o backend só tem os endpoints CRUD, nada no app chama `/entries` ou
   `/categories` ainda.
 - Modelo de assinatura (`Subscription`) + verificação de recibo do Google
-  Play Billing, pra gatear o backup atrás do plano pago.
+  Play Billing, pra gatear o backup atrás do plano pago — quando isso
+  existir, o botão "Em breve" da `PlansActivity` vira "Assinar" de verdade.
+- Definir preço/features reais dos planos (o que tá na `PlansActivity` hoje
+  é placeholder que eu escrevi, não decisão de negócio fechada).
 - Exportar histórico em CSV.
 - Widget de tela inicial com total de gastos do dia/mês.
 - Editar/renomear categoria existente (hoje só dá pra adicionar e remover).

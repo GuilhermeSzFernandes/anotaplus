@@ -31,7 +31,22 @@ class QuickCaptureActivity : AppCompatActivity() {
         // um toque na tela, então nunca tem sourceBounds. É essa diferença
         // que usamos pra separar as duas origens sem precisar mexer na
         // configuração do gesto no aparelho.
-        if (intent.sourceBounds != null) {
+        val abrirHistorico = intent.sourceBounds != null
+
+        // Primeiríssima vez que o app é aberto (ícone ou gesto, o que vier
+        // primeiro): manda pro guia do gesto + tela de login/planos antes de
+        // seguir pro destino normal. Depois disso nunca mais aparece.
+        if (!Prefs.isOnboardingConcluido(this)) {
+            startActivity(
+                Intent(this, GestureGuideActivity::class.java)
+                    .putExtra(GestureGuideActivity.EXTRA_ONBOARDING, true)
+                    .putExtra(GestureGuideActivity.EXTRA_ABRIR_HISTORICO, abrirHistorico)
+            )
+            finish()
+            return
+        }
+
+        if (abrirHistorico) {
             startActivity(Intent(this, HistoryActivity::class.java))
             finish()
             return

@@ -56,6 +56,28 @@
             android:theme="@style/Theme.AnotaPlus"
             android:windowSoftInputMode="adjustResize" />
 
+        <!--
+            Sequência de onboarding (só aparece na primeiríssima abertura do
+            app, controlado por Prefs.isOnboardingConcluido):
+            QuickCaptureActivity -> GestureGuideActivity -> LoginActivity.
+            Cada uma também pode ser aberta isoladamente depois (fora do
+            onboarding) a partir de Configurações.
+        -->
+        <activity
+            android:name=".GestureGuideActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AnotaPlus" />
+
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AnotaPlus" />
+
+        <activity
+            android:name=".PlansActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AnotaPlus" />
+
     </application>
 
 </manifest>

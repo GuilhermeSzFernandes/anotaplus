@@ -1,17 +1,12 @@
 package com.guilherme.anotaplus
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.credentials.ClearCredentialStateRequest
-import androidx.credentials.CredentialManager
-import androidx.credentials.CustomCredential
-import androidx.credentials.GetCredentialRequest
 import androidx.lifecycle.lifecycleScope
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.guilherme.anotaplus.data.AppDatabase
 import com.guilherme.anotaplus.data.Category
 import com.guilherme.anotaplus.data.EntryType
@@ -19,8 +14,6 @@ import com.guilherme.anotaplus.data.Prefs
 import com.guilherme.anotaplus.data.SessionPrefs
 import com.guilherme.anotaplus.databinding.ActivitySettingsBinding
 import com.guilherme.anotaplus.databinding.ItemCategoryBinding
-import com.guilherme.anotaplus.network.ApiClient
-import com.guilherme.anotaplus.network.dto.GoogleLoginRequest
 import kotlinx.coroutines.launch
 
 class SettingsActivity : AppCompatActivity() {
@@ -37,6 +30,12 @@ class SettingsActivity : AppCompatActivity() {
         atualizarUiConta()
         binding.btnEntrarGoogle.setOnClickListener { lifecycleScope.launch { entrarComGoogle() } }
         binding.btnSair.setOnClickListener { lifecycleScope.launch { sairDaConta() } }
+        binding.linkVerPlanos.setOnClickListener {
+            startActivity(Intent(this, PlansActivity::class.java))
+        }
+        binding.linkGuiaGesto.setOnClickListener {
+            startActivity(Intent(this, GestureGuideActivity::class.java))
+        }
 
         val tipoPadrao = Prefs.getTipoPadrao(this)
         if (tipoPadrao == EntryType.GASTO) {
@@ -96,15 +95,6 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private suspend fun entrarComGoogle() {
-        val googleIdOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false)
-            .setServerClientId(BuildConfig.GOOGLE_WEB_CLIENT_ID)
-            .build()
-
-        val request = GetCredentialRequest.Builder()
-            .addCredentialOption(googleIdOption)
-            .build()
-
         binding.btnEntrarGoogle.isEnabled = false
         // Fica visível até a próxima tentativa (em vez de um Toast rápido
         // que passa despercebido) — o backend no Render pode levar bem mais
@@ -112,20 +102,7 @@ class SettingsActivity : AppCompatActivity() {
         binding.textContaStatus.text = getString(R.string.conta_entrando)
 
         try {
-            val result = CredentialManager.create(this).getCredential(this, request)
-            val credential = result.credential
-
-            if (credential !is CustomCredential ||
-                credential.type != GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
-            ) {
-                mostrarErroLogin(getString(R.string.login_erro))
-                return
-            }
-
-            val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-            val resposta = ApiClient.api.loginWithGoogle(GoogleLoginRequest(googleIdTokenCredential.idToken))
-
-            SessionPrefs.salvarSessao(this, resposta.accessToken, resposta.user.email, resposta.user.name)
+            val resposta = AuthHelper.entrarComGoogle(this)
             atualizarUiConta()
             Toast.makeText(this, getString(R.string.login_sucesso, resposta.user.email), Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
@@ -140,8 +117,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private suspend fun sairDaConta() {
-        runCatching { CredentialManager.create(this).clearCredentialState(ClearCredentialStateRequest()) }
-        SessionPrefs.limparSessao(this)
+        AuthHelper.sair(this)
         atualizarUiConta()
     }
 
