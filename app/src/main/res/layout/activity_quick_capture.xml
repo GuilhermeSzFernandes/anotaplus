@@ -122,6 +122,7 @@
                     android:background="@null"
                     android:gravity="end"
                     android:hint="@string/hint_valor"
+                    android:textColor="@color/ink"
                     android:textColorHint="@color/ink_soft"
                     android:inputType="numberDecimal"
                     android:textAppearance="@style/TextAppearance.AnotaPlus.Amount" />
@@ -139,6 +140,7 @@
                 android:paddingBottom="6dp"
                 android:visibility="gone"
                 android:hint="@string/hint_categoria"
+                android:textColor="@color/ink"
                 android:textColorHint="@color/ink_soft"
                 android:inputType="text"
                 android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
@@ -157,6 +159,7 @@
                 android:maxLines="5"
                 android:gravity="top"
                 android:hint="@string/hint_pensamento"
+                android:textColor="@color/ink"
                 android:textColorHint="@color/ink_soft"
                 android:inputType="textMultiLine|textCapSentences"
                 android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
