@@ -16,10 +16,27 @@ android {
         versionName = "1.0"
     }
 
+    signingConfigs {
+        getByName("debug") {
+            // Keystore de debug fixo e commitado (não é segredo — é só pra
+            // ter um SHA-1 estável entre builds do GitHub Actions, já que
+            // cada runner é efêmero e geraria um keystore de debug
+            // diferente a cada vez, quebrando o Google Sign-In).
+            storeFile = file("debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+            storeType = "PKCS12"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+        debug {
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
