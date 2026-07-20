@@ -37,6 +37,16 @@
             android:exported="false"
             android:theme="@style/Theme.AnotaPlus" />
 
+        <activity
+            android:name=".ReportActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AnotaPlus" />
+
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AnotaPlus" />
+
     </application>
 
 </manifest>

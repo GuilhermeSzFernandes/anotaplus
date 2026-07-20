@@ -129,8 +129,9 @@
 
             </LinearLayout>
 
-            <!-- Categoria (opcional), só pra Gasto -->
-            <EditText
+            <!-- Categoria (opcional), só pra Gasto. Sugere as categorias
+                 salvas em Configurações, mas aceita texto livre também. -->
+            <AutoCompleteTextView
                 android:id="@+id/edit_categoria"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -143,6 +144,7 @@
                 android:textColor="@color/ink"
                 android:textColorHint="@color/ink_soft"
                 android:inputType="text"
+                android:completionThreshold="1"
                 android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
                 tools:visibility="visible" />
 

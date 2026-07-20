@@ -13,4 +13,19 @@
     <string name="empty_history">Nenhum lançamento ainda.\nToque duas vezes na traseira do celular pra começar.</string>
     <string name="entry_number_format">Nº %04d</string>
     <string name="prefix_valor">R$</string>
+
+    <string name="title_relatorio">Relatório</string>
+    <string name="title_configuracoes">Configurações</string>
+
+    <string name="label_tipo_padrao">Tipo padrão ao abrir</string>
+    <string name="label_categorias">Categorias</string>
+    <string name="hint_nova_categoria">nova categoria</string>
+    <string name="content_desc_remover_categoria">Remover categoria</string>
+    <string name="empty_categorias">Nenhuma categoria ainda. Adicione uma acima.</string>
+
+    <string name="label_gasto_no_mes">gasto no mês</string>
+    <string name="label_por_categoria">Por categoria</string>
+    <string name="format_ideias_mes">%d ideia(s) registrada(s) este mês</string>
+    <string name="empty_report">Nenhum gasto registrado este mês ainda.</string>
+    <string name="sem_categoria">Sem categoria</string>
 </resources>

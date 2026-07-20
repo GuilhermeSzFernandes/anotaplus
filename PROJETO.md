@@ -51,17 +51,39 @@ digita e salva sem sair do que estava fazendo.
 ## Estrutura de telas
 
 - **QuickCaptureActivity** (`res/layout/activity_quick_capture.xml`): toggle
-  Gasto/Pensamento, campo de valor + categoria (só aparece se "Gasto"),
-  campo de texto livre, botão salvar, botão "Histórico".
-- **HistoryActivity** (`res/layout/activity_history.xml`): lista tudo que foi
-  salvo (RecyclerView + `EntryAdapter`), acessada pelo botão dentro do modal.
+  Gasto/Pensamento (abre no tipo padrão definido em Configurações), campo de
+  valor + categoria (só aparece se "Gasto", com autocomplete das categorias
+  salvas), campo de texto livre, botão salvar, botão "Histórico".
+- **HistoryActivity** (`res/layout/activity_history.xml`): duas abas
+  (`TabLayout`) — Gasto e Ideia — cada uma filtrando a mesma lista
+  (RecyclerView + `EntryAdapter`) por `EntryType`. O toolbar tem um menu com
+  dois ícones: Relatório e Configurações.
+- **ReportActivity** (`res/layout/activity_report.xml`): relatório do mês
+  atual — total gasto, gasto por categoria (com barra proporcional) e
+  contagem de ideias registradas. Linhas de categoria são infladas
+  programaticamente (sem RecyclerView, lista sempre pequena).
+- **SettingsActivity** (`res/layout/activity_settings.xml`): escolha do tipo
+  padrão ao abrir (salvo em `SharedPreferences` via `Prefs.kt`) e gestão de
+  categorias (adicionar/remover, também sem RecyclerView).
 
 ## Dados (`app/src/main/java/.../data/`)
 
 - `Entry.kt`: entidade Room — `id`, `type` (enum `GASTO`/`PENSAMENTO`),
   `texto`, `valor: Double?`, `categoria: String?`, `timestamp`.
-- `EntryDao.kt`: insert, `getAll()` como `Flow`, delete por id.
-- `AppDatabase.kt`: singleton do Room + `Converters` para o enum.
+- `Category.kt` / `CategoryDao.kt`: categorias de gasto definidas pelo
+  usuário (`id`, `nome`). Populadas com um seed padrão (Mercado, Transporte,
+  Lazer, Contas, Outros) na primeira criação do banco, via
+  `RoomDatabase.Callback.onCreate` no `AppDatabase`.
+- `EntryDao.kt`: insert, `getAll()`/`getByType()` como `Flow`, delete por id,
+  e queries de relatório (`getGastoPorCategoria`, `getTotalGasto`,
+  `getTotalIdeias`) filtradas por intervalo de tempo (mês atual).
+- `AppDatabase.kt`: singleton do Room + `Converters` para o enum. **Versão 2**
+  (adicionou `categories`) usa `fallbackToDestructiveMigration()` — não tem
+  migração real escrita, então qualquer bump de versão futuro apaga os dados
+  locais existentes no aparelho do usuário. Aceitável agora (projeto ainda em
+  fase inicial/teste), mas revisar se isso virar um problema real.
+- `Prefs.kt`: wrapper simples sobre `SharedPreferences` pra guardar o tipo
+  padrão (`Gasto`/`Ideia`) que o `QuickCaptureActivity` usa ao abrir.
 
 ## Build sem Android Studio
 
@@ -92,6 +114,8 @@ para instalar SDK e Gradle no runner (não depende de wrapper local).
   NestJS, então a ideia é eventualmente unificar/reaproveitar essa lógica.
 - Exportar histórico em CSV.
 - Widget de tela inicial com total de gastos do dia/mês.
+- Editar/renomear categoria existente (hoje só dá pra adicionar e remover).
+- Relatório hoje é só do mês atual — considerar seletor de mês/período.
 
 ## Preferências do usuário (relevantes pro trabalho neste projeto)
 

@@ -1,0 +1,25 @@
+package com.guilherme.anotaplus.data
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface CategoryDao {
+
+    @Insert
+    suspend fun insert(category: Category): Long
+
+    @Query("SELECT * FROM categories ORDER BY nome ASC")
+    fun getAll(): Flow<List<Category>>
+
+    @Query("SELECT nome FROM categories ORDER BY nome ASC")
+    suspend fun getNomesOnce(): List<String>
+
+    @Query("DELETE FROM categories WHERE id = :id")
+    suspend fun deleteById(id: Long)
+
+    @Query("SELECT COUNT(*) FROM categories")
+    suspend fun count(): Int
+}

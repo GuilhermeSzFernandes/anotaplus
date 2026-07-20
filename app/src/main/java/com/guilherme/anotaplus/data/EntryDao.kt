@@ -14,6 +14,29 @@ interface EntryDao {
     @Query("SELECT * FROM entries ORDER BY timestamp DESC")
     fun getAll(): Flow<List<Entry>>
 
+    @Query("SELECT * FROM entries WHERE type = :type ORDER BY timestamp DESC")
+    fun getByType(type: EntryType): Flow<List<Entry>>
+
     @Query("DELETE FROM entries WHERE id = :id")
     suspend fun deleteById(id: Long)
+
+    @Query(
+        """
+        SELECT categoria, SUM(valor) AS total FROM entries
+        WHERE type = 'GASTO' AND timestamp BETWEEN :inicio AND :fim AND valor IS NOT NULL
+        GROUP BY categoria
+        ORDER BY total DESC
+        """
+    )
+    fun getGastoPorCategoria(inicio: Long, fim: Long): Flow<List<CategoriaTotal>>
+
+    @Query(
+        "SELECT COALESCE(SUM(valor), 0) FROM entries WHERE type = 'GASTO' AND timestamp BETWEEN :inicio AND :fim"
+    )
+    fun getTotalGasto(inicio: Long, fim: Long): Flow<Double>
+
+    @Query(
+        "SELECT COUNT(*) FROM entries WHERE type = 'PENSAMENTO' AND timestamp BETWEEN :inicio AND :fim"
+    )
+    fun getTotalIdeias(inicio: Long, fim: Long): Flow<Int>
 }

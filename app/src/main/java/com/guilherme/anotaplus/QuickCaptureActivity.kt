@@ -4,11 +4,13 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.guilherme.anotaplus.data.AppDatabase
 import com.guilherme.anotaplus.data.Entry
 import com.guilherme.anotaplus.data.EntryType
+import com.guilherme.anotaplus.data.Prefs
 import com.guilherme.anotaplus.databinding.ActivityQuickCaptureBinding
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -61,8 +63,21 @@ class QuickCaptureActivity : AppCompatActivity() {
         val timestampFormat = SimpleDateFormat("dd MMM · HH:mm", Locale("pt", "BR"))
         binding.textTimestamp.text = timestampFormat.format(Date()).uppercase(Locale("pt", "BR"))
 
-        binding.btnTipoPensamento.isChecked = true
-        atualizarCamposPorTipo(EntryType.PENSAMENTO)
+        val tipoPadrao = Prefs.getTipoPadrao(this)
+        tipoSelecionado = tipoPadrao
+        if (tipoPadrao == EntryType.GASTO) {
+            binding.btnTipoGasto.isChecked = true
+        } else {
+            binding.btnTipoPensamento.isChecked = true
+        }
+        atualizarCamposPorTipo(tipoPadrao)
+
+        lifecycleScope.launch {
+            val nomes = AppDatabase.getInstance(applicationContext).categoryDao().getNomesOnce()
+            binding.editCategoria.setAdapter(
+                ArrayAdapter(this@QuickCaptureActivity, android.R.layout.simple_dropdown_item_1line, nomes)
+            )
+        }
 
         binding.toggleTipo.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
