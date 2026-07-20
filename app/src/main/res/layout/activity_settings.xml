@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/paper">
@@ -45,6 +46,48 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@string/label_conta"
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
+
+            <TextView
+                android:id="@+id/text_conta_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
+                android:textColor="@color/ink_soft"
+                tools:text="Conectado como voce@gmail.com" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_entrar_google"
+                style="@style/Widget.AnotaPlus.Button.Stamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/btn_entrar_google" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_sair"
+                style="@style/Widget.AnotaPlus.Button.Link"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:visibility="gone"
+                android:text="@string/btn_sair" />
+
+            <com.guilherme.anotaplus.ui.PerforationView
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:layout_marginTop="20dp"
+                app:toothWidth="8dp"
+                app:toothHeight="4dp"
+                app:toothGap="3dp"
+                app:toothColor="@color/ink_soft" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
                 android:text="@string/label_tipo_padrao"
                 android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
 

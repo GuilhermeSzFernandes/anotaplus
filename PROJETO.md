@@ -14,7 +14,9 @@ digita e salva sem sair do que estava fazendo.
 
 - Kotlin nativo, Android SDK (minSdk 26, compileSdk/targetSdk 34)
 - View Binding (sem Compose por enquanto)
-- Room (SQLite local) para persistência — **sem backend/sync ainda**
+- Room (SQLite local) para persistência — dado local continua sendo a fonte
+  de verdade; a nuvem (ver seção "Backend / backup na nuvem") é só login +
+  CRUD por enquanto, ainda **sem sync de verdade**
 - Sem Gradle Wrapper commitado: o build roda com Gradle instalado direto
   (ver seção de build)
 
@@ -105,6 +107,40 @@ digita e salva sem sair do que estava fazendo.
 - `Prefs.kt`: wrapper simples sobre `SharedPreferences` pra guardar o tipo
   padrão (`Gasto`/`Ideia`) que o `QuickCaptureActivity` usa ao abrir.
 
+## Backend / backup na nuvem (novo, em andamento)
+
+Início de uma futura oferta de planos pagos com backup na nuvem. Decisões já
+tomadas: NestJS + Prisma, Neon (Postgres), Render (deploy), Google Sign-In
+(auth), Google Play Billing (quando chegar a hora de cobrar — ainda não
+implementado).
+
+- Repo separado: `https://github.com/GuilhermeSzFernandes/anotaplus-backend`,
+  clonado localmente em `anotaplusdadsa/anotaplus-backend` (pasta irmã deste
+  repo). Já no ar em `https://anotaplus-backend.onrender.com`.
+- Schema Prisma (`User`, `Category`, `Entry`) espelha as entidades do Room,
+  com `userId` porque agora é multi-usuário.
+- `POST /auth/google` recebe o ID token do Google, valida contra
+  `GOOGLE_WEB_CLIENT_ID` via `google-auth-library` e devolve um JWT próprio.
+  `GET/POST/DELETE` de `/entries` e `/categories` protegidos por esse JWT.
+- **No app Android**: login com Google via Credential Manager (API atual do
+  Google, não usa `google-services.json` nem a `GoogleSignInClient` antiga).
+  Tela de login fica em Configurações (seção "Conta", topo da tela) — mostra
+  "Entrar com Google" ou "Conectado como {email}" + "Sair". O `accessToken`
+  retornado pelo backend fica salvo em `SessionPrefs.kt` (SharedPreferences
+  simples, sem criptografia — aceitável por enquanto, dado que é só uma
+  sessão de app, não a senha do Google).
+  - `network/ApiClient.kt` + `network/AnotaApi.kt` (Retrofit + OkHttp +
+    Gson) — primeira vez que o app faz qualquer chamada de rede; precisou
+    adicionar `INTERNET` permission no manifest.
+  - `BuildConfig.API_BASE_URL` e `BuildConfig.GOOGLE_WEB_CLIENT_ID` vêm de
+    `buildConfigField` no `build.gradle.kts` (valores fixos por enquanto,
+    não variam por build type ainda).
+- **Login ainda não faz nada além de autenticar** — não existe sync de
+  entries/categories entre o Room local e o backend ainda. É só a base
+  (auth) pronta pra construir isso em cima.
+- Ver `README.md` do repo do backend pra detalhes de setup/deploy — aqui só
+  o resumo do lado Android.
+
 ## Build sem Android Studio
 
 O usuário **não tem Android Studio instalado** e não quer instalar. A solução
@@ -129,13 +165,15 @@ para instalar SDK e Gradle no runner (não depende de wrapper local).
 
 ## Próximos passos (ainda não implementados)
 
-- Sync com backend NestJS (endpoint tipo `POST /entries`) — o usuário já tem
-  experiência com um projeto pessoal de rastreamento de gastos via Tasker +
-  NestJS, então a ideia é eventualmente unificar/reaproveitar essa lógica.
+- Sync de verdade entre o Room local e o backend (upload/download de
+  entries e categories, resolução de conflito entre dispositivos) — hoje
+  o backend só tem os endpoints CRUD, nada no app chama `/entries` ou
+  `/categories` ainda.
+- Modelo de assinatura (`Subscription`) + verificação de recibo do Google
+  Play Billing, pra gatear o backup atrás do plano pago.
 - Exportar histórico em CSV.
 - Widget de tela inicial com total de gastos do dia/mês.
 - Editar/renomear categoria existente (hoje só dá pra adicionar e remover).
-- Relatório hoje é só do mês atual — considerar seletor de mês/período.
 
 ## Preferências do usuário (relevantes pro trabalho neste projeto)
 
