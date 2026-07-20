@@ -72,6 +72,10 @@ class QuickCaptureActivity : AppCompatActivity() {
         }
         atualizarCamposPorTipo(tipoPadrao)
 
+        // Combobox: sem teclado, o toque sempre abre a lista inteira em vez
+        // de filtrar por texto digitado (não há texto digitado possível).
+        binding.editCategoria.setOnClickListener { binding.editCategoria.showDropDown() }
+
         lifecycleScope.launch {
             val nomes = AppDatabase.getInstance(applicationContext).categoryDao().getNomesOnce()
             binding.editCategoria.setAdapter(

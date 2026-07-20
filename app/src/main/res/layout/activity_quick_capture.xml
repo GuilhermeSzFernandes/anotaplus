@@ -129,8 +129,9 @@
 
             </LinearLayout>
 
-            <!-- Categoria (opcional), só pra Gasto. Sugere as categorias
-                 salvas em Configurações, mas aceita texto livre também. -->
+            <!-- Categoria (opcional), só pra Gasto. Combobox: sem teclado,
+                 toque abre a lista completa das categorias salvas em
+                 Configurações (não aceita texto livre). -->
             <AutoCompleteTextView
                 android:id="@+id/edit_categoria"
                 android:layout_width="match_parent"
@@ -143,8 +144,10 @@
                 android:hint="@string/hint_categoria"
                 android:textColor="@color/ink"
                 android:textColorHint="@color/ink_soft"
-                android:inputType="text"
-                android:completionThreshold="1"
+                android:inputType="none"
+                android:cursorVisible="false"
+                android:drawableEnd="@drawable/ic_chevron_down"
+                android:drawablePadding="6dp"
                 android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
                 tools:visibility="visible" />
 

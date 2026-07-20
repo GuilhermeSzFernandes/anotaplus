@@ -17,6 +17,11 @@ interface EntryDao {
     @Query("SELECT * FROM entries WHERE type = :type ORDER BY timestamp DESC")
     fun getByType(type: EntryType): Flow<List<Entry>>
 
+    @Query(
+        "SELECT * FROM entries WHERE type = :type AND timestamp BETWEEN :inicio AND :fim ORDER BY timestamp DESC"
+    )
+    fun getByTypeAndRange(type: EntryType, inicio: Long, fim: Long): Flow<List<Entry>>
+
     @Query("DELETE FROM entries WHERE id = :id")
     suspend fun deleteById(id: Long)
 

@@ -52,19 +52,31 @@ digita e salva sem sair do que estava fazendo.
 
 - **QuickCaptureActivity** (`res/layout/activity_quick_capture.xml`): toggle
   Gasto/Pensamento (abre no tipo padrão definido em Configurações), campo de
-  valor + categoria (só aparece se "Gasto", com autocomplete das categorias
-  salvas), campo de texto livre, botão salvar, botão "Histórico".
+  valor + categoria (só aparece se "Gasto"), campo de texto livre, botão
+  salvar, botão "Histórico". O campo categoria é uma combobox de verdade:
+  `AutoCompleteTextView` com `inputType="none"` (sem teclado) e clique
+  forçando `showDropDown()`, então só dá pra escolher uma categoria já
+  cadastrada, sem digitar texto livre.
 - **HistoryActivity** (`res/layout/activity_history.xml`): duas abas
   (`TabLayout`) — Gasto e Ideia — cada uma filtrando a mesma lista
-  (RecyclerView + `EntryAdapter`) por `EntryType`. O toolbar tem um menu com
-  dois ícones: Relatório e Configurações.
-- **ReportActivity** (`res/layout/activity_report.xml`): relatório do mês
-  atual — total gasto, gasto por categoria (com barra proporcional) e
-  contagem de ideias registradas. Linhas de categoria são infladas
-  programaticamente (sem RecyclerView, lista sempre pequena).
+  (RecyclerView + `EntryAdapter`) por `EntryType`. A aba Gasto também tem um
+  seletor de mês (`row_month_selector.xml`, incluído via `<include>`) que
+  filtra o período — default é o mês atual, com setas pra navegar pra
+  meses anteriores (não deixa avançar além do mês atual). A aba Ideia não
+  tem esse filtro, mostra tudo. O toolbar tem um menu com dois ícones:
+  Relatório e Configurações.
+- **ReportActivity** (`res/layout/activity_report.xml`): mesmo seletor de mês
+  reutilizado (`row_month_selector.xml`), com total gasto, gasto por
+  categoria (com barra proporcional) e contagem de ideias — tudo recalculado
+  reativamente (`flatMapLatest`) quando o mês selecionado muda. Linhas de
+  categoria são infladas programaticamente (sem RecyclerView, lista sempre
+  pequena).
 - **SettingsActivity** (`res/layout/activity_settings.xml`): escolha do tipo
   padrão ao abrir (salvo em `SharedPreferences` via `Prefs.kt`) e gestão de
   categorias (adicionar/remover, também sem RecyclerView).
+- `MesUtil.kt`: helper compartilhado entre `HistoryActivity` e
+  `ReportActivity` — converte um `Calendar` no intervalo de início/fim do
+  mês em epoch millis (usado nas queries) e formata o label do mês.
 
 ## Dados (`app/src/main/java/.../data/`)
 
@@ -74,9 +86,9 @@ digita e salva sem sair do que estava fazendo.
   usuário (`id`, `nome`). Populadas com um seed padrão (Mercado, Transporte,
   Lazer, Contas, Outros) na primeira criação do banco, via
   `RoomDatabase.Callback.onCreate` no `AppDatabase`.
-- `EntryDao.kt`: insert, `getAll()`/`getByType()` como `Flow`, delete por id,
-  e queries de relatório (`getGastoPorCategoria`, `getTotalGasto`,
-  `getTotalIdeias`) filtradas por intervalo de tempo (mês atual).
+- `EntryDao.kt`: insert, `getAll()`/`getByType()`/`getByTypeAndRange()` como
+  `Flow`, delete por id, e queries de relatório (`getGastoPorCategoria`,
+  `getTotalGasto`, `getTotalIdeias`) filtradas por intervalo de tempo.
 - `AppDatabase.kt`: singleton do Room + `Converters` para o enum. **Versão 2**
   (adicionou `categories`) usa `fallbackToDestructiveMigration()` — não tem
   migração real escrita, então qualquer bump de versão futuro apaga os dados

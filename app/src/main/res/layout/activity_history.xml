@@ -54,6 +54,29 @@
 
     </com.google.android.material.tabs.TabLayout>
 
+    <include
+        android:id="@+id/row_mes"
+        layout="@layout/row_month_selector"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="6dp"
+        app:layout_constraintTop_toBottomOf="@id/tab_tipo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.guilherme.anotaplus.ui.PerforationView
+        android:id="@+id/row_mes_perforation"
+        android:layout_width="0dp"
+        android:layout_height="5dp"
+        app:toothWidth="7dp"
+        app:toothHeight="3dp"
+        app:toothGap="3dp"
+        app:toothColor="@color/paper_dim"
+        app:layout_constraintTop_toBottomOf="@id/row_mes"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_entries"
         android:layout_width="0dp"
@@ -61,7 +84,7 @@
         android:paddingHorizontal="12dp"
         android:paddingTop="12dp"
         android:clipToPadding="false"
-        app:layout_constraintTop_toBottomOf="@id/tab_tipo"
+        app:layout_constraintTop_toBottomOf="@id/row_mes_perforation"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

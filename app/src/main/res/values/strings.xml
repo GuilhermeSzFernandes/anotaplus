@@ -28,4 +28,7 @@
     <string name="format_ideias_mes">%d ideia(s) registrada(s) este mês</string>
     <string name="empty_report">Nenhum gasto registrado este mês ainda.</string>
     <string name="sem_categoria">Sem categoria</string>
+
+    <string name="desc_mes_anterior">Mês anterior</string>
+    <string name="desc_mes_proximo">Próximo mês</string>
 </resources>
