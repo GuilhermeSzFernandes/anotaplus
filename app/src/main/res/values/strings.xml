@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Anota+</string>
+    <string name="hint_gasto">Ex: 45,90 mercado</string>
+    <string name="hint_pensamento">O que está passando pela sua cabeça?</string>
+    <string name="btn_gasto">Gasto</string>
+    <string name="btn_pensamento">Pensamento</string>
+    <string name="btn_salvar">Salvar</string>
+    <string name="btn_historico">Histórico</string>
+    <string name="hint_valor">Valor (R$)</string>
+    <string name="hint_categoria">Categoria (opcional)</string>
+    <string name="empty_history">Nada por aqui ainda</string>
+</resources>

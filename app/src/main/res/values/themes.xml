@@ -1,0 +1,27 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Theme.AnotaPlus" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/accent</item>
+    </style>
+
+    <!--
+        Tema "modal": janela translúcida, sem título, sem animação de entrada/saída
+        cheia de tela. É isso que dá a sensação de "apareceu um cartão por cima"
+        em vez de "abriu um app".
+    -->
+    <style name="Theme.AnotaPlus.Modal" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@style/ModalAnimation</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowIsFloating">false</item>
+    </style>
+
+    <style name="ModalAnimation" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+    </style>
+
+</resources>

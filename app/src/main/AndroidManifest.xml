@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.AnotaPlus">
+
+        <!--
+            Activity principal: é a que o gesto "Toque duas vezes na traseira"
+            do Moto Actions vai abrir (mesma que o ícone do app abre).
+            Tema translúcido para se comportar como um modal por cima da tela atual.
+            noHistory + excludeFromRecents evitam que ela fique "presa" nos recentes
+            e fazem a transição de volta ser instantânea ao fechar.
+        -->
+        <activity
+            android:name=".QuickCaptureActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AnotaPlus.Modal"
+            android:noHistory="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize|stateVisible">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".HistoryActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AnotaPlus" />
+
+    </application>
+
+</manifest>
