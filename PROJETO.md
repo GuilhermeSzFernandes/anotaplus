@@ -159,16 +159,23 @@ implementado).
     onboarding) a partir de Configurações — "ver planos" e "como configurar
     o gesto" — nesse caso os extras não são passados e a tela só fecha ao
     concluir, sem redirecionar pra mais nada.
-- **GestureGuideActivity**: explica o gesto "toque duas vezes na traseira"
-  com passo a passo numerado (a numeração aqui faz sentido — é uma sequência
-  real de ações) + botão que tenta abrir o app `com.motorola.actions`
-  direto (`packageManager.getLaunchIntentForPackage`), caindo pra
-  `Settings.ACTION_SETTINGS` se não encontrar ou falhar. Não existe uma API
-  pública pra linkar direto na tela específica do gesto — o guia escrito
-  cobre esse gap.
-- **LoginActivity**: tela cheia (não é o modal translúcido), usa
-  `AuthHelper` pro login, com opção "Continuar sem conta" (o app funciona
-  100% local sem login) e link pra `PlansActivity`.
+- **GestureGuideActivity**: explica o gesto de abertura rápida com passo a
+  passo numerado (a numeração aqui faz sentido — é uma sequência real de
+  ações). Detecta o fabricante via `Build.MANUFACTURER`: no Moto, texto e
+  botão são específicos ("toque duas vezes na traseira", tenta abrir
+  `com.motorola.actions` direto via `packageManager.getLaunchIntentForPackage`)
+  e caem pra `Settings.ACTION_SETTINGS` se não encontrar; em qualquer outro
+  fabricante, o texto vira genérico (gesto de toque, clique duplo no botão
+  de energia, etc.) e o botão abre `Settings.ACTION_SETTINGS` direto — não
+  existe API pública pra linkar na tela específica do gesto em fabricantes
+  fora o caso Moto conhecido, então o guia escrito cobre esse gap.
+- **LoginActivity**: tela cheia (não é o modal translúcido) — desenhada
+  como um "ticket sendo emitido": fundo escuro (`@color/scrim`, igual o
+  scrim do modal de captura) com um card de papel centralizado que tem a
+  borda serrilhada no topo (mesmo padrão do `card_slip` do QuickCapture),
+  criando uma ponte visual deliberada com a experiência principal do app.
+  Login é **obrigatório** — não existe opção de pular. Usa `AuthHelper` pro
+  login, mais link pra `PlansActivity`.
 - **PlansActivity**: comparação Free vs Premium, cards com
   `bg_card_free.xml` / `bg_card_premium.xml` (borda em latão no Premium).
   Preço e features são **placeholder** — plano de verdade e Google Play
@@ -176,7 +183,18 @@ implementado).
   ("Em breve") de propósito, pra não passar a impressão de que já é
   possível comprar.
 
-## Build sem Android Studio
+## Bug corrigido: gesto parava de ficar translúcido depois da 1ª abertura
+
+`QuickCaptureActivity` tinha `android:launchMode="singleTask"` no manifest.
+Isso quebrava a ilusão de modal: na primeira abertura (task nova) funcionava
+normal, mas depois que o usuário já tinha aberto o app uma vez, toda
+abertura seguinte via gesto fazia o Android **trazer a task antiga pra
+frente** (troca de tela cheia) em vez de empilhar uma instância nova e
+translúcida por cima do app que estivesse aberto no momento — ou seja, o
+gesto passava a "abrir o app no lugar do app atual" em vez de aparecer como
+card flutuante por cima. Removido o `launchMode` (volta pro padrão
+"standard", que sempre cria uma instância nova) e deixei um comentário bem
+explícito no manifest pra não reintroduzir isso por engano no futuro.
 
 ## Build sem Android Studio
 

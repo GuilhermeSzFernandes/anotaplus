@@ -20,6 +20,12 @@
             Tema translúcido para se comportar como um modal por cima da tela atual.
             noHistory + excludeFromRecents evitam que ela fique "presa" nos recentes
             e fazem a transição de volta ser instantânea ao fechar.
+            IMPORTANTE: não usar launchMode="singleTask" aqui — já tentamos e
+            quebrava a ilusão de modal: depois da primeira abertura, o Android
+            passa a trazer a task antiga pra frente (troca de tela cheia) em
+            vez de empilhar uma instância nova e translúcida por cima do app
+            que estiver aberto no momento do gesto. launchMode padrão
+            ("standard") é o certo aqui.
         -->
         <activity
             android:name=".QuickCaptureActivity"
@@ -27,7 +33,6 @@
             android:theme="@style/Theme.AnotaPlus.Modal"
             android:noHistory="true"
             android:excludeFromRecents="true"
-            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize|stateVisible">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

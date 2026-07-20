@@ -2,6 +2,7 @@ package com.guilherme.anotaplus
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
@@ -15,33 +16,55 @@ class GestureGuideActivity : AppCompatActivity() {
 
         // Package do app "Moto" (gestos/ações) nos aparelhos Motorola. Não
         // existe um jeito público/oficial de linkar direto pra tela
-        // específica do gesto — o nome e o caminho do menu variam por
-        // versão do Android/Moto UI, por isso o botão só tenta abrir o app
-        // e o guia escrito cobre o resto.
+        // específica do gesto em qualquer fabricante — o nome e o caminho
+        // do menu variam demais (Moto, Samsung, Xiaomi...). Por isso só
+        // temos um atalho direto conhecido pro caso Moto; pros demais o
+        // guia escrito + Configurações genéricas é o melhor que dá pra
+        // oferecer sem chutar um package/intent que não existe.
         private const val PACOTE_MOTO_ACTIONS = "com.motorola.actions"
     }
 
     private lateinit var binding: ActivityGestureGuideBinding
+    private val isMotorola = Build.MANUFACTURER.equals("motorola", ignoreCase = true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGestureGuideBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.btnAbrirConfigMoto.setOnClickListener { abrirConfiguracoesMoto() }
+        if (isMotorola) {
+            binding.textIntro.text = getString(R.string.guia_gesto_intro_moto)
+            binding.textPasso2.text = getString(R.string.guia_gesto_passo_2_moto)
+            binding.textPasso3.text = getString(R.string.guia_gesto_passo_3_moto)
+            binding.btnAbrirConfigMoto.text = getString(R.string.btn_abrir_config_moto)
+        } else {
+            binding.textIntro.text = getString(R.string.guia_gesto_intro_generico)
+            binding.textPasso2.text = getString(R.string.guia_gesto_passo_2_generico)
+            binding.textPasso3.text = getString(R.string.guia_gesto_passo_3_generico)
+            binding.btnAbrirConfigMoto.text = getString(R.string.btn_abrir_config_generico)
+        }
+
+        binding.btnAbrirConfigMoto.setOnClickListener { abrirConfiguracoesGesto() }
         binding.btnEntendi.setOnClickListener { continuar() }
     }
 
-    private fun abrirConfiguracoesMoto() {
-        val intentMoto = packageManager.getLaunchIntentForPackage(PACOTE_MOTO_ACTIONS)
-        try {
+    private fun abrirConfiguracoesGesto() {
+        if (isMotorola) {
+            val intentMoto = packageManager.getLaunchIntentForPackage(PACOTE_MOTO_ACTIONS)
             if (intentMoto != null) {
-                startActivity(intentMoto)
-            } else {
-                startActivity(Intent(Settings.ACTION_SETTINGS))
+                try {
+                    startActivity(intentMoto)
+                    return
+                } catch (e: ActivityNotFoundException) {
+                    // cai pro fallback genérico abaixo
+                }
             }
-        } catch (e: ActivityNotFoundException) {
+        }
+        try {
             startActivity(Intent(Settings.ACTION_SETTINGS))
+        } catch (e: ActivityNotFoundException) {
+            // Configurações sempre existe em qualquer aparelho Android real;
+            // só protege contra o caso extremo de não resolver mesmo assim.
         }
     }
 

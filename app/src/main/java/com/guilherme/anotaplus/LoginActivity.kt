@@ -19,7 +19,6 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnEntrarGoogle.setOnClickListener { lifecycleScope.launch { entrarComGoogle() } }
-        binding.btnContinuarSemConta.setOnClickListener { concluir() }
         binding.linkVerPlanos.setOnClickListener { startActivity(Intent(this, PlansActivity::class.java)) }
     }
 

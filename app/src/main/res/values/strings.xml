@@ -47,8 +47,7 @@
     <string name="login_erro">Não deu pra fazer login. Tenta de novo.</string>
     <string name="login_erro_detalhe">Erro no login: %s</string>
     <string name="login_tagline">GASTOS E IDEIAS, NA HORA</string>
-    <string name="login_pitch">Entre com sua conta Google pra ativar o backup na nuvem (em breve). Ou continue usando 100% local, sem conta.</string>
-    <string name="btn_continuar_sem_conta">Continuar sem conta</string>
+    <string name="login_pitch">Crie sua conta grátis com o Google pra continuar — é ela que vai guardar seu backup na nuvem quando o plano Premium chegar.</string>
     <string name="link_ver_planos">ver planos →</string>
 
     <string name="title_planos">Planos</string>
@@ -66,13 +65,17 @@
     <string name="feature_premium_4">— Suporte prioritário</string>
     <string name="btn_em_breve">Em breve</string>
 
-    <string name="title_guia_gesto">Toque duas vezes</string>
-    <string name="guia_gesto_intro">O Anota+ funciona melhor com o gesto \"toque duas vezes na traseira\" do seu Moto — ele abre o app na hora, mesmo com a tela bloqueada.</string>
+    <string name="title_guia_gesto">Abrir na hora</string>
+    <string name="guia_gesto_intro_moto">O Anota+ funciona melhor com o gesto \"toque duas vezes na traseira\" do seu Moto — ele abre o app na hora, mesmo com a tela bloqueada.</string>
+    <string name="guia_gesto_intro_generico">Muitos Android têm algum gesto rápido pra abrir um app na hora — toque na traseira, clique duplo no botão de energia, entre outros. Procure isso nas configurações do seu aparelho.</string>
     <string name="guia_gesto_passo_1">1. Abra as Configurações do celular</string>
-    <string name="guia_gesto_passo_2">2. Procure por \"Moto\" ou \"Gestos\"</string>
-    <string name="guia_gesto_passo_3">3. Ative \"Toque duas vezes na traseira\"</string>
+    <string name="guia_gesto_passo_2_moto">2. Procure por \"Moto\" ou \"Gestos\"</string>
+    <string name="guia_gesto_passo_2_generico">2. Procure por \"Gestos\", \"Ações\" ou \"Movimentos\"</string>
+    <string name="guia_gesto_passo_3_moto">3. Ative \"Toque duas vezes na traseira\"</string>
+    <string name="guia_gesto_passo_3_generico">3. Ative o gesto disponível (toque na traseira, clique duplo no botão de energia, etc.)</string>
     <string name="guia_gesto_passo_4">4. Escolha o Anota+ na lista de apps</string>
     <string name="btn_abrir_config_moto">Abrir configurações do Moto</string>
+    <string name="btn_abrir_config_generico">Abrir Configurações</string>
     <string name="btn_entendi">Entendi</string>
     <string name="link_guia_gesto">como configurar o gesto →</string>
 </resources>
