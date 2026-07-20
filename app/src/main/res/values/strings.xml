@@ -31,4 +31,9 @@
 
     <string name="desc_mes_anterior">Mês anterior</string>
     <string name="desc_mes_proximo">Próximo mês</string>
+
+    <string name="title_novo_gasto">Novo gasto</string>
+    <string name="desc_adicionar_gasto">Adicionar gasto manualmente</string>
+    <string name="label_data">Data</string>
+    <string name="error_valor_obrigatorio">Informe um valor</string>
 </resources>

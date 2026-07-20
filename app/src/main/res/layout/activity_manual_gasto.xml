@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/paper">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.AnotaPlus.Toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:title="@string/title_novo_gasto"
+        app:navigationIcon="@drawable/ic_back"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.guilherme.anotaplus.ui.PerforationView
+        android:layout_width="0dp"
+        android:layout_height="6dp"
+        app:toothWidth="8dp"
+        app:toothHeight="4dp"
+        app:toothGap="3dp"
+        app:toothColor="@color/ink_soft"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/toolbar_perforation" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_perforation"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_data"
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
+
+            <TextView
+                android:id="@+id/text_data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_underline_field"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingHorizontal="4dp"
+                android:paddingBottom="8dp"
+                android:drawableEnd="@drawable/ic_calendar"
+                android:drawablePadding="8dp"
+                android:fontFamily="monospace"
+                android:textColor="@color/ink"
+                android:textSize="15sp" />
+
+            <com.guilherme.anotaplus.ui.PerforationView
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:layout_marginTop="20dp"
+                app:toothWidth="8dp"
+                app:toothHeight="4dp"
+                app:toothGap="3dp"
+                app:toothColor="@color/ink_soft" />
+
+            <LinearLayout
+                android:id="@+id/layout_valor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_amount_field">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/prefix_valor"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.Amount"
+                    android:textColor="@color/ink_soft" />
+
+                <EditText
+                    android:id="@+id/edit_valor"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="end"
+                    android:hint="@string/hint_valor"
+                    android:textColor="@color/ink"
+                    android:textColorHint="@color/ink_soft"
+                    android:inputType="numberDecimal"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.Amount" />
+
+            </LinearLayout>
+
+            <!-- Combobox: sem teclado, toque abre a lista de categorias -->
+            <AutoCompleteTextView
+                android:id="@+id/edit_categoria"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_underline_field"
+                android:paddingHorizontal="4dp"
+                android:paddingBottom="6dp"
+                android:hint="@string/hint_categoria"
+                android:textColor="@color/ink"
+                android:textColorHint="@color/ink_soft"
+                android:inputType="none"
+                android:cursorVisible="false"
+                android:drawableEnd="@drawable/ic_chevron_down"
+                android:drawablePadding="6dp"
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
+
+            <EditText
+                android:id="@+id/edit_texto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_underline_field"
+                android:paddingHorizontal="4dp"
+                android:paddingBottom="8dp"
+                android:minLines="2"
+                android:maxLines="5"
+                android:gravity="top"
+                android:hint="@string/hint_gasto"
+                android:textColor="@color/ink"
+                android:textColorHint="@color/ink_soft"
+                android:inputType="textMultiLine|textCapSentences"
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
+                android:lineSpacingExtra="4dp" />
+
+            <com.guilherme.anotaplus.ui.PerforationView
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:layout_marginTop="16dp"
+                app:toothWidth="8dp"
+                app:toothHeight="4dp"
+                app:toothGap="3dp"
+                app:toothColor="@color/ink_soft" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_salvar"
+                style="@style/Widget.AnotaPlus.Button.Stamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_gravity="end"
+                android:text="@string/btn_salvar" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -33,6 +33,10 @@ class HistoryActivity : AppCompatActivity() {
         binding.toolbar.inflateMenu(R.menu.history_menu)
         binding.toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
+                R.id.action_add_gasto -> {
+                    startActivity(Intent(this, ManualGastoActivity::class.java))
+                    true
+                }
                 R.id.action_report -> {
                     startActivity(Intent(this, ReportActivity::class.java))
                     true
@@ -54,9 +58,11 @@ class HistoryActivity : AppCompatActivity() {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 val tipo = if (tab.position == 0) EntryType.GASTO else EntryType.PENSAMENTO
                 tipoSelecionado.value = tipo
-                val visibility = if (tipo == EntryType.GASTO) View.VISIBLE else View.GONE
+                val isGasto = tipo == EntryType.GASTO
+                val visibility = if (isGasto) View.VISIBLE else View.GONE
                 binding.rowMes.root.visibility = visibility
                 binding.rowMesPerforation.visibility = visibility
+                binding.toolbar.menu.findItem(R.id.action_add_gasto)?.isVisible = isGasto
             }
             override fun onTabUnselected(tab: TabLayout.Tab) {}
             override fun onTabReselected(tab: TabLayout.Tab) {}

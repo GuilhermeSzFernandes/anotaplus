@@ -63,8 +63,16 @@ digita e salva sem sair do que estava fazendo.
   seletor de mês (`row_month_selector.xml`, incluído via `<include>`) que
   filtra o período — default é o mês atual, com setas pra navegar pra
   meses anteriores (não deixa avançar além do mês atual). A aba Ideia não
-  tem esse filtro, mostra tudo. O toolbar tem um menu com dois ícones:
-  Relatório e Configurações.
+  tem esse filtro, mostra tudo. O toolbar tem um menu com três ícones (o
+  "+" só aparece na aba Gasto): adicionar gasto manual, Relatório e
+  Configurações.
+- **ManualGastoActivity** (`res/layout/activity_manual_gasto.xml`):
+  formulário pra lançar um gasto retroativo — mesmos campos do
+  QuickCapture (valor, categoria em combobox, texto) mais um seletor de
+  **data e hora** (`DatePickerDialog` + `TimePickerDialog` nativos, sem
+  dependência nova), já que aqui não faz sentido usar o timestamp de
+  "agora" como na captura rápida. Sempre grava como `EntryType.GASTO`.
+  Acessada pelo ícone "+" no toolbar do Histórico (aba Gasto).
 - **ReportActivity** (`res/layout/activity_report.xml`): mesmo seletor de mês
   reutilizado (`row_month_selector.xml`), com total gasto, gasto por
   categoria (com barra proporcional) e contagem de ideias — tudo recalculado
