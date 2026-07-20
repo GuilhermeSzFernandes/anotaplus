@@ -1,0 +1,8 @@
+<resources>
+    <declare-styleable name="PerforationView">
+        <attr name="toothWidth" format="dimension" />
+        <attr name="toothHeight" format="dimension" />
+        <attr name="toothColor" format="color" />
+        <attr name="toothGap" format="dimension" />
+    </declare-styleable>
+</resources>

@@ -1,37 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_scrim"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/modal_scrim">
 
-    <com.google.android.material.card.MaterialCardView
+    <LinearLayout
+        android:id="@+id/card_slip"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_margin="16dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="8dp"
-        app:cardBackgroundColor="@color/card_background">
+        android:orientation="vertical"
+        android:background="@drawable/bg_card_paper"
+        android:elevation="6dp"
+        android:clickable="true"
+        android:focusable="true">
+
+        <com.guilherme.anotaplus.ui.PerforationView
+            android:layout_width="match_parent"
+            android:layout_height="9dp"
+            app:toothWidth="14dp"
+            app:toothHeight="8dp"
+            app:toothGap="5dp"
+            app:toothColor="@color/scrim" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="18dp"
+            android:paddingTop="14dp">
 
-            <!-- Toggle Gasto / Pensamento -->
+            <!-- Cabeçalho tipo recibo: marca + timestamp -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/app_name"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.Wordmark" />
+
+                <TextView
+                    android:id="@+id/text_timestamp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
+                    tools:text="20 JUL · 14:32" />
+
+            </LinearLayout>
+
+            <com.guilherme.anotaplus.ui.PerforationView
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:layout_marginTop="10dp"
+                app:toothWidth="8dp"
+                app:toothHeight="4dp"
+                app:toothGap="3dp"
+                app:toothColor="@color/ink_soft" />
+
+            <!-- Toggle Gasto / Ideia -->
             <com.google.android.material.button.MaterialButtonToggleGroup
                 android:id="@+id/toggle_tipo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 app:singleSelection="true"
                 app:selectionRequired="true">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_tipo_gasto"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    style="@style/Widget.AnotaPlus.Button.Tab"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -39,7 +86,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_tipo_pensamento"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    style="@style/Widget.AnotaPlus.Button.Tab"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -47,71 +94,99 @@
 
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
-            <!-- Campo valor, só aparece quando "Gasto" está selecionado -->
-            <com.google.android.material.textfield.TextInputLayout
+            <!-- Valor: display tipo POS, só aparece quando "Gasto" está selecionado -->
+            <LinearLayout
                 android:id="@+id/layout_valor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="14dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_amount_field"
                 android:visibility="gone"
-                android:hint="@string/hint_valor">
+                tools:visibility="visible">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edit_valor"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal" />
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/prefix_valor"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.Amount"
+                    android:textColor="@color/ink_soft" />
 
-            </com.google.android.material.textfield.TextInputLayout>
+                <EditText
+                    android:id="@+id/edit_valor"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="end"
+                    android:hint="@string/hint_valor"
+                    android:textColorHint="@color/ink_soft"
+                    android:inputType="numberDecimal"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.Amount" />
 
-            <!-- Campo categoria (opcional), só pra Gasto -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/layout_categoria"
+            </LinearLayout>
+
+            <!-- Categoria (opcional), só pra Gasto -->
+            <EditText
+                android:id="@+id/edit_categoria"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_underline_field"
+                android:paddingHorizontal="4dp"
+                android:paddingBottom="6dp"
                 android:visibility="gone"
-                android:hint="@string/hint_categoria">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edit_categoria"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+                android:hint="@string/hint_categoria"
+                android:textColorHint="@color/ink_soft"
+                android:inputType="text"
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
+                tools:visibility="visible" />
 
             <!-- Campo de texto principal -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/layout_texto"
+            <EditText
+                android:id="@+id/edit_texto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:hint="@string/hint_pensamento">
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_underline_field"
+                android:paddingHorizontal="4dp"
+                android:paddingBottom="8dp"
+                android:minLines="2"
+                android:maxLines="5"
+                android:gravity="top"
+                android:hint="@string/hint_pensamento"
+                android:textColorHint="@color/ink_soft"
+                android:inputType="textMultiLine|textCapSentences"
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
+                android:lineSpacingExtra="4dp" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edit_texto"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minLines="2"
-                    android:maxLines="5"
-                    android:inputType="textMultiLine|textCapSentences" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+            <com.guilherme.anotaplus.ui.PerforationView
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:layout_marginTop="16dp"
+                app:toothWidth="8dp"
+                app:toothHeight="4dp"
+                app:toothGap="3dp"
+                app:toothColor="@color/ink_soft" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="12dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_historico"
-                    style="@style/Widget.Material3.Button.TextButton"
+                    style="@style/Widget.AnotaPlus.Button.Link"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/btn_historico" />
+                    android:paddingHorizontal="0dp"
+                    app:insetLeft="0dp"
+                    app:insetRight="0dp"
+                    android:text="@string/link_historico" />
 
                 <View
                     android:layout_width="0dp"
@@ -120,6 +195,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_salvar"
+                    style="@style/Widget.AnotaPlus.Button.Stamp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/btn_salvar" />
@@ -128,6 +204,6 @@
 
         </LinearLayout>
 
-    </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
 
 </FrameLayout>

@@ -1,12 +1,16 @@
 <resources>
     <string name="app_name">Anota+</string>
-    <string name="hint_gasto">Ex: 45,90 mercado</string>
+
+    <string name="hint_gasto">Onde foi o gasto?</string>
     <string name="hint_pensamento">O que está passando pela sua cabeça?</string>
     <string name="btn_gasto">Gasto</string>
-    <string name="btn_pensamento">Pensamento</string>
+    <string name="btn_pensamento">Ideia</string>
     <string name="btn_salvar">Salvar</string>
     <string name="btn_historico">Histórico</string>
-    <string name="hint_valor">Valor (R$)</string>
-    <string name="hint_categoria">Categoria (opcional)</string>
-    <string name="empty_history">Nada por aqui ainda</string>
+    <string name="link_historico">ver histórico →</string>
+    <string name="hint_valor">0,00</string>
+    <string name="hint_categoria">categoria (opcional)</string>
+    <string name="empty_history">Nenhum lançamento ainda.\nToque duas vezes na traseira do celular pra começar.</string>
+    <string name="entry_number_format">Nº %04d</string>
+    <string name="prefix_valor">R$</string>
 </resources>

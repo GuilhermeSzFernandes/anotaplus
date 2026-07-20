@@ -1,40 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="1dp">
+    android:layout_marginBottom="10dp"
+    android:orientation="horizontal"
+    android:background="@color/paper">
+
+    <View
+        android:id="@+id/view_type_bar"
+        android:layout_width="3dp"
+        android:layout_height="match_parent"
+        android:background="@color/ink" />
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:orientation="vertical"
-        android:padding="14dp">
+        android:paddingStart="12dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/text_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
+                tools:text="Nº 0007" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/text_data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
+                tools:text="20 JUL · 14:32" />
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/text_tipo_valor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textSize="15sp" />
+            android:layout_marginTop="4dp"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.02"
+            android:textSize="15sp"
+            tools:text="R$ 45,90 · mercado" />
 
         <TextView
             android:id="@+id/text_conteudo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/text_primary" />
+            android:layout_marginTop="2dp"
+            android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
+            tools:text="Café com o time pra fechar o sprint." />
 
-        <TextView
-            android:id="@+id/text_data"
+        <com.guilherme.anotaplus.ui.PerforationView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp" />
+            android:layout_height="6dp"
+            android:layout_marginTop="10dp"
+            app:toothWidth="8dp"
+            app:toothHeight="4dp"
+            app:toothGap="3dp"
+            app:toothColor="@color/ink_soft" />
 
     </LinearLayout>
 
-</com.google.android.material.card.MaterialCardView>
+</LinearLayout>

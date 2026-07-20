@@ -1,9 +1,21 @@
 <resources>
-    <color name="modal_scrim">#B3000000</color>
-    <color name="card_background">#FFFFFF</color>
-    <color name="accent">#4F6BFF</color>
-    <color name="text_primary">#1A1A1A</color>
-    <color name="text_secondary">#6B6B6B</color>
-    <color name="gasto_color">#E8543E</color>
-    <color name="pensamento_color">#4F6BFF</color>
+    <!-- Backdrop: por trás do slip, quando o modal aparece por cima da tela -->
+    <color name="scrim">#14140F</color>
+    <color name="modal_scrim">#E014140F</color>
+
+    <!-- Papel: a superfície do "recibo" -->
+    <color name="paper">#F1EEE4</color>
+    <color name="paper_dim">#E4E0D2</color>
+
+    <!-- Tinta: texto sobre papel -->
+    <color name="ink">#211D18</color>
+    <color name="ink_soft">#6E6759</color>
+
+    <!-- Duas tintas de carimbo: gasto (oxblood) e ideia (índigo) -->
+    <color name="gasto_color">#96362A</color>
+    <color name="pensamento_color">#33397E</color>
+
+    <!-- Latão: a única cor de ação (selo/confirmação) -->
+    <color name="brass">#B8862E</color>
+    <color name="brass_pressed">#9C7025</color>
 </resources>

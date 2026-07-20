@@ -10,6 +10,9 @@ import com.guilherme.anotaplus.data.Entry
 import com.guilherme.anotaplus.data.EntryType
 import com.guilherme.anotaplus.databinding.ActivityQuickCaptureBinding
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class QuickCaptureActivity : AppCompatActivity() {
 
@@ -26,6 +29,9 @@ class QuickCaptureActivity : AppCompatActivity() {
 
         // Toque fora do card fecha o modal, como um diálogo normal
         binding.rootScrim.setOnClickListener { finish() }
+
+        val timestampFormat = SimpleDateFormat("dd MMM · HH:mm", Locale("pt", "BR"))
+        binding.textTimestamp.text = timestampFormat.format(Date()).uppercase(Locale("pt", "BR"))
 
         binding.btnTipoPensamento.isChecked = true
         atualizarCamposPorTipo(EntryType.PENSAMENTO)
@@ -49,8 +55,8 @@ class QuickCaptureActivity : AppCompatActivity() {
     private fun atualizarCamposPorTipo(tipo: EntryType) {
         val isGasto = tipo == EntryType.GASTO
         binding.layoutValor.visibility = if (isGasto) android.view.View.VISIBLE else android.view.View.GONE
-        binding.layoutCategoria.visibility = if (isGasto) android.view.View.VISIBLE else android.view.View.GONE
-        binding.layoutTexto.hint = getString(
+        binding.editCategoria.visibility = if (isGasto) android.view.View.VISIBLE else android.view.View.GONE
+        binding.editTexto.hint = getString(
             if (isGasto) R.string.hint_gasto else R.string.hint_pensamento
         )
     }
