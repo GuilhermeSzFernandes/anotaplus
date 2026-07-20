@@ -83,7 +83,13 @@ digita e salva sem sair do que estava fazendo.
   pequena).
 - **SettingsActivity** (`res/layout/activity_settings.xml`): escolha do tipo
   padrão ao abrir (salvo em `SharedPreferences` via `Prefs.kt`) e gestão de
-  categorias (adicionar/remover, também sem RecyclerView).
+  categorias (adicionar/remover, também sem RecyclerView). Cada seção
+  (Conta, Tipo padrão, Categorias) é um card próprio com `bg_card_free.xml`
+  (mesma borda fina usada no plano Free da `PlansActivity`) em vez de um
+  bloco único separado só por divisores — dá hierarquia mais clara entre
+  as seções. O e-mail da conta logada fica em linha própria, fonte mono,
+  `maxLines="1"` + `ellipsize="middle"` — antes quebrava linha de um jeito
+  feio quando o e-mail era longo.
 - `MesUtil.kt`: helper compartilhado entre `HistoryActivity` e
   `ReportActivity` — converte um `Calendar` no intervalo de início/fim do
   mês em epoch millis (usado nas queries) e formata o label do mês.
@@ -183,18 +189,27 @@ implementado).
   ("Em breve") de propósito, pra não passar a impressão de que já é
   possível comprar.
 
-## Bug corrigido: gesto parava de ficar translúcido depois da 1ª abertura
+## Bug corrigido (em duas partes): gesto parava de ficar translúcido depois da 1ª abertura
 
-`QuickCaptureActivity` tinha `android:launchMode="singleTask"` no manifest.
-Isso quebrava a ilusão de modal: na primeira abertura (task nova) funcionava
-normal, mas depois que o usuário já tinha aberto o app uma vez, toda
-abertura seguinte via gesto fazia o Android **trazer a task antiga pra
-frente** (troca de tela cheia) em vez de empilhar uma instância nova e
-translúcida por cima do app que estivesse aberto no momento — ou seja, o
-gesto passava a "abrir o app no lugar do app atual" em vez de aparecer como
-card flutuante por cima. Removido o `launchMode` (volta pro padrão
-"standard", que sempre cria uma instância nova) e deixei um comentário bem
-explícito no manifest pra não reintroduzir isso por engano no futuro.
+`QuickCaptureActivity` tinha `android:launchMode="singleTask"` no manifest,
+o que quebrava a ilusão de modal depois da primeira abertura (o Android
+trazia a task antiga pra frente em vez de empilhar uma instância nova por
+cima do app atual). Removido — mas isso **não resolveu completamente**: o
+mesmo sintoma continuava acontecendo mesmo com `launchMode` padrão, sempre
+que o usuário já tinha navegado pra Histórico/Configurações/etc. e só
+apertado Home (sem fechar o app). A causa raiz de verdade: todas as
+activities do app compartilham a mesma task (mesmo `taskAffinity` padrão,
+baseado no pacote), então uma task em segundo plano contendo, por exemplo,
+`HistoryActivity` no topo já existia — e o gesto (que dispara o mesmo
+intent MAIN/LAUNCHER de sempre) fazia o Android simplesmente **reaproveitar
+e trazer essa task de volta pra frente** (mostrando a última tela usada),
+sem sequer chegar a criar uma instância nova do `QuickCaptureActivity`. A
+correção final foi dar `android:taskAffinity=""` só pro `QuickCaptureActivity`
+— isso isola ele numa task própria, que nunca persiste em segundo plano
+(porque ele sempre se fecha sozinho via `noHistory` + `finish()`), então
+toda vez que o gesto dispara, o Android é obrigado a criar uma instância
+nova e fresca, independente do que estiver rolando nas outras telas do app.
+Deixei os dois aprendizados comentados no manifest.
 
 ## Build sem Android Studio
 

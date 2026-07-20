@@ -41,7 +41,7 @@
     <string name="btn_entrar_google">Entrar com Google</string>
     <string name="btn_sair">Sair</string>
     <string name="conta_nao_logado">Faça login pra ativar o backup na nuvem (em breve).</string>
-    <string name="conta_logado_como">Conectado como %s</string>
+    <string name="label_conectado_como">CONECTADO COMO</string>
     <string name="conta_entrando">Entrando…</string>
     <string name="login_sucesso">Login feito: %s</string>
     <string name="login_erro">Não deu pra fazer login. Tenta de novo.</string>

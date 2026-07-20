@@ -85,11 +85,15 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun atualizarUiConta() {
         val logado = SessionPrefs.estaLogado(this)
-        binding.textContaStatus.text = if (logado) {
-            getString(R.string.conta_logado_como, SessionPrefs.getEmail(this).orEmpty())
-        } else {
-            getString(R.string.conta_nao_logado)
+
+        binding.textContaStatus.visibility = if (logado) View.GONE else View.VISIBLE
+        if (!logado) {
+            binding.textContaStatus.text = getString(R.string.conta_nao_logado)
         }
+
+        binding.layoutContaLogada.visibility = if (logado) View.VISIBLE else View.GONE
+        binding.textContaEmail.text = SessionPrefs.getEmail(this).orEmpty()
+
         binding.btnEntrarGoogle.visibility = if (logado) View.GONE else View.VISIBLE
         binding.btnSair.visibility = if (logado) View.VISIBLE else View.GONE
     }
