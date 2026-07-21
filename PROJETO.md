@@ -67,7 +67,18 @@ digita e salva sem sair do que estava fazendo.
   meses anteriores (não deixa avançar além do mês atual). A aba Ideia não
   tem esse filtro, mostra tudo. O toolbar tem um menu com três ícones (o
   "+" só aparece na aba Gasto): adicionar gasto manual, Relatório e
-  Configurações.
+  Configurações. Tocar num item da lista abre `EditEntryActivity`.
+- **EditEntryActivity** (`res/layout/activity_edit_entry.xml`): edição e
+  exclusão de um lançamento existente — mesmo formulário do QuickCapture
+  (toggle Gasto/Ideia, valor+categoria, texto) mais o seletor de data/hora
+  do `ManualGastoActivity`, mas carregando os valores já salvos
+  (`EntryDao.getById`). Botão "Excluir" pede confirmação
+  (`MaterialAlertDialogBuilder` — não o `AlertDialog` puro do framework,
+  que não pega o tema Material3 do app). Se o lançamento já tinha
+  `remoteId` (já sincronizado antes), edição e exclusão também propagam
+  pro backend (`PATCH`/`DELETE /entries/:id`) — sem isso, um "Restaurar
+  backup" mais tarde ressuscitaria algo que foi editado/apagado só
+  localmente.
 - **ManualGastoActivity** (`res/layout/activity_manual_gasto.xml`):
   formulário pra lançar um gasto retroativo — mesmos campos do
   QuickCapture (valor, categoria em combobox, texto) mais um seletor de
@@ -322,6 +333,12 @@ para instalar SDK e Gradle no runner (não depende de wrapper local).
 - Exportar histórico em CSV.
 - Widget de tela inicial com total de gastos do dia/mês.
 - Editar/renomear categoria existente (hoje só dá pra adicionar e remover).
+- Excluir categoria em Configurações **não propaga pro backend** (diferente
+  de excluir/editar um `Entry`, que já propaga — ver `EditEntryActivity`) —
+  um "Restaurar backup" depois ressuscitaria uma categoria apagada
+  localmente. Mesmo problema que já foi resolvido pra `Entry`, só falta
+  replicar pra `Category` (`DELETE /categories/:id` já existe no backend,
+  só falta o app chamar).
 
 ## Preferências do usuário (relevantes pro trabalho neste projeto)
 

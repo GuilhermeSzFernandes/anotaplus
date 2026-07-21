@@ -10,7 +10,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class EntryAdapter : RecyclerView.Adapter<EntryAdapter.EntryViewHolder>() {
+class EntryAdapter(private val onItemClick: (Entry) -> Unit) :
+    RecyclerView.Adapter<EntryAdapter.EntryViewHolder>() {
 
     private var items: List<Entry> = emptyList()
     private val locale = Locale("pt", "BR")
@@ -58,6 +59,8 @@ class EntryAdapter : RecyclerView.Adapter<EntryAdapter.EntryViewHolder>() {
             binding.textNumber.text =
                 binding.root.context.getString(R.string.entry_number_format, entry.id)
             binding.textData.text = dateFormat.format(Date(entry.timestamp)).uppercase(locale)
+
+            binding.root.setOnClickListener { onItemClick(entry) }
         }
     }
 }

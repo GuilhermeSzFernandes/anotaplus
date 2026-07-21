@@ -88,4 +88,9 @@
     <string name="btn_abrir_config_generico">Abrir Configurações</string>
     <string name="btn_entendi">Entendi</string>
     <string name="link_guia_gesto">como configurar o gesto →</string>
+
+    <string name="title_editar">Editar</string>
+    <string name="btn_excluir">Excluir</string>
+    <string name="btn_cancelar">Cancelar</string>
+    <string name="confirmar_exclusao">Excluir esse lançamento? Essa ação não pode ser desfeita.</string>
 </resources>

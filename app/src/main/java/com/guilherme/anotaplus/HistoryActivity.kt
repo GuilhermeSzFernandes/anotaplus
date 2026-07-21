@@ -20,7 +20,12 @@ import java.util.Calendar
 class HistoryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHistoryBinding
-    private val adapter = EntryAdapter()
+    private val adapter = EntryAdapter { entry ->
+        startActivity(
+            Intent(this, EditEntryActivity::class.java)
+                .putExtra(EditEntryActivity.EXTRA_ENTRY_ID, entry.id)
+        )
+    }
     private val tipoSelecionado = MutableStateFlow(EntryType.GASTO)
     private val mesSelecionado = MutableStateFlow(Calendar.getInstance())
 
