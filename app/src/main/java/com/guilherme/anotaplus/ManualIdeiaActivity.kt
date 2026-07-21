@@ -28,6 +28,14 @@ class ManualIdeiaActivity : AppCompatActivity() {
         binding.toolbar.setNavigationOnClickListener { finish() }
         binding.editTitulo.requestFocus()
         binding.btnSalvar.setOnClickListener { lifecycleScope.launch { salvar() } }
+
+        RichTextEngine.instalarFormatacaoLive(binding.editNota)
+        RichTextEngine.instalarToqueChecklist(binding.editNota)
+        binding.btnFormatoTitulo.setOnClickListener { RichTextEngine.alternarTitulo(binding.editNota) }
+        binding.btnFormatoNegrito.setOnClickListener { RichTextEngine.alternarNegrito(binding.editNota) }
+        binding.btnFormatoItalico.setOnClickListener { RichTextEngine.alternarItalico(binding.editNota) }
+        binding.btnFormatoLista.setOnClickListener { RichTextEngine.alternarLista(binding.editNota) }
+        binding.btnFormatoChecklist.setOnClickListener { RichTextEngine.alternarChecklist(binding.editNota) }
     }
 
     private suspend fun salvar() {

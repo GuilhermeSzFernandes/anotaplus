@@ -56,9 +56,14 @@ class EntryAdapter(private val onItemClick: (Entry) -> Unit) :
             binding.textTitulo.visibility =
                 if (entry.titulo.isNullOrBlank()) android.view.View.GONE else android.view.View.VISIBLE
 
-            binding.textConteudo.text = entry.texto
+            // Ideias criadas no "bloco de notas" podem ter marcadores de
+            // formatação (#, **, ☐ etc.) — na lista mostra só o texto
+            // puro, sem sintaxe crua; a formatação de verdade só aparece
+            // ao abrir a nota (RichTextEngine.instalarFormatacaoLive).
+            val preview = if (isGasto) entry.texto else RichTextEngine.textoSemMarcadores(entry.texto)
+            binding.textConteudo.text = preview
             binding.textConteudo.visibility =
-                if (entry.texto.isBlank()) android.view.View.GONE else android.view.View.VISIBLE
+                if (preview.isBlank()) android.view.View.GONE else android.view.View.VISIBLE
 
             binding.textNumber.text =
                 binding.root.context.getString(R.string.entry_number_format, entry.id)

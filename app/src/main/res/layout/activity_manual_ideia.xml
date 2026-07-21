@@ -69,6 +69,81 @@
                 app:toothGap="3dp"
                 app:toothColor="@color/ink_soft" />
 
+            <!-- Barra de formatação: cada botão insere/alterna o marcador
+                 correspondente na linha/seleção atual (ver RichTextEngine) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_formato_titulo"
+                    style="@style/Widget.AnotaPlus.Button.Link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:paddingHorizontal="10dp"
+                    android:text="@string/formato_titulo" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_formato_negrito"
+                    style="@style/Widget.AnotaPlus.Button.Link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:paddingHorizontal="10dp"
+                    android:text="@string/formato_negrito" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_formato_italico"
+                    style="@style/Widget.AnotaPlus.Button.Link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:paddingHorizontal="10dp"
+                    android:text="@string/formato_italico" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_formato_lista"
+                    style="@style/Widget.AnotaPlus.Button.Link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:paddingHorizontal="10dp"
+                    android:text="@string/formato_lista" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_formato_checklist"
+                    style="@style/Widget.AnotaPlus.Button.Link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:paddingHorizontal="10dp"
+                    android:text="@string/formato_checklist" />
+
+            </LinearLayout>
+
             <!-- Corpo da nota: sem caixa/sublinhado, página aberta pra
                  escrever à vontade — é o que diferencia isso da Captura
                  Rápida (pequena, rápida) -->

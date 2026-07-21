@@ -295,6 +295,57 @@ bullet própria do Premium na `PlansActivity`.
   verdade via Google Play Billing, R$ 10,00/mês — ver seção "Assinatura
   PRO e anúncios" abaixo.
 
+## Formatação rica na Ideia e widget de checklist (novo)
+
+- **`RichTextEngine.kt`**: formatação "viva" (WYSIWYG) sem editor de texto
+  rico de verdade nem mudança de schema — o texto guardado (`Entry.texto`)
+  continua sendo puro texto simples com marcadores tipo Markdown
+  (`# título`, `- item`, `☐`/`☑` de checklist, `**negrito**`, `_itálico_`),
+  e um `TextWatcher` recalcula os spans visuais (`StyleSpan`, `BulletSpan`,
+  `RelativeSizeSpan`, `StrikethroughSpan` no item marcado) a cada tecla
+  digitada — o efeito aparece na hora, mas o dado salvo continua sendo uma
+  `String` comum. Escolhido assim (em vez de blocos estruturados ou HTML)
+  porque é bem mais simples de manter e faz o checklist do widget
+  funcionar de forma trivial (é só procurar a linha certa e trocar o
+  caractere ☐/☑, sem precisar parsear/gerar HTML nem JSON).
+  - Barra de formatação (5 botões: T1/B/I/•/☑) em `ManualIdeiaActivity` e
+    em `EditEntryActivity` (só visível quando o tipo é Ideia) — cada botão
+    liga em `RichTextEngine.alternarX()`.
+  - Tocar no "☐"/"☑" no começo da linha (dentro do próprio editor) marca/
+    desmarca via `instalarToqueChecklist` (usa `getOffsetForPosition` pra
+    saber se o toque caiu bem no caractere da marca, sem interferir no
+    posicionamento normal do cursor no resto da linha).
+  - `EntryAdapter`/`item_entry.xml`: o preview no Histórico usa
+    `RichTextEngine.textoSemMarcadores()` — mostra o texto puro, sem a
+    sintaxe crua (`#`, `**`, `☐` etc.) poluindo a lista.
+- **Terceiro widget** (`widget/AnotacaoWidgetProvider.kt` +
+  `widget_anotacao.xml`/`widget_anotacao_info.xml`): mostra uma Ideia
+  específica na tela inicial, com os itens de checklist tocáveis direto
+  do widget (sem abrir o app). Diferente dos outros dois widgets, esse
+  precisa saber QUAL Ideia mostrar — por isso tem
+  `android:configure` apontando pra `AnotacaoWidgetConfigActivity`
+  (aberta automaticamente pelo sistema toda vez que uma instância é
+  adicionada; reaproveita o próprio `EntryAdapter` pra listar as Ideias
+  existentes). O mapeamento `appWidgetId -> entryId` fica em
+  `AnotacaoWidgetPrefs` (SharedPreferences).
+  - **Limitação conhecida, deliberada**: o widget mostra até **6 linhas**
+    fixas (`widget_anotacao.xml` tem 6 blocos de linha pré-declarados,
+    visibilidade `GONE` pras que sobrarem) — não é um
+    `RemoteViewsService`/coleção (`ListView` com `RemoteViewsFactory`), que
+    seria a forma "de verdade" de suportar qualquer quantidade de linhas.
+    Optamos pela versão mais simples/robusta dado que notas/checklists de
+    uso real tendem a ser curtas; documentado aqui em vez de escondido.
+  - Tocar no "☐"/"☑" de uma linha dispara um `PendingIntent.getBroadcast`
+    pro `AnotacaoWidgetToggleReceiver`, que carrega a `Entry`, troca o
+    caractere da linha certa, salva no Room, propaga pro backend (se
+    PRO — mesmo `EntrySyncRequest`/`PATCH /entries/:id` de sempre) e manda
+    redesenhar só aquele widget (`notifyAppWidgetViewDataChanged` não se
+    aplica aqui já que não é coleção — só chama
+    `AnotacaoWidgetUpdater.atualizar` de novo).
+  - Tocar no restante do widget (título, linhas de texto simples) abre
+    `EditEntryActivity` pra editar a nota inteira; se ainda não tiver
+    nenhuma Ideia configurada, abre a tela de configuração direto.
+
 ## Assinatura PRO e anúncios (novo)
 
 - **Preço/produto**: R$ 10,00/mês, id do produto de assinatura
@@ -449,6 +500,14 @@ para instalar SDK e Gradle no runner (não depende de wrapper local).
   build com sucesso e gera um APK instalável.
 
 ## Próximos passos (ainda não implementados)
+- Pressionar Enter numa linha de lista/checklist não continua o marcador
+  automaticamente na linha seguinte (nem sai da lista sozinho numa linha
+  vazia) — corte de escopo deliberado no `RichTextEngine` pra manter o
+  motor de formatação simples; usuário precisa apertar o botão da barra
+  de novo.
+- `AnotacaoWidgetProvider` mostra no máximo 6 linhas por widget (ver seção
+  própria) — virar um `RemoteViewsService`/coleção de verdade é o próximo
+  passo se isso incomodar no uso real.
 - Sincronizar de verdade entre múltiplos aparelhos ao mesmo tempo
   (resolução de conflito quando o mesmo usuário edita em dois lugares) —
   bullet própria do PRO na `PlansActivity`, distinta do backup simples.

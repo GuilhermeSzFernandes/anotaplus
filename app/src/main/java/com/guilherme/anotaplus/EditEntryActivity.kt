@@ -67,6 +67,14 @@ class EditEntryActivity : AppCompatActivity() {
         binding.btnSalvar.setOnClickListener { lifecycleScope.launch { salvar() } }
         binding.btnExcluir.setOnClickListener { confirmarExclusao() }
 
+        RichTextEngine.instalarFormatacaoLive(binding.editTexto)
+        RichTextEngine.instalarToqueChecklist(binding.editTexto)
+        binding.btnFormatoTitulo.setOnClickListener { RichTextEngine.alternarTitulo(binding.editTexto) }
+        binding.btnFormatoNegrito.setOnClickListener { RichTextEngine.alternarNegrito(binding.editTexto) }
+        binding.btnFormatoItalico.setOnClickListener { RichTextEngine.alternarItalico(binding.editTexto) }
+        binding.btnFormatoLista.setOnClickListener { RichTextEngine.alternarLista(binding.editTexto) }
+        binding.btnFormatoChecklist.setOnClickListener { RichTextEngine.alternarChecklist(binding.editTexto) }
+
         lifecycleScope.launch {
             val entry = AppDatabase.getInstance(applicationContext).entryDao().getById(entryId)
             if (entry == null) {
@@ -113,6 +121,7 @@ class EditEntryActivity : AppCompatActivity() {
         binding.layoutValor.visibility = if (isGasto) View.VISIBLE else View.GONE
         binding.editCategoria.visibility = if (isGasto) View.VISIBLE else View.GONE
         binding.editTitulo.visibility = if (isGasto) View.GONE else View.VISIBLE
+        binding.layoutFormato.visibility = if (isGasto) View.GONE else View.VISIBLE
         binding.editTexto.hint = getString(if (isGasto) R.string.hint_gasto else R.string.hint_pensamento)
     }
 

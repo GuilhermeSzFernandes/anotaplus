@@ -168,6 +168,82 @@
                 android:fontFamily="sans-serif-black"
                 android:textSize="17sp" />
 
+            <!-- Só pra Ideia — barra de formatação (ver RichTextEngine) -->
+            <LinearLayout
+                android:id="@+id/layout_formato"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_formato_titulo"
+                    style="@style/Widget.AnotaPlus.Button.Link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:paddingHorizontal="10dp"
+                    android:text="@string/formato_titulo" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_formato_negrito"
+                    style="@style/Widget.AnotaPlus.Button.Link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:paddingHorizontal="10dp"
+                    android:text="@string/formato_negrito" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_formato_italico"
+                    style="@style/Widget.AnotaPlus.Button.Link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:paddingHorizontal="10dp"
+                    android:text="@string/formato_italico" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_formato_lista"
+                    style="@style/Widget.AnotaPlus.Button.Link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:paddingHorizontal="10dp"
+                    android:text="@string/formato_lista" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_formato_checklist"
+                    style="@style/Widget.AnotaPlus.Button.Link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:paddingHorizontal="10dp"
+                    android:text="@string/formato_checklist" />
+
+            </LinearLayout>
+
             <EditText
                 android:id="@+id/edit_texto"
                 android:layout_width="match_parent"

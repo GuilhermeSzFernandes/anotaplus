@@ -112,6 +112,19 @@
             android:exported="false"
             android:theme="@style/Theme.AnotaPlus" />
 
+        <!-- Tela de configuração do widget "Uma Ideia" — aberta pelo
+             próprio sistema (android:configure no widget_anotacao_info.xml)
+             sempre que uma instância desse widget é adicionada. exported
+             precisa ser true pro launcher/host do widget conseguir abrir. -->
+        <activity
+            android:name=".widget.AnotacaoWidgetConfigActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AnotaPlus">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
         <!-- Ladrilho de Configurações Rápidas: abre a Captura Rápida em
              qualquer Android (puxar a barra + tocar), sem depender de
              gesto de fabricante — ver CapturaRapidaTileService.kt. -->
@@ -154,6 +167,28 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_captura_rapida_info" />
+        </receiver>
+
+        <!-- Terceiro widget: mostra uma Ideia específica (escolhida na
+             configuração), com checklist tocável direto da tela inicial. -->
+        <receiver
+            android:name=".widget.AnotacaoWidgetProvider"
+            android:exported="false"
+            android:label="@string/widget_anotacao_nome">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_anotacao_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.AnotacaoWidgetToggleReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.guilherme.anotaplus.TOGGLE_CHECKLIST_WIDGET" />
+            </intent-filter>
         </receiver>
 
     </application>
