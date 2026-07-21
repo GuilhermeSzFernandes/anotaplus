@@ -46,7 +46,12 @@ class BillingManager(private val context: Context) : PurchasesUpdatedListener {
 
     private val billingClient = BillingClient.newBuilder(context)
         .setListener(this)
-        .enablePendingPurchases(PendingPurchasesParams.newBuilder().build())
+        // enableOneTimeProducts() é obrigatório aqui mesmo só vendendo
+        // assinatura — sem ele, PendingPurchasesParams.build() lança
+        // IllegalArgumentException ("Pending purchases for one-time
+        // products must be supported") e derruba o app na hora (foi o que
+        // crashava Configurações/Planos/Login, que criam BillingManager).
+        .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
         .build()
 
     override fun onPurchasesUpdated(billingResult: BillingResult, purchases: MutableList<Purchase>?) {

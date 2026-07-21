@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
@@ -127,8 +126,9 @@ class HistoryActivity : AppCompatActivity() {
             return
         }
 
+        // adSize já vem do XML (app:adSize="BANNER") — setar nos dois
+        // lugares faria o AdView lançar "adSize already set".
         binding.adViewBanner.visibility = View.VISIBLE
-        binding.adViewBanner.setAdSize(AdSize.BANNER)
         binding.adViewBanner.adUnitId = BuildConfig.AD_BANNER_UNIT_ID
         binding.adViewBanner.loadAd(AdRequest.Builder().build())
 
