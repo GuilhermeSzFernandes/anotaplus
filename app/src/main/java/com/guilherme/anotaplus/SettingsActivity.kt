@@ -37,6 +37,7 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(Intent(this, GestureGuideActivity::class.java))
         }
         binding.btnFazerBackup.setOnClickListener { lifecycleScope.launch { fazerBackupAgora() } }
+        binding.btnRestaurarBackup.setOnClickListener { lifecycleScope.launch { restaurarBackupAgora() } }
 
         val tipoPadrao = Prefs.getTipoPadrao(this)
         if (tipoPadrao == EntryType.GASTO) {
@@ -113,8 +114,11 @@ class SettingsActivity : AppCompatActivity() {
             val resposta = AuthHelper.entrarComGoogle(this)
             atualizarUiConta()
             Toast.makeText(this, getString(R.string.login_sucesso, resposta.user.email), Toast.LENGTH_SHORT).show()
-            // Login recém-ativado: já manda pra fila o que tiver pendente
-            // (categorias/entries criadas antes de logar).
+            // Restaura primeiro (nuvem -> local, importante se essa conta já
+            // tinha backup de uma instalação anterior) e só depois manda pra
+            // fila o que sobrar local-only (categorias/entries criadas antes
+            // de logar nessa instalação).
+            SyncManager.restaurarTudo(this)
             SyncWorker.agendar(applicationContext)
         } catch (e: Exception) {
             // Cobre tanto falha no picker de contas (GetCredentialException,
@@ -153,6 +157,25 @@ class SettingsActivity : AppCompatActivity() {
             binding.textBackupStatus.text = getString(R.string.backup_erro)
         } finally {
             binding.btnFazerBackup.isEnabled = true
+        }
+    }
+
+    private suspend fun restaurarBackupAgora() {
+        binding.btnRestaurarBackup.isEnabled = false
+        binding.textBackupStatus.visibility = View.VISIBLE
+        binding.textBackupStatus.text = getString(R.string.backup_restaurando)
+
+        try {
+            val quantidade = SyncManager.restaurarTudo(this)
+            binding.textBackupStatus.text = if (quantidade > 0) {
+                getString(R.string.backup_restaurado, quantidade)
+            } else {
+                getString(R.string.backup_nada_pra_restaurar)
+            }
+        } catch (e: Exception) {
+            binding.textBackupStatus.text = getString(R.string.backup_erro)
+        } finally {
+            binding.btnRestaurarBackup.isEnabled = true
         }
     }
 }

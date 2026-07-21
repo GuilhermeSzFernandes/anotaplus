@@ -106,6 +106,18 @@
                         android:paddingHorizontal="0dp"
                         android:text="@string/btn_fazer_backup" />
 
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_restaurar_backup"
+                        style="@style/Widget.AnotaPlus.Button.Link"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:insetLeft="0dp"
+                        android:insetTop="0dp"
+                        android:insetRight="0dp"
+                        android:insetBottom="0dp"
+                        android:paddingHorizontal="0dp"
+                        android:text="@string/btn_restaurar_backup" />
+
                     <TextView
                         android:id="@+id/text_backup_status"
                         android:layout_width="match_parent"

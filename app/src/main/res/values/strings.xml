@@ -55,6 +55,10 @@
     <string name="backup_resultado">%d item(ns) sincronizado(s)</string>
     <string name="backup_tudo_sincronizado">Tudo já sincronizado</string>
     <string name="backup_erro">Não deu pra sincronizar agora. Tenta de novo.</string>
+    <string name="btn_restaurar_backup">Restaurar backup</string>
+    <string name="backup_restaurando">Restaurando…</string>
+    <string name="backup_restaurado">%d item(ns) restaurado(s)</string>
+    <string name="backup_nada_pra_restaurar">Nada novo pra restaurar</string>
 
     <string name="title_planos">Planos</string>
     <string name="label_plano_free">Free</string>

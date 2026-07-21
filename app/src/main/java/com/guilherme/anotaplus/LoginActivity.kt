@@ -29,6 +29,11 @@ class LoginActivity : AppCompatActivity() {
 
         try {
             AuthHelper.entrarComGoogle(this)
+            // Restaura primeiro (nuvem -> local, importante se for uma
+            // reinstalação) e só depois agenda o push do que for local-only
+            // — assim nada que acabou de ser restaurado é reenviado à toa.
+            binding.textStatus.text = getString(R.string.backup_restaurando)
+            SyncManager.restaurarTudo(this)
             SyncWorker.agendar(applicationContext)
             concluir()
         } catch (e: Exception) {

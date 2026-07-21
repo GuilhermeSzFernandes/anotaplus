@@ -28,6 +28,9 @@ interface EntryDao {
     @Query("SELECT * FROM entries WHERE remoteId IS NULL")
     suspend fun getPendentesDeSync(): List<Entry>
 
+    @Query("SELECT EXISTS(SELECT 1 FROM entries WHERE remoteId = :remoteId)")
+    suspend fun existsByRemoteId(remoteId: String): Boolean
+
     @Query("UPDATE entries SET remoteId = :remoteId WHERE id = :id")
     suspend fun marcarSincronizada(id: Long, remoteId: String)
 

@@ -149,9 +149,11 @@ implementado).
 
 ### Backup na nuvem (sync) — implementado
 
-Só push (local → nuvem) por enquanto, sem pull/restore ainda — isso é
-"backup", não "sincronizar entre aparelhos" (esse último é feature futura,
-já separada como bullet própria do Premium na `PlansActivity`).
+Push (local → nuvem) **e** restore (nuvem → local, útil pra reinstalar o
+app ou trocar de aparelho) — mas ainda não é "sincronizar entre aparelhos
+ao mesmo tempo" de verdade (sem resolução de conflito se o mesmo usuário
+editar em dois lugares); isso continua feature futura, já separada como
+bullet própria do Premium na `PlansActivity`.
 
 - `Entry`/`Category` ganharam campo `remoteId: String?` (null = ainda não
   sincronizado). **Migração real** (`MIGRATION_2_3` em `AppDatabase.kt`,
@@ -184,6 +186,16 @@ já separada como bullet própria do Premium na `PlansActivity`).
   a constraint única do Prisma) em vez de `create` — sem isso, sincronizar
   duas vezes (ou entrar com categorias padrão que já existem) quebraria
   com erro de constraint única.
+- `SyncManager.restaurarTudo(context)`: busca `GET /categories` e
+  `GET /entries` do backend, insere no Room local o que ainda não existe.
+  Categorias são casadas **por nome** (evita duplicar as categorias padrão
+  que toda instalação nova já semeia sozinha); entries são casadas **pelo
+  `remoteId`** (só insere se não existir localmente nenhuma com aquele
+  `remoteId`) — rodar várias vezes é seguro, idempotente, não duplica nada.
+  Disparado automaticamente logo após qualquer login bem-sucedido (antes do
+  push, pra não reenviar à toa o que acabou de restaurar) e também via
+  botão manual "Restaurar backup" em Configurações, ao lado do "Fazer
+  backup agora".
 
 ## Onboarding (primeira abertura) e tela de Planos
 
@@ -297,9 +309,6 @@ para instalar SDK e Gradle no runner (não depende de wrapper local).
   build com sucesso e gera um APK instalável.
 
 ## Próximos passos (ainda não implementados)
-
-- Pull/restore: baixar do backend pro Room local (útil pra reinstalar o
-  app ou trocar de aparelho). Hoje o sync só empurra local → nuvem.
 - Sincronizar de verdade entre múltiplos aparelhos ao mesmo tempo
   (resolução de conflito quando o mesmo usuário edita em dois lugares) —
   bullet própria do Premium na `PlansActivity`, distinta do backup simples.

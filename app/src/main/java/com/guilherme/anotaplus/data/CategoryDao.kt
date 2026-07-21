@@ -26,6 +26,9 @@ interface CategoryDao {
     @Query("SELECT * FROM categories WHERE remoteId IS NULL")
     suspend fun getPendentesDeSync(): List<Category>
 
+    @Query("SELECT * FROM categories")
+    suspend fun getAllOnce(): List<Category>
+
     @Query("UPDATE categories SET remoteId = :remoteId WHERE id = :id")
     suspend fun marcarSincronizada(id: Long, remoteId: String)
 }
