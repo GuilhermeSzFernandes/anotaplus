@@ -51,10 +51,17 @@
 
         </LinearLayout>
 
-        <View
+        <!-- TextView vazio em vez de View puro: RemoteViews só sabe inflar
+             um conjunto fechado de classes (TextView, ImageView, etc.) —
+             android.view.View "puro" não está nessa lista e quebra o
+             widget assim que ele é colocado de verdade na tela (o preview
+             na lista de widgets não passa por esse inflate real, só mostra
+             o ícone do app, por isso parecia funcionar até esse ponto). -->
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="10dp"
+            android:text=""
             android:background="@drawable/divider_dashed" />
 
         <LinearLayout
@@ -92,10 +99,11 @@
 
             </LinearLayout>
 
-            <View
+            <TextView
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="12dp"
+                android:text=""
                 android:background="@color/ink_soft" />
 
             <LinearLayout
