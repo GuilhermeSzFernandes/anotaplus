@@ -70,6 +70,10 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
+    // ProcessLifecycleOwner — detecta quando o app INTEIRO (não só uma
+    // activity) sai de primeiro plano, pra derrubar a task (ver
+    // AnotaPlusApplication.kt).
+    implementation("androidx.lifecycle:lifecycle-process:2.8.4")
 
     // Room (armazenamento local)
     implementation("androidx.room:room-runtime:2.6.1")

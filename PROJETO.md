@@ -224,7 +224,7 @@ já separada como bullet própria do Premium na `PlansActivity`).
   ("Em breve") de propósito, pra não passar a impressão de que já é
   possível comprar.
 
-## Bug corrigido (em duas partes): gesto parava de ficar translúcido depois da 1ª abertura
+## Bug corrigido (em três partes): gesto parava de ficar translúcido depois da 1ª abertura
 
 `QuickCaptureActivity` tinha `android:launchMode="singleTask"` no manifest,
 o que quebrava a ilusão de modal depois da primeira abertura (o Android
@@ -245,6 +245,34 @@ correção final foi dar `android:taskAffinity=""` só pro `QuickCaptureActivity
 toda vez que o gesto dispara, o Android é obrigado a criar uma instância
 nova e fresca, independente do que estiver rolando nas outras telas do app.
 Deixei os dois aprendizados comentados no manifest.
+
+**Ainda não resolveu de verdade** — o usuário reportou o mesmo sintoma de
+novo depois dessa correção. Hipótese (não 100% confirmável sem debugar o
+próprio Moto Actions, que é fechado): o gesto provavelmente não faz um
+`startActivity()` "normal" que passaria pela resolução de task por
+`taskAffinity` — ele deve simplesmente checar se o app já tem alguma task
+viva (usando `ActivityManager`/lista de tasks recentes) e, se tiver, trazer
+ela pra frente diretamente (tipo abrir pelos Recentes), sem nunca chegar a
+entregar um intent novo pro `QuickCaptureActivity`. Nesse cenário, não
+importa qual activity é o alvo do intent — o que importa é se **existe
+qualquer task do app viva em segundo plano**, e `HistoryActivity`/
+`SettingsActivity`/etc. (que não têm `taskAffinity=""`) continuavam vivas.
+
+Solução (terceira tentativa): `AnotaPlusApplication.kt`, usando
+`ProcessLifecycleOwner` (diferencia "uma activity específica parou" de "o
+app inteiro saiu de primeiro plano" — só o segundo caso interessa aqui) pra
+detectar quando o app inteiro vai pro background e chamar
+`finishAndRemoveTask()` na activity que estava em primeiro plano. Isso
+garante que nunca sobra task nenhuma do app rodando quando ele não está em
+uso — não importa o mecanismo exato que o gesto usa pra "resgatar" o app,
+não vai ter nada pra resgatar.
+
+**Contrapartida assumida**: qualquer tela do app (Histórico, Configurações,
+Relatório) perde o estado (posição de rolagem, etc.) se a tela do celular
+apagar sozinha no meio do uso ou se o usuário for pra outro app — na
+próxima vez ela recarrega do zero em vez de continuar de onde parou. Dado
+que essas telas recarregam do Room local instantaneamente (sem chamada de
+rede), o custo é baixo perto do gesto ter que funcionar sempre.
 
 ## Build sem Android Studio
 
