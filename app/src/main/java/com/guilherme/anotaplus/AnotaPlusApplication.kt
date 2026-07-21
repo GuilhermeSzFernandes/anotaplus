@@ -6,6 +6,10 @@ import android.os.Bundle
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.google.android.gms.ads.MobileAds
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * Garante que nenhuma task do app sobrevive em segundo plano.
@@ -33,6 +37,11 @@ class AnotaPlusApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        // Inicialização pode levar um tempo (rede) e não precisa bloquear
+        // nada — os primeiros loadAd() de banner/intersticial esperam ela
+        // terminar sozinhos internamente.
+        CoroutineScope(Dispatchers.IO).launch { MobileAds.initialize(this@AnotaPlusApplication) }
 
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityResumed(activity: Activity) {

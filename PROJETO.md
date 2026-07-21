@@ -240,12 +240,61 @@ bullet própria do Premium na `PlansActivity`.
   criando uma ponte visual deliberada com a experiência principal do app.
   Login é **obrigatório** — não existe opção de pular. Usa `AuthHelper` pro
   login, mais link pra `PlansActivity`.
-- **PlansActivity**: comparação Free vs Premium, cards com
-  `bg_card_free.xml` / `bg_card_premium.xml` (borda em latão no Premium).
-  Preço e features são **placeholder** — plano de verdade e Google Play
-  Billing ainda não existem, o botão "Assinar" fica desabilitado
-  ("Em breve") de propósito, pra não passar a impressão de que já é
-  possível comprar.
+- **PlansActivity**: comparação Free vs PRO, cards com `bg_card_free.xml` /
+  `bg_card_premium.xml` (borda em latão no PRO; nome do recurso continua
+  "premium" internamente, só o texto exibido virou "PRO"). Assinatura de
+  verdade via Google Play Billing, R$ 10,00/mês — ver seção "Assinatura
+  PRO e anúncios" abaixo.
+
+## Assinatura PRO e anúncios (novo)
+
+- **Preço/produto**: R$ 10,00/mês, id do produto de assinatura
+  `anotaplus_pro_mensal` (`BuildConfig.SUBSCRIPTION_PRODUCT_ID`). Esse id
+  **ainda não existe no Play Console** — precisa ser criado lá com esse
+  exato id antes de qualquer compra funcionar.
+- **Bloqueio crítico ainda não resolvido**: Google Play Billing só
+  funciona de verdade com o app instalado **a partir da Play Store**
+  (nem que seja em teste interno/fechado) — instalado via APK avulso, como
+  o `app-debug.apk` do GitHub Actions que o usuário sempre sideloadou até
+  aqui, o `BillingClient` conecta mas nunca encontra o produto. Antes de
+  testar qualquer compra de verdade, precisa: (1) criar conta de
+  desenvolvedor no Google Play Console (usuário confirmou que ainda não
+  tem, `$25` pagamento único), (2) subir o app pra pelo menos um canal de
+  teste, (3) cadastrar lá a assinatura `anotaplus_pro_mensal` a R$
+  10,00/mês, (4) adicionar a própria conta Google como testador de
+  licença.
+- **`BillingManager`** (`app/.../billing/BillingManager.kt`): fina camada
+  em cima da Play Billing Library. `consultarProductDetails()` busca
+  preço/offer da Play Store; `iniciarCompra()` abre o fluxo de compra;
+  `atualizarStatusAssinatura()` reconsulta `queryPurchasesAsync` (fonte da
+  verdade) e sincroniza o resultado tanto no cache local
+  (`SubscriptionPrefs`) quanto no backend (`POST /billing/sync`) — chamado
+  no login, ao abrir Configurações, e no `onResume()` de `PlansActivity`
+  (cobre a volta do fluxo de compra).
+- **Gate do backup**: `SubscriptionPrefs.podeFazerBackup()` (logado E PRO)
+  substitui os antigos checks de "só logado" em
+  `QuickCaptureActivity`/`ManualGastoActivity`/`EditEntryActivity`/
+  `SettingsActivity` antes de chamar `SyncWorker.agendar()`. No backend,
+  `ProActiveGuard` (além do `JwtAuthGuard` de sempre) recusa com 403 quem
+  não tem `proAtivo` — aplicado em todo `EntriesController` e
+  `CategoriesController`, defesa em profundidade (não só esconder o botão
+  na UI).
+- **Gap conhecido, documentado (não é bug)**: o backend **não verifica o
+  `purchaseToken`** contra a API do Google Play Developer — confia no que
+  o app relata em `POST /billing/sync`. Verificação de verdade precisa de
+  uma service account do Google Cloud com acesso à Android Publisher API,
+  vinculada no Play Console — só faz sentido configurar depois que a conta
+  de desenvolvedor existir.
+- **Anúncios (AdMob)**: usuário também não tem conta AdMob ainda — o app
+  usa os **IDs de teste oficiais do Google**
+  (`app/build.gradle.kts`, `buildConfigField AD_BANNER_UNIT_ID` /
+  `AD_INTERSTITIAL_UNIT_ID`, e `manifestPlaceholders["adMobAppId"]`),
+  seguros de publicar mas que só mostram anúncio de teste, sem receita
+  nenhuma. Banner fixo no rodapé do Histórico (`ad_view_banner` em
+  `activity_history.xml`, escondido se `SubscriptionPrefs.isPro()`) +
+  intersticial ocasional (a cada 4 aberturas do Histórico,
+  `Prefs.incrementarAberturasHistorico`) — os dois só pro plano Free.
+  Trocar pelos IDs reais assim que a conta AdMob existir.
 
 ## Bug corrigido (em três partes): gesto parava de ficar translúcido depois da 1ª abertura
 
@@ -353,14 +402,19 @@ para instalar SDK e Gradle no runner (não depende de wrapper local).
 ## Próximos passos (ainda não implementados)
 - Sincronizar de verdade entre múltiplos aparelhos ao mesmo tempo
   (resolução de conflito quando o mesmo usuário edita em dois lugares) —
-  bullet própria do Premium na `PlansActivity`, distinta do backup simples.
-- Modelo de assinatura (`Subscription`) + verificação de recibo do Google
-  Play Billing, pra gatear o backup atrás do plano pago — quando isso
-  existir, o botão "Em breve" da `PlansActivity` vira "Assinar" de verdade,
-  **e o backup (hoje liberado pra qualquer usuário logado, sem checar
-  plano) passa a exigir assinatura ativa**.
-- Definir preço/features reais dos planos (o que tá na `PlansActivity` hoje
-  é placeholder que eu escrevi, não decisão de negócio fechada).
+  bullet própria do PRO na `PlansActivity`, distinta do backup simples.
+- **Criar a conta de desenvolvedor no Google Play Console** ($25, pagamento
+  único), subir o Anota+ pra pelo menos teste interno, e cadastrar lá a
+  assinatura `anotaplus_pro_mensal` a R$ 10,00/mês — sem isso, o botão
+  "Assinar" da `PlansActivity` conecta no Play Billing mas nunca acha
+  produto nenhum (ver seção "Assinatura PRO e anúncios").
+- **Criar conta AdMob** e cadastrar o Anota+ lá pra conseguir App ID e Ad
+  Unit IDs reais — hoje o app usa os IDs de teste oficiais do Google
+  (banner + intersticial), que não geram receita nenhuma.
+- Verificar o `purchaseToken` do `POST /billing/sync` contra a API do
+  Google Play Developer, em vez de confiar no que o app relata — precisa
+  de uma service account do Google Cloud com Android Publisher API,
+  vinculada no Play Console (só faz sentido depois que a conta existir).
 - Exportar histórico em CSV.
 - Editar/renomear categoria existente (hoje só dá pra adicionar e remover).
 - Excluir categoria em Configurações **não propaga pro backend** (diferente

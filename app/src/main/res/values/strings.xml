@@ -60,20 +60,31 @@
     <string name="backup_restaurado">%d item(ns) restaurado(s)</string>
     <string name="backup_nada_pra_restaurar">Nada novo pra restaurar</string>
 
+    <!-- Nomes internos dos recursos ainda dizem "premium" (histórico), mas
+         o texto exibido é o plano PRO — trocar o id de todo mundo por
+         "pro" não muda nada pro usuário, só dá risco de esquecer alguma
+         referência. -->
     <string name="title_planos">Planos</string>
     <string name="label_plano_free">Free</string>
-    <string name="label_plano_premium">Premium</string>
+    <string name="label_plano_premium">PRO</string>
     <string name="preco_free">Grátis</string>
-    <string name="preco_premium">R$ 9,90/mês</string>
+    <string name="preco_premium">R$ 10,00/mês</string>
     <string name="feature_free_1">— Captura ilimitada, 100% offline</string>
     <string name="feature_free_2">— Categorias personalizadas</string>
     <string name="feature_free_3">— Relatórios mensais</string>
     <string name="feature_free_4">— Histórico completo</string>
-    <string name="feature_premium_1">— Tudo do Free</string>
+    <string name="feature_premium_1">— Tudo do Free, sem anúncios</string>
     <string name="feature_premium_2">— Backup automático na nuvem</string>
     <string name="feature_premium_3">— Sincroniza entre aparelhos</string>
     <string name="feature_premium_4">— Suporte prioritário</string>
     <string name="btn_em_breve">Em breve</string>
+    <string name="btn_assinar_pro">Assinar por R$ 10,00/mês</string>
+    <string name="assinatura_processando">Processando…</string>
+    <string name="assinatura_ativa">Você já é PRO ✓</string>
+    <string name="assinatura_erro">Não deu pra iniciar a compra. Tenta de novo.</string>
+    <string name="assinatura_indisponivel">Assinatura indisponível neste aparelho (precisa estar instalado pela Play Store).</string>
+    <string name="backup_exclusivo_pro">Backup na nuvem é exclusivo do plano PRO.</string>
+    <string name="link_virar_pro">ver plano PRO →</string>
 
     <string name="title_guia_gesto">Abrir na hora</string>
     <string name="guia_gesto_intro_moto">O Anota+ funciona melhor com o gesto \"toque duas vezes na traseira\" do seu Moto — ele abre o app na hora, mesmo com a tela bloqueada.</string>

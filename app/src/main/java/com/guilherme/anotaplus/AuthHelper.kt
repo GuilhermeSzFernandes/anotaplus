@@ -8,6 +8,7 @@ import androidx.credentials.GetCredentialRequest
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.guilherme.anotaplus.data.SessionPrefs
+import com.guilherme.anotaplus.data.SubscriptionPrefs
 import com.guilherme.anotaplus.network.ApiClient
 import com.guilherme.anotaplus.network.dto.AuthResponse
 import com.guilherme.anotaplus.network.dto.GoogleLoginRequest
@@ -44,11 +45,17 @@ object AuthHelper {
         val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
         val resposta = ApiClient.api.loginWithGoogle(GoogleLoginRequest(googleIdTokenCredential.idToken))
         SessionPrefs.salvarSessao(activity, resposta.accessToken, resposta.user.email, resposta.user.name)
+        // Valor do login já serve de primeiro palpite; BillingManager
+        // confirma com o Play Billing local logo em seguida (a fonte da
+        // verdade de verdade é o Google, não o que o backend guardou da
+        // última vez).
+        SubscriptionPrefs.setPro(activity, resposta.user.pro)
         return resposta
     }
 
     suspend fun sair(activity: Activity) {
         runCatching { CredentialManager.create(activity).clearCredentialState(ClearCredentialStateRequest()) }
         SessionPrefs.limparSessao(activity)
+        SubscriptionPrefs.setPro(activity, false)
     }
 }

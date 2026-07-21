@@ -7,6 +7,7 @@ object Prefs {
     private const val PREFS_NAME = "anotaplus_prefs"
     private const val KEY_TIPO_PADRAO = "tipo_padrao"
     private const val KEY_ONBOARDING_CONCLUIDO = "onboarding_concluido"
+    private const val KEY_ABERTURAS_HISTORICO = "aberturas_historico"
 
     fun getTipoPadrao(context: Context): EntryType {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -31,5 +32,15 @@ object Prefs {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit {
             putBoolean(KEY_ONBOARDING_CONCLUIDO, true)
         }
+    }
+
+    // Controla o intersticial "ocasional" do plano Free: incrementa a cada
+    // abertura do Histórico, HistoryActivity decide o que fazer com o
+    // número (mostrar só a cada N aberturas).
+    fun incrementarAberturasHistorico(context: Context): Int {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val novoValor = prefs.getInt(KEY_ABERTURAS_HISTORICO, 0) + 1
+        prefs.edit { putInt(KEY_ABERTURAS_HISTORICO, novoValor) }
+        return novoValor
     }
 }

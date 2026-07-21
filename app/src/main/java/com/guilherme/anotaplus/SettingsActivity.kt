@@ -7,11 +7,13 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.guilherme.anotaplus.billing.BillingManager
 import com.guilherme.anotaplus.data.AppDatabase
 import com.guilherme.anotaplus.data.Category
 import com.guilherme.anotaplus.data.EntryType
 import com.guilherme.anotaplus.data.Prefs
 import com.guilherme.anotaplus.data.SessionPrefs
+import com.guilherme.anotaplus.data.SubscriptionPrefs
 import com.guilherme.anotaplus.databinding.ActivitySettingsBinding
 import com.guilherme.anotaplus.databinding.ItemCategoryBinding
 import kotlinx.coroutines.launch
@@ -19,6 +21,7 @@ import kotlinx.coroutines.launch
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
+    private val billingManager by lazy { BillingManager(applicationContext) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,8 +39,18 @@ class SettingsActivity : AppCompatActivity() {
         binding.linkGuiaGesto.setOnClickListener {
             startActivity(Intent(this, GestureGuideActivity::class.java))
         }
+        binding.btnVirarPro.setOnClickListener {
+            startActivity(Intent(this, PlansActivity::class.java))
+        }
         binding.btnFazerBackup.setOnClickListener { lifecycleScope.launch { fazerBackupAgora() } }
         binding.btnRestaurarBackup.setOnClickListener { lifecycleScope.launch { restaurarBackupAgora() } }
+
+        if (SessionPrefs.estaLogado(this)) {
+            lifecycleScope.launch {
+                billingManager.atualizarStatusAssinatura()
+                atualizarUiConta()
+            }
+        }
 
         val tipoPadrao = Prefs.getTipoPadrao(this)
         if (tipoPadrao == EntryType.GASTO) {
@@ -58,7 +71,7 @@ class SettingsActivity : AppCompatActivity() {
             if (nome.isNotEmpty()) {
                 lifecycleScope.launch {
                     categoryDao.insert(Category(nome = nome))
-                    if (SessionPrefs.estaLogado(this@SettingsActivity)) {
+                    if (SubscriptionPrefs.podeFazerBackup(this@SettingsActivity)) {
                         SyncWorker.agendar(applicationContext)
                     }
                 }
@@ -101,6 +114,13 @@ class SettingsActivity : AppCompatActivity() {
 
         binding.btnEntrarGoogle.visibility = if (logado) View.GONE else View.VISIBLE
         binding.btnSair.visibility = if (logado) View.VISIBLE else View.GONE
+
+        // Backup na nuvem é exclusivo do plano PRO — quem só tem conta
+        // logada (mas não assinou) vê o convite pra virar PRO em vez dos
+        // botões de backup.
+        val pro = logado && SubscriptionPrefs.isPro(this)
+        binding.layoutBackupBotoes.visibility = if (pro) View.VISIBLE else View.GONE
+        binding.layoutBackupBloqueado.visibility = if (logado && !pro) View.VISIBLE else View.GONE
     }
 
     private suspend fun entrarComGoogle() {
@@ -177,5 +197,10 @@ class SettingsActivity : AppCompatActivity() {
         } finally {
             binding.btnRestaurarBackup.isEnabled = true
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        billingManager.encerrar()
     }
 }

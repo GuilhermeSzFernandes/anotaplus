@@ -5,13 +5,16 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.guilherme.anotaplus.billing.BillingManager
 import com.guilherme.anotaplus.data.Prefs
+import com.guilherme.anotaplus.data.SubscriptionPrefs
 import com.guilherme.anotaplus.databinding.ActivityLoginBinding
 import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
+    private val billingManager by lazy { BillingManager(applicationContext) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,12 +32,20 @@ class LoginActivity : AppCompatActivity() {
 
         try {
             AuthHelper.entrarComGoogle(this)
-            // Restaura primeiro (nuvem -> local, importante se for uma
-            // reinstalação) e só depois agenda o push do que for local-only
-            // — assim nada que acabou de ser restaurado é reenviado à toa.
-            binding.textStatus.text = getString(R.string.backup_restaurando)
-            SyncManager.restaurarTudo(this)
-            SyncWorker.agendar(applicationContext)
+            // Reconsulta o Play Billing (fonte da verdade) antes de decidir
+            // se restaura backup — o valor que veio no login é só o último
+            // que o backend tinha guardado, pode estar desatualizado.
+            billingManager.atualizarStatusAssinatura()
+
+            if (SubscriptionPrefs.podeFazerBackup(this)) {
+                // Restaura primeiro (nuvem -> local, importante se for uma
+                // reinstalação) e só depois agenda o push do que for
+                // local-only — assim nada que acabou de ser restaurado é
+                // reenviado à toa.
+                binding.textStatus.text = getString(R.string.backup_restaurando)
+                SyncManager.restaurarTudo(this)
+                SyncWorker.agendar(applicationContext)
+            }
             concluir()
         } catch (e: Exception) {
             binding.textStatus.text = getString(R.string.login_erro_detalhe, e.message ?: e.toString())
@@ -50,5 +61,10 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this, destino))
         }
         finish()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        billingManager.encerrar()
     }
 }

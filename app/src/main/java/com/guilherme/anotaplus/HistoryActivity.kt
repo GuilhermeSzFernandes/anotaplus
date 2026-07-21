@@ -6,9 +6,16 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.tabs.TabLayout
 import com.guilherme.anotaplus.data.AppDatabase
 import com.guilherme.anotaplus.data.EntryType
+import com.guilherme.anotaplus.data.Prefs
+import com.guilherme.anotaplus.data.SubscriptionPrefs
 import com.guilherme.anotaplus.databinding.ActivityHistoryBinding
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -56,6 +63,8 @@ class HistoryActivity : AppCompatActivity() {
 
         binding.recyclerEntries.layoutManager = LinearLayoutManager(this)
         binding.recyclerEntries.adapter = adapter
+
+        exibirAnunciosSeFree()
 
         // O filtro por mês só existe na aba Gasto; em Ideia o histórico
         // continua mostrando tudo, sem recorte de período.
@@ -108,5 +117,47 @@ class HistoryActivity : AppCompatActivity() {
         val calendar = mesSelecionado.value.clone() as Calendar
         calendar.add(Calendar.MONTH, delta)
         mesSelecionado.value = calendar
+    }
+
+    // Plano Free tem anúncio; PRO não. Banner fixo sempre que a tela abre
+    // (se Free); intersticial só de vez em quando, pra não ser tão chato.
+    private fun exibirAnunciosSeFree() {
+        if (SubscriptionPrefs.isPro(this)) {
+            binding.adViewBanner.visibility = View.GONE
+            return
+        }
+
+        binding.adViewBanner.visibility = View.VISIBLE
+        binding.adViewBanner.setAdSize(AdSize.BANNER)
+        binding.adViewBanner.adUnitId = BuildConfig.AD_BANNER_UNIT_ID
+        binding.adViewBanner.loadAd(AdRequest.Builder().build())
+
+        val aberturas = Prefs.incrementarAberturasHistorico(this)
+        if (aberturas % ABERTURAS_POR_INTERSTICIAL == 0) {
+            InterstitialAd.load(
+                this,
+                BuildConfig.AD_INTERSTITIAL_UNIT_ID,
+                AdRequest.Builder().build(),
+                object : InterstitialAdLoadCallback() {
+                    override fun onAdLoaded(ad: InterstitialAd) {
+                        ad.show(this@HistoryActivity)
+                    }
+
+                    override fun onAdFailedToLoad(error: LoadAdError) {
+                        // Sem anúncio pra mostrar (sem internet, sem
+                        // inventário etc.) — não bloqueia o uso do app.
+                    }
+                }
+            )
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.adViewBanner.destroy()
+    }
+
+    companion object {
+        private const val ABERTURAS_POR_INTERSTICIAL = 4
     }
 }

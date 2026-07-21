@@ -188,7 +188,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:enabled="false"
-                    android:text="@string/btn_em_breve" />
+                    android:text="@string/btn_assinar_pro" />
 
             </LinearLayout>
 

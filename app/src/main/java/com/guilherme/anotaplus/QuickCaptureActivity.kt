@@ -11,7 +11,7 @@ import com.guilherme.anotaplus.data.AppDatabase
 import com.guilherme.anotaplus.data.Entry
 import com.guilherme.anotaplus.data.EntryType
 import com.guilherme.anotaplus.data.Prefs
-import com.guilherme.anotaplus.data.SessionPrefs
+import com.guilherme.anotaplus.data.SubscriptionPrefs
 import com.guilherme.anotaplus.databinding.ActivityQuickCaptureBinding
 import com.guilherme.anotaplus.widget.WidgetUpdater
 import kotlinx.coroutines.launch
@@ -159,7 +159,7 @@ class QuickCaptureActivity : AppCompatActivity() {
             if (tipoSelecionado == EntryType.GASTO) {
                 WidgetUpdater.atualizarTodos(applicationContext)
             }
-            if (SessionPrefs.estaLogado(this@QuickCaptureActivity)) {
+            if (SubscriptionPrefs.podeFazerBackup(this@QuickCaptureActivity)) {
                 SyncWorker.agendar(applicationContext)
             }
             finish()

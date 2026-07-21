@@ -21,6 +21,20 @@ android {
             "GOOGLE_WEB_CLIENT_ID",
             "\"666199767955-c02f82u6vv8sg1o8a0i3uhd65h38k9j7.apps.googleusercontent.com\""
         )
+
+        // Assinatura PRO (Google Play Billing): id do produto de assinatura
+        // que precisa ser cadastrado no Play Console com esse EXATO id
+        // antes de qualquer compra funcionar (ainda não existe — ver
+        // PROJETO.md).
+        buildConfigField("String", "SUBSCRIPTION_PRODUCT_ID", "\"anotaplus_pro_mensal\"")
+
+        // AdMob (anúncios do plano Free): IDs de TESTE oficiais do Google
+        // (developers.google.com/admob/android/test-ads) — seguros de
+        // publicar, mas só mostram anúncio de teste, sem gerar receita
+        // nenhuma. Trocar pelos IDs reais assim que a conta AdMob existir.
+        manifestPlaceholders["adMobAppId"] = "ca-app-pub-3940256099942544~3347511713"
+        buildConfigField("String", "AD_BANNER_UNIT_ID", "\"ca-app-pub-3940256099942544/6300978111\"")
+        buildConfigField("String", "AD_INTERSTITIAL_UNIT_ID", "\"ca-app-pub-3940256099942544/1033173712\"")
     }
 
     signingConfigs {
@@ -95,4 +109,8 @@ dependencies {
     // sempre finish() logo em seguida), então uma coroutine presa ao
     // lifecycle da activity não serve.
     implementation("androidx.work:work-runtime-ktx:2.9.1")
+
+    // Assinatura PRO (Google Play Billing) e anúncios do plano Free (AdMob)
+    implementation("com.android.billingclient:billing-ktx:7.1.1")
+    implementation("com.google.android.gms:play-services-ads:23.5.0")
 }

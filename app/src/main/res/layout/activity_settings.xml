@@ -93,40 +93,82 @@
                         android:ellipsize="middle"
                         tools:text="guilhermenovo3001@gmail.com" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_fazer_backup"
-                        style="@style/Widget.AnotaPlus.Button.Link"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:insetLeft="0dp"
-                        android:insetTop="0dp"
-                        android:insetRight="0dp"
-                        android:insetBottom="0dp"
-                        android:paddingHorizontal="0dp"
-                        android:text="@string/btn_fazer_backup" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_restaurar_backup"
-                        style="@style/Widget.AnotaPlus.Button.Link"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:insetLeft="0dp"
-                        android:insetTop="0dp"
-                        android:insetRight="0dp"
-                        android:insetBottom="0dp"
-                        android:paddingHorizontal="0dp"
-                        android:text="@string/btn_restaurar_backup" />
-
-                    <TextView
-                        android:id="@+id/text_backup_status"
+                    <!-- Backup em si: só aparece pra quem já é PRO -->
+                    <LinearLayout
+                        android:id="@+id/layout_backup_botoes"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
+                        android:orientation="vertical"
                         android:visibility="gone"
-                        tools:text="12 itens sincronizados"
-                        tools:visibility="visible" />
+                        tools:visibility="visible">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_fazer_backup"
+                            style="@style/Widget.AnotaPlus.Button.Link"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:insetLeft="0dp"
+                            android:insetTop="0dp"
+                            android:insetRight="0dp"
+                            android:insetBottom="0dp"
+                            android:paddingHorizontal="0dp"
+                            android:text="@string/btn_fazer_backup" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_restaurar_backup"
+                            style="@style/Widget.AnotaPlus.Button.Link"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:insetLeft="0dp"
+                            android:insetTop="0dp"
+                            android:insetRight="0dp"
+                            android:insetBottom="0dp"
+                            android:paddingHorizontal="0dp"
+                            android:text="@string/btn_restaurar_backup" />
+
+                        <TextView
+                            android:id="@+id/text_backup_status"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
+                            android:visibility="gone"
+                            tools:text="12 itens sincronizados"
+                            tools:visibility="visible" />
+
+                    </LinearLayout>
+
+                    <!-- Quem tá logado mas não é PRO vê isso em vez dos botões -->
+                    <LinearLayout
+                        android:id="@+id/layout_backup_bloqueado"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/backup_exclusivo_pro"
+                            android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
+                            android:textColor="@color/ink_soft" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_virar_pro"
+                            style="@style/Widget.AnotaPlus.Button.Link"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:insetLeft="0dp"
+                            android:insetTop="0dp"
+                            android:insetRight="0dp"
+                            android:insetBottom="0dp"
+                            android:paddingHorizontal="0dp"
+                            android:text="@string/link_virar_pro" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 

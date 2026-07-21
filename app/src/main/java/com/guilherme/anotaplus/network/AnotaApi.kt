@@ -1,6 +1,8 @@
 package com.guilherme.anotaplus.network
 
 import com.guilherme.anotaplus.network.dto.AuthResponse
+import com.guilherme.anotaplus.network.dto.BillingSyncRequest
+import com.guilherme.anotaplus.network.dto.BillingSyncResponse
 import com.guilherme.anotaplus.network.dto.CategoriaRemota
 import com.guilherme.anotaplus.network.dto.CategoriaSyncRequest
 import com.guilherme.anotaplus.network.dto.EntryRemota
@@ -49,4 +51,10 @@ interface AnotaApi {
 
     @GET("entries")
     suspend fun listarEntries(@Header("Authorization") auth: String): List<EntryRemota>
+
+    @POST("billing/sync")
+    suspend fun sincronizarAssinatura(
+        @Header("Authorization") auth: String,
+        @Body body: BillingSyncRequest
+    ): BillingSyncResponse
 }

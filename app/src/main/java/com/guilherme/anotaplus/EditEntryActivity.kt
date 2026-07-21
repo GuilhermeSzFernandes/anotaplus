@@ -13,6 +13,7 @@ import com.guilherme.anotaplus.data.AppDatabase
 import com.guilherme.anotaplus.data.Entry
 import com.guilherme.anotaplus.data.EntryType
 import com.guilherme.anotaplus.data.SessionPrefs
+import com.guilherme.anotaplus.data.SubscriptionPrefs
 import com.guilherme.anotaplus.databinding.ActivityEditEntryBinding
 import com.guilherme.anotaplus.network.ApiClient
 import com.guilherme.anotaplus.network.dto.EntrySyncRequest
@@ -171,7 +172,7 @@ class EditEntryActivity : AppCompatActivity() {
 
     private suspend fun propagarEdicaoPraNuvem(entry: Entry) {
         val id = entry.remoteId ?: return
-        if (!SessionPrefs.estaLogado(this)) return
+        if (!SubscriptionPrefs.podeFazerBackup(this)) return
 
         runCatching {
             ApiClient.api.atualizarEntry(
@@ -200,7 +201,7 @@ class EditEntryActivity : AppCompatActivity() {
         AppDatabase.getInstance(applicationContext).entryDao().deleteById(entryId)
 
         val id = remoteId
-        if (id != null && SessionPrefs.estaLogado(this)) {
+        if (id != null && SubscriptionPrefs.podeFazerBackup(this)) {
             runCatching {
                 ApiClient.api.excluirEntry("Bearer ${SessionPrefs.getAccessToken(this)}", id)
             }
