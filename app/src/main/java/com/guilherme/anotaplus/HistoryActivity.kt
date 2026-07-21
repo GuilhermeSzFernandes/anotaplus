@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
@@ -120,41 +121,51 @@ class HistoryActivity : AppCompatActivity() {
 
     // Plano Free tem anúncio; PRO não. Banner fixo sempre que a tela abre
     // (se Free); intersticial só de vez em quando, pra não ser tão chato.
+    // runCatching em volta de tudo: anúncio é sempre secundário, uma
+    // falha do AdMob não pode nunca mais derrubar a tela (já aconteceu).
     private fun exibirAnunciosSeFree() {
         if (SubscriptionPrefs.isPro(this)) {
             binding.adViewBanner.visibility = View.GONE
             return
         }
 
-        // adSize já vem do XML (app:adSize="BANNER") — setar nos dois
-        // lugares faria o AdView lançar "adSize already set".
-        binding.adViewBanner.visibility = View.VISIBLE
-        binding.adViewBanner.adUnitId = BuildConfig.AD_BANNER_UNIT_ID
-        binding.adViewBanner.loadAd(AdRequest.Builder().build())
+        runCatching {
+            // adSize e adUnitId têm que ser setados programaticamente ANTES
+            // do loadAd() — via XML (app:adSize) não funcionou de verdade
+            // (foi o que crashava com "ad size and ad unit ID must be set
+            // before loadAd is called"), então é isso mesmo, direto no
+            // código.
+            binding.adViewBanner.visibility = View.VISIBLE
+            binding.adViewBanner.setAdSize(AdSize.BANNER)
+            binding.adViewBanner.adUnitId = BuildConfig.AD_BANNER_UNIT_ID
+            binding.adViewBanner.loadAd(AdRequest.Builder().build())
+        }
 
         val aberturas = Prefs.incrementarAberturasHistorico(this)
         if (aberturas % ABERTURAS_POR_INTERSTICIAL == 0) {
-            InterstitialAd.load(
-                this,
-                BuildConfig.AD_INTERSTITIAL_UNIT_ID,
-                AdRequest.Builder().build(),
-                object : InterstitialAdLoadCallback() {
-                    override fun onAdLoaded(ad: InterstitialAd) {
-                        ad.show(this@HistoryActivity)
-                    }
+            runCatching {
+                InterstitialAd.load(
+                    this,
+                    BuildConfig.AD_INTERSTITIAL_UNIT_ID,
+                    AdRequest.Builder().build(),
+                    object : InterstitialAdLoadCallback() {
+                        override fun onAdLoaded(ad: InterstitialAd) {
+                            runCatching { ad.show(this@HistoryActivity) }
+                        }
 
-                    override fun onAdFailedToLoad(error: LoadAdError) {
-                        // Sem anúncio pra mostrar (sem internet, sem
-                        // inventário etc.) — não bloqueia o uso do app.
+                        override fun onAdFailedToLoad(error: LoadAdError) {
+                            // Sem anúncio pra mostrar (sem internet, sem
+                            // inventário etc.) — não bloqueia o uso do app.
+                        }
                     }
-                }
-            )
+                )
+            }
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        binding.adViewBanner.destroy()
+        runCatching { binding.adViewBanner.destroy() }
     }
 
     companion object {
