@@ -1,12 +1,16 @@
 package com.guilherme.anotaplus
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.guilherme.anotaplus.data.AppDatabase
 import com.guilherme.anotaplus.data.Entry
 import com.guilherme.anotaplus.data.EntryType
@@ -26,6 +30,17 @@ class QuickCaptureActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Antes de qualquer outra coisa: se o app crashou da última vez,
+        // mostra o stacktrace num diálogo copiável em vez de seguir o
+        // fluxo normal — sem isso não tem como diagnosticar sem Android
+        // Studio/adb. Ver CrashHandler.kt.
+        val crash = CrashHandler.pegarUltimoCrash(this)
+        if (crash != null) {
+            CrashHandler.limparUltimoCrash(this)
+            mostrarDialogoCrash(crash)
+            return
+        }
 
         // Ícone da tela inicial sempre chega com sourceBounds (a posição do
         // ícone na tela, usada na animação de abertura do launcher). O gesto
@@ -164,5 +179,20 @@ class QuickCaptureActivity : AppCompatActivity() {
             }
             finish()
         }
+    }
+
+    private fun mostrarDialogoCrash(stacktrace: String) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("O app crashou da última vez")
+            .setMessage(stacktrace)
+            .setCancelable(false)
+            .setPositiveButton("Copiar") { _, _ ->
+                val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                clipboard.setPrimaryClip(ClipData.newPlainText("crash", stacktrace))
+                Toast.makeText(this, "Copiado", Toast.LENGTH_SHORT).show()
+                finish()
+            }
+            .setNegativeButton("Fechar") { _, _ -> finish() }
+            .show()
     }
 }

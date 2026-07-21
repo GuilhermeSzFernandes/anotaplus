@@ -38,6 +38,11 @@ class AnotaPlusApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        // Antes de qualquer outra coisa: instala o coletor de crash (ver
+        // CrashHandler.kt) — sem Android Studio/adb, é a única forma
+        // prática de descobrir o que está derrubando o app.
+        CrashHandler.instalar(this)
+
         // Inicialização pode levar um tempo (rede) e não precisa bloquear
         // nada — os primeiros loadAd() de banner/intersticial esperam ela
         // terminar sozinhos internamente. runCatching porque isso roda em
