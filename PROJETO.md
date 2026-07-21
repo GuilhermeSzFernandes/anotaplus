@@ -144,11 +144,46 @@ implementado).
   - `BuildConfig.API_BASE_URL` e `BuildConfig.GOOGLE_WEB_CLIENT_ID` vêm de
     `buildConfigField` no `build.gradle.kts` (valores fixos por enquanto,
     não variam por build type ainda).
-- **Login ainda não faz nada além de autenticar** — não existe sync de
-  entries/categories entre o Room local e o backend ainda. É só a base
-  (auth) pronta pra construir isso em cima.
 - Ver `README.md` do repo do backend pra detalhes de setup/deploy — aqui só
   o resumo do lado Android.
+
+### Backup na nuvem (sync) — implementado
+
+Só push (local → nuvem) por enquanto, sem pull/restore ainda — isso é
+"backup", não "sincronizar entre aparelhos" (esse último é feature futura,
+já separada como bullet própria do Premium na `PlansActivity`).
+
+- `Entry`/`Category` ganharam campo `remoteId: String?` (null = ainda não
+  sincronizado). **Migração real** (`MIGRATION_2_3` em `AppDatabase.kt`,
+  versão 2 → 3, `ALTER TABLE ... ADD COLUMN`), não a
+  `fallbackToDestructiveMigration()` usada nas versões anteriores — dessa
+  vez tem gente com dado de verdade no app, seria irônico apagar tudo bem
+  na hora de adicionar backup. `fallbackToDestructiveMigration()` continua
+  como rede de segurança pra qualquer bump futuro sem migração explícita.
+- `SyncManager.sincronizarTudo(context)`: busca tudo com `remoteId IS NULL`
+  local, empurra pro backend (`POST /categories` / `POST /entries`, com
+  `Authorization: Bearer <token>`), grava o `remoteId` retornado. Cada item
+  falha isolado (`runCatching`) — um erro de rede num item não trava o
+  lote inteiro.
+- `SyncWorker` (`CoroutineWorker` do WorkManager) envolve o `SyncManager` —
+  **não dá pra rodar isso numa coroutine presa ao `lifecycleScope` da
+  activity**, porque `QuickCaptureActivity`/`ManualGastoActivity` chamam
+  `finish()` logo depois de salvar, o que cancelaria a sincronização antes
+  de completar. WorkManager sobrevive a isso, só roda com rede disponível
+  (`Constraints.NetworkType.CONNECTED`) e tenta de novo sozinho se falhar.
+- Disparado (`SyncWorker.agendar(context)`) em: salvar um gasto/ideia
+  (`QuickCaptureActivity`, `ManualGastoActivity`), adicionar categoria
+  (`SettingsActivity`), e logo após um login bem-sucedido (pra já mandar
+  o que tiver acumulado antes de logar). Só dispara se
+  `SessionPrefs.estaLogado()`.
+- Botão manual "Fazer backup agora" em Configurações (dentro do card
+  Conta, só visível logado) — chama `SyncManager.sincronizarTudo()` direto
+  (sem passar pelo WorkManager, já que aqui a activity fica viva esperando
+  o resultado) e mostra quantos itens foram sincronizados.
+- Backend: `CategoriesService.create` virou `upsert` (por `userId_nome`,
+  a constraint única do Prisma) em vez de `create` — sem isso, sincronizar
+  duas vezes (ou entrar com categorias padrão que já existem) quebraria
+  com erro de constraint única.
 
 ## Onboarding (primeira abertura) e tela de Planos
 
@@ -235,13 +270,16 @@ para instalar SDK e Gradle no runner (não depende de wrapper local).
 
 ## Próximos passos (ainda não implementados)
 
-- Sync de verdade entre o Room local e o backend (upload/download de
-  entries e categories, resolução de conflito entre dispositivos) — hoje
-  o backend só tem os endpoints CRUD, nada no app chama `/entries` ou
-  `/categories` ainda.
+- Pull/restore: baixar do backend pro Room local (útil pra reinstalar o
+  app ou trocar de aparelho). Hoje o sync só empurra local → nuvem.
+- Sincronizar de verdade entre múltiplos aparelhos ao mesmo tempo
+  (resolução de conflito quando o mesmo usuário edita em dois lugares) —
+  bullet própria do Premium na `PlansActivity`, distinta do backup simples.
 - Modelo de assinatura (`Subscription`) + verificação de recibo do Google
   Play Billing, pra gatear o backup atrás do plano pago — quando isso
-  existir, o botão "Em breve" da `PlansActivity` vira "Assinar" de verdade.
+  existir, o botão "Em breve" da `PlansActivity` vira "Assinar" de verdade,
+  **e o backup (hoje liberado pra qualquer usuário logado, sem checar
+  plano) passa a exigir assinatura ativa**.
 - Definir preço/features reais dos planos (o que tá na `PlansActivity` hoje
   é placeholder que eu escrevi, não decisão de negócio fechada).
 - Exportar histórico em CSV.

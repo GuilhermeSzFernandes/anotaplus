@@ -25,6 +25,12 @@ interface EntryDao {
     @Query("DELETE FROM entries WHERE id = :id")
     suspend fun deleteById(id: Long)
 
+    @Query("SELECT * FROM entries WHERE remoteId IS NULL")
+    suspend fun getPendentesDeSync(): List<Entry>
+
+    @Query("UPDATE entries SET remoteId = :remoteId WHERE id = :id")
+    suspend fun marcarSincronizada(id: Long, remoteId: String)
+
     @Query(
         """
         SELECT categoria, SUM(valor) AS total FROM entries

@@ -29,6 +29,7 @@ class LoginActivity : AppCompatActivity() {
 
         try {
             AuthHelper.entrarComGoogle(this)
+            SyncWorker.agendar(applicationContext)
             concluir()
         } catch (e: Exception) {
             binding.textStatus.text = getString(R.string.login_erro_detalhe, e.message ?: e.toString())

@@ -36,6 +36,7 @@ class SettingsActivity : AppCompatActivity() {
         binding.linkGuiaGesto.setOnClickListener {
             startActivity(Intent(this, GestureGuideActivity::class.java))
         }
+        binding.btnFazerBackup.setOnClickListener { lifecycleScope.launch { fazerBackupAgora() } }
 
         val tipoPadrao = Prefs.getTipoPadrao(this)
         if (tipoPadrao == EntryType.GASTO) {
@@ -56,6 +57,9 @@ class SettingsActivity : AppCompatActivity() {
             if (nome.isNotEmpty()) {
                 lifecycleScope.launch {
                     categoryDao.insert(Category(nome = nome))
+                    if (SessionPrefs.estaLogado(this@SettingsActivity)) {
+                        SyncWorker.agendar(applicationContext)
+                    }
                 }
                 binding.editNovaCategoria.text?.clear()
             }
@@ -109,6 +113,9 @@ class SettingsActivity : AppCompatActivity() {
             val resposta = AuthHelper.entrarComGoogle(this)
             atualizarUiConta()
             Toast.makeText(this, getString(R.string.login_sucesso, resposta.user.email), Toast.LENGTH_SHORT).show()
+            // Login recém-ativado: já manda pra fila o que tiver pendente
+            // (categorias/entries criadas antes de logar).
+            SyncWorker.agendar(applicationContext)
         } catch (e: Exception) {
             // Cobre tanto falha no picker de contas (GetCredentialException,
             // inclusive o usuário cancelando) quanto erro de rede pro backend.
@@ -128,5 +135,24 @@ class SettingsActivity : AppCompatActivity() {
     private fun mostrarErroLogin(detalhe: String) {
         binding.textContaStatus.text = getString(R.string.login_erro_detalhe, detalhe)
         Toast.makeText(this, R.string.login_erro, Toast.LENGTH_LONG).show()
+    }
+
+    private suspend fun fazerBackupAgora() {
+        binding.btnFazerBackup.isEnabled = false
+        binding.textBackupStatus.visibility = View.VISIBLE
+        binding.textBackupStatus.text = getString(R.string.backup_sincronizando)
+
+        try {
+            val quantidade = SyncManager.sincronizarTudo(this)
+            binding.textBackupStatus.text = if (quantidade > 0) {
+                getString(R.string.backup_resultado, quantidade)
+            } else {
+                getString(R.string.backup_tudo_sincronizado)
+            }
+        } catch (e: Exception) {
+            binding.textBackupStatus.text = getString(R.string.backup_erro)
+        } finally {
+            binding.btnFazerBackup.isEnabled = true
+        }
     }
 }

@@ -40,15 +40,21 @@
     <string name="label_conta">Conta</string>
     <string name="btn_entrar_google">Entrar com Google</string>
     <string name="btn_sair">Sair</string>
-    <string name="conta_nao_logado">Faça login pra ativar o backup na nuvem (em breve).</string>
+    <string name="conta_nao_logado">Faça login pra ativar o backup na nuvem.</string>
     <string name="label_conectado_como">CONECTADO COMO</string>
     <string name="conta_entrando">Entrando…</string>
     <string name="login_sucesso">Login feito: %s</string>
     <string name="login_erro">Não deu pra fazer login. Tenta de novo.</string>
     <string name="login_erro_detalhe">Erro no login: %s</string>
     <string name="login_tagline">GASTOS E IDEIAS, NA HORA</string>
-    <string name="login_pitch">Crie sua conta grátis com o Google pra continuar — é ela que vai guardar seu backup na nuvem quando o plano Premium chegar.</string>
+    <string name="login_pitch">Crie sua conta grátis com o Google pra continuar — ela ativa o backup automático dos seus lançamentos na nuvem.</string>
     <string name="link_ver_planos">ver planos →</string>
+
+    <string name="btn_fazer_backup">Fazer backup agora</string>
+    <string name="backup_sincronizando">Sincronizando…</string>
+    <string name="backup_resultado">%d item(ns) sincronizado(s)</string>
+    <string name="backup_tudo_sincronizado">Tudo já sincronizado</string>
+    <string name="backup_erro">Não deu pra sincronizar agora. Tenta de novo.</string>
 
     <string name="title_planos">Planos</string>
     <string name="label_plano_free">Free</string>

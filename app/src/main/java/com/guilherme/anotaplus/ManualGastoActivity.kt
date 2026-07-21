@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import com.guilherme.anotaplus.data.AppDatabase
 import com.guilherme.anotaplus.data.Entry
 import com.guilherme.anotaplus.data.EntryType
+import com.guilherme.anotaplus.data.SessionPrefs
 import com.guilherme.anotaplus.databinding.ActivityManualGastoBinding
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -90,6 +91,9 @@ class ManualGastoActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             AppDatabase.getInstance(applicationContext).entryDao().insert(entry)
+            if (SessionPrefs.estaLogado(this@ManualGastoActivity)) {
+                SyncWorker.agendar(applicationContext)
+            }
             finish()
         }
     }

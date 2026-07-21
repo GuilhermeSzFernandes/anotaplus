@@ -11,6 +11,7 @@ import com.guilherme.anotaplus.data.AppDatabase
 import com.guilherme.anotaplus.data.Entry
 import com.guilherme.anotaplus.data.EntryType
 import com.guilherme.anotaplus.data.Prefs
+import com.guilherme.anotaplus.data.SessionPrefs
 import com.guilherme.anotaplus.databinding.ActivityQuickCaptureBinding
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -145,6 +146,9 @@ class QuickCaptureActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             AppDatabase.getInstance(applicationContext).entryDao().insert(entry)
+            if (SessionPrefs.estaLogado(this@QuickCaptureActivity)) {
+                SyncWorker.agendar(applicationContext)
+            }
             finish()
         }
     }

@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +20,18 @@ class Converters {
     fun toEntryType(value: String): EntryType = EntryType.valueOf(value)
 }
 
-@Database(entities = [Entry::class, Category::class], version = 2, exportSchema = false)
+// v2 -> v3: adiciona remoteId (String?) em entries/categories, pro backup
+// na nuvem. Migração real (não destrutiva) porque, diferente das versões
+// anteriores, agora tem gente com dado de verdade guardado no app — seria
+// irônico apagar o histórico local bem na hora de adicionar backup.
+val MIGRATION_2_3 = object : Migration(2, 3) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE entries ADD COLUMN remoteId TEXT")
+        db.execSQL("ALTER TABLE categories ADD COLUMN remoteId TEXT")
+    }
+}
+
+@Database(entities = [Entry::class, Category::class], version = 3, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun entryDao(): EntryDao
@@ -38,6 +50,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "anotaplus.db"
                 )
+                    .addMigrations(MIGRATION_2_3)
                     .fallbackToDestructiveMigration()
                     .addCallback(object : RoomDatabase.Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {

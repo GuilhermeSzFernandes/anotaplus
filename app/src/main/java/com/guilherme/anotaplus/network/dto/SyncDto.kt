@@ -1,0 +1,16 @@
+package com.guilherme.anotaplus.network.dto
+
+data class CategoriaSyncRequest(val nome: String)
+
+data class EntrySyncRequest(
+    val type: String,
+    val texto: String,
+    val valor: Double?,
+    val categoria: String?,
+    val timestamp: String
+)
+
+// Usado tanto pra categoria quanto pra entry — só precisamos do id gerado
+// no backend; o Gson ignora os outros campos do JSON de resposta (userId,
+// email, etc.) que não existem nessa data class.
+data class SyncResponse(val id: String)

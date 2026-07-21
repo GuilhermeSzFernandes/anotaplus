@@ -85,4 +85,10 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    // Backup na nuvem em segundo plano — precisa sobreviver mesmo se a
+    // activity que disparou o salvamento já tiver fechado (QuickCapture
+    // sempre finish() logo em seguida), então uma coroutine presa ao
+    // lifecycle da activity não serve.
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
 }
