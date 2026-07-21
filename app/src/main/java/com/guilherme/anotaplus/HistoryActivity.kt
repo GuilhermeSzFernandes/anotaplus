@@ -8,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
@@ -35,6 +36,7 @@ class HistoryActivity : AppCompatActivity() {
     }
     private val tipoSelecionado = MutableStateFlow(EntryType.GASTO)
     private val mesSelecionado = MutableStateFlow(Calendar.getInstance())
+    private var adViewBanner: AdView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +49,10 @@ class HistoryActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.action_add_gasto -> {
                     startActivity(Intent(this, ManualGastoActivity::class.java))
+                    true
+                }
+                R.id.action_add_ideia -> {
+                    startActivity(Intent(this, ManualIdeiaActivity::class.java))
                     true
                 }
                 R.id.action_report -> {
@@ -77,6 +83,7 @@ class HistoryActivity : AppCompatActivity() {
                 binding.rowMes.root.visibility = visibility
                 binding.rowMesPerforation.visibility = visibility
                 binding.toolbar.menu.findItem(R.id.action_add_gasto)?.isVisible = isGasto
+                binding.toolbar.menu.findItem(R.id.action_add_ideia)?.isVisible = !isGasto
             }
             override fun onTabUnselected(tab: TabLayout.Tab) {}
             override fun onTabReselected(tab: TabLayout.Tab) {}
@@ -124,21 +131,22 @@ class HistoryActivity : AppCompatActivity() {
     // runCatching em volta de tudo: anúncio é sempre secundário, uma
     // falha do AdMob não pode nunca mais derrubar a tela (já aconteceu).
     private fun exibirAnunciosSeFree() {
-        if (SubscriptionPrefs.isPro(this)) {
-            binding.adViewBanner.visibility = View.GONE
-            return
-        }
+        if (SubscriptionPrefs.isPro(this)) return
 
         runCatching {
-            // adSize e adUnitId têm que ser setados programaticamente ANTES
-            // do loadAd() — via XML (app:adSize) não funcionou de verdade
-            // (foi o que crashava com "ad size and ad unit ID must be set
-            // before loadAd is called"), então é isso mesmo, direto no
-            // código.
-            binding.adViewBanner.visibility = View.VISIBLE
-            binding.adViewBanner.setAdSize(AdSize.BANNER)
-            binding.adViewBanner.adUnitId = BuildConfig.AD_BANNER_UNIT_ID
-            binding.adViewBanner.loadAd(AdRequest.Builder().build())
+            // AdView criado 100% por código (não declarado no layout XML):
+            // o AdMob exige que adSize/adUnitId sejam setados "do mesmo
+            // jeito" — os dois via XML ou os dois via código — e a tag
+            // <AdView> no XML sem esses atributos entrava em conflito com
+            // setar por código depois, mostrando "Required XML attribute
+            // 'adSize' was missing" em vez do anúncio de teste.
+            val adView = AdView(this).apply {
+                setAdSize(AdSize.BANNER)
+                adUnitId = BuildConfig.AD_BANNER_UNIT_ID
+            }
+            adViewBanner = adView
+            binding.adContainer.addView(adView)
+            adView.loadAd(AdRequest.Builder().build())
         }
 
         val aberturas = Prefs.incrementarAberturasHistorico(this)
@@ -165,7 +173,7 @@ class HistoryActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        runCatching { binding.adViewBanner.destroy() }
+        runCatching { adViewBanner?.destroy() }
     }
 
     companion object {

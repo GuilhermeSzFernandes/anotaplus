@@ -62,6 +62,21 @@
             android:textSize="15sp"
             tools:text="R$ 45,90 · mercado" />
 
+        <!-- Só existe quando a Ideia foi criada pelo "bloco de notas"
+             (ManualIdeiaActivity) — Gasto e Ideia via Captura Rápida não
+             têm título, essa view some (GONE). -->
+        <TextView
+            android:id="@+id/text_titulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="sans-serif-black"
+            android:textColor="@color/ink"
+            android:textSize="15sp"
+            android:visibility="gone"
+            tools:text="Ideia pro app novo"
+            tools:visibility="visible" />
+
         <TextView
             android:id="@+id/text_conteudo"
             android:layout_width="match_parent"

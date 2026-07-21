@@ -151,6 +151,23 @@
                 android:drawablePadding="6dp"
                 android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
 
+            <!-- Só pra Ideia — Gasto não tem título -->
+            <EditText
+                android:id="@+id/edit_titulo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_underline_field"
+                android:paddingHorizontal="4dp"
+                android:paddingBottom="6dp"
+                android:visibility="gone"
+                android:hint="@string/hint_titulo_ideia"
+                android:textColor="@color/ink"
+                android:textColorHint="@color/ink_soft"
+                android:inputType="textCapSentences"
+                android:fontFamily="sans-serif-black"
+                android:textSize="17sp" />
+
             <EditText
                 android:id="@+id/edit_texto"
                 android:layout_width="match_parent"

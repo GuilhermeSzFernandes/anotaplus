@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/paper">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.AnotaPlus.Toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:title="@string/title_nova_ideia"
+        app:navigationIcon="@drawable/ic_back"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.guilherme.anotaplus.ui.PerforationView
+        android:id="@+id/toolbar_perforation"
+        android:layout_width="0dp"
+        android:layout_height="6dp"
+        app:toothWidth="8dp"
+        app:toothHeight="4dp"
+        app:toothGap="3dp"
+        app:toothColor="@color/ink_soft"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_perforation"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Título grande, sem rótulo separado (o hint já basta) —
+                 é o "cabeçalho" da página, igual um bloco de notas -->
+            <EditText
+                android:id="@+id/edit_titulo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_underline_field"
+                android:paddingHorizontal="4dp"
+                android:paddingBottom="8dp"
+                android:hint="@string/hint_titulo_ideia"
+                android:textColor="@color/ink"
+                android:textColorHint="@color/ink_soft"
+                android:inputType="textCapSentences"
+                android:imeOptions="actionNext"
+                android:fontFamily="sans-serif-black"
+                android:textSize="19sp" />
+
+            <com.guilherme.anotaplus.ui.PerforationView
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:layout_marginTop="18dp"
+                app:toothWidth="8dp"
+                app:toothHeight="4dp"
+                app:toothGap="3dp"
+                app:toothColor="@color/ink_soft" />
+
+            <!-- Corpo da nota: sem caixa/sublinhado, página aberta pra
+                 escrever à vontade — é o que diferencia isso da Captura
+                 Rápida (pequena, rápida) -->
+            <EditText
+                android:id="@+id/edit_nota"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginTop="16dp"
+                android:background="@null"
+                android:gravity="top"
+                android:hint="@string/hint_nota_ideia"
+                android:textColor="@color/ink"
+                android:textColorHint="@color/ink_soft"
+                android:inputType="textMultiLine|textCapSentences"
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
+                android:textSize="17sp"
+                android:lineSpacingExtra="8dp" />
+
+            <com.guilherme.anotaplus.ui.PerforationView
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:layout_marginTop="12dp"
+                app:toothWidth="8dp"
+                app:toothHeight="4dp"
+                app:toothGap="3dp"
+                app:toothColor="@color/ink_soft" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_salvar"
+                style="@style/Widget.AnotaPlus.Button.Stamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_gravity="end"
+                android:text="@string/btn_salvar" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

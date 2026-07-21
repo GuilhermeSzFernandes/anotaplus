@@ -37,6 +37,11 @@
     <string name="label_data">Data</string>
     <string name="error_valor_obrigatorio">Informe um valor</string>
 
+    <string name="title_nova_ideia">Nova ideia</string>
+    <string name="desc_adicionar_ideia">Escrever uma ideia (bloco de notas)</string>
+    <string name="hint_titulo_ideia">Título (opcional)</string>
+    <string name="hint_nota_ideia">Escreva à vontade…</string>
+
     <string name="label_conta">Conta</string>
     <string name="btn_entrar_google">Entrar com Google</string>
     <string name="btn_sair">Sair</string>

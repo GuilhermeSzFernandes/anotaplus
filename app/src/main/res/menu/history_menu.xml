@@ -9,6 +9,13 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/action_add_ideia"
+        android:title="@string/desc_adicionar_ideia"
+        android:icon="@drawable/ic_add"
+        android:visible="false"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/action_report"
         android:title="@string/title_relatorio"
         android:icon="@drawable/ic_report"

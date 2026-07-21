@@ -52,6 +52,10 @@ class EntryAdapter(private val onItemClick: (Entry) -> Unit) :
             binding.textTipoValor.setTextColor(typeColor)
             binding.viewTypeBar.setBackgroundColor(typeColor)
 
+            binding.textTitulo.text = entry.titulo.orEmpty()
+            binding.textTitulo.visibility =
+                if (entry.titulo.isNullOrBlank()) android.view.View.GONE else android.view.View.VISIBLE
+
             binding.textConteudo.text = entry.texto
             binding.textConteudo.visibility =
                 if (entry.texto.isBlank()) android.view.View.GONE else android.view.View.VISIBLE

@@ -9,6 +9,9 @@ enum class EntryType { GASTO, PENSAMENTO }
 data class Entry(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val type: EntryType,
+    // Só usado pela tela "bloco de notas" (ManualIdeiaActivity) — Gasto e
+    // Ideia via Captura Rápida continuam sem título, null.
+    val titulo: String? = null,
     val texto: String,
     val valor: Double? = null,
     val categoria: String? = null,

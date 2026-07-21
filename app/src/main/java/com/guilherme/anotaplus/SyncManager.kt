@@ -38,6 +38,7 @@ object SyncManager {
                     auth,
                     EntrySyncRequest(
                         type = entry.type.name,
+                        titulo = entry.titulo,
                         texto = entry.texto,
                         valor = entry.valor,
                         categoria = entry.categoria,
@@ -85,6 +86,7 @@ object SyncManager {
                     db.entryDao().insert(
                         Entry(
                             type = EntryType.valueOf(remota.type),
+                            titulo = remota.titulo,
                             texto = remota.texto,
                             valor = remota.valor,
                             categoria = remota.categoria,

@@ -91,6 +91,7 @@ class EditEntryActivity : AppCompatActivity() {
 
         binding.editValor.setText(entry.valor?.let { String.format(MesUtil.locale, "%.2f", it) })
         binding.editCategoria.setText(entry.categoria.orEmpty(), false)
+        binding.editTitulo.setText(entry.titulo.orEmpty())
         binding.editTexto.setText(entry.texto)
         atualizarTextoData()
         focarValorSeGasto(entry.type)
@@ -111,6 +112,7 @@ class EditEntryActivity : AppCompatActivity() {
         val isGasto = tipo == EntryType.GASTO
         binding.layoutValor.visibility = if (isGasto) View.VISIBLE else View.GONE
         binding.editCategoria.visibility = if (isGasto) View.VISIBLE else View.GONE
+        binding.editTitulo.visibility = if (isGasto) View.GONE else View.VISIBLE
         binding.editTexto.hint = getString(if (isGasto) R.string.hint_gasto else R.string.hint_pensamento)
     }
 
@@ -145,6 +147,7 @@ class EditEntryActivity : AppCompatActivity() {
 
     private suspend fun salvar() {
         val texto = binding.editTexto.text?.toString()?.trim().orEmpty()
+        val titulo = binding.editTitulo.text?.toString()?.trim()
         val valorTexto = binding.editValor.text?.toString()?.trim()
         val categoria = binding.editCategoria.text?.toString()?.trim()
         val valor = valorTexto?.replace(",", ".")?.toDoubleOrNull()
@@ -157,6 +160,7 @@ class EditEntryActivity : AppCompatActivity() {
         val entryAtualizada = Entry(
             id = entryId,
             type = tipoSelecionado,
+            titulo = if (tipoSelecionado == EntryType.PENSAMENTO) titulo?.ifEmpty { null } else null,
             texto = texto,
             valor = if (tipoSelecionado == EntryType.GASTO) valor else null,
             categoria = if (tipoSelecionado == EntryType.GASTO) categoria?.ifEmpty { null } else null,
@@ -180,6 +184,7 @@ class EditEntryActivity : AppCompatActivity() {
                 id,
                 EntrySyncRequest(
                     type = entry.type.name,
+                    titulo = entry.titulo,
                     texto = entry.texto,
                     valor = entry.valor,
                     categoria = entry.categoria,

@@ -65,9 +65,11 @@ digita e salva sem sair do que estava fazendo.
   seletor de mês (`row_month_selector.xml`, incluído via `<include>`) que
   filtra o período — default é o mês atual, com setas pra navegar pra
   meses anteriores (não deixa avançar além do mês atual). A aba Ideia não
-  tem esse filtro, mostra tudo. O toolbar tem um menu com três ícones (o
-  "+" só aparece na aba Gasto): adicionar gasto manual, Relatório e
-  Configurações. Tocar num item da lista abre `EditEntryActivity`.
+  tem esse filtro, mostra tudo. O toolbar tem um menu com três ícones
+  visíveis por vez: o "+" alterna entre `action_add_gasto` e
+  `action_add_ideia` conforme a aba selecionada (visibilidade trocada no
+  listener do `TabLayout`), mais Relatório e Configurações, sempre fixos.
+  Tocar num item da lista abre `EditEntryActivity`.
 - **EditEntryActivity** (`res/layout/activity_edit_entry.xml`): edição e
   exclusão de um lançamento existente — mesmo formulário do QuickCapture
   (toggle Gasto/Ideia, valor+categoria, texto) mais o seletor de data/hora
@@ -86,6 +88,20 @@ digita e salva sem sair do que estava fazendo.
   dependência nova), já que aqui não faz sentido usar o timestamp de
   "agora" como na captura rápida. Sempre grava como `EntryType.GASTO`.
   Acessada pelo ícone "+" no toolbar do Histórico (aba Gasto).
+- **ManualIdeiaActivity** (`res/layout/activity_manual_ideia.xml`): "bloco
+  de notas" — jeito separado (não é a Captura Rápida, que continua
+  pequena/instantânea de propósito) de criar uma Ideia de dentro do app,
+  acessado pelo ícone "+" no toolbar do Histórico (aba Ideia, espelhando o
+  "+" de Gasto). Campo `Título` grande (`edit_titulo`, opcional) + corpo
+  `Nota` sem caixa/sublinhado (`android:background="@null"`, dentro de um
+  `NestedScrollView` com `fillViewport` + `layout_weight` pra ocupar o
+  espaço todo da tela) — deliberadamente mais espaçoso que qualquer outro
+  formulário do app. Sempre grava como `EntryType.PENSAMENTO`. `titulo` é
+  exclusivo dessa tela: Gasto e Ideia via Captura Rápida/gesto continuam
+  sempre com `titulo = null`. `EditEntryActivity` também ganhou o campo
+  (visível só quando o tipo é Ideia) pra poder editar depois, e
+  `EntryAdapter`/`item_entry.xml` mostram o título em negrito acima do
+  texto quando existir.
 - **ReportActivity** (`res/layout/activity_report.xml`): mesmo seletor de mês
   reutilizado (`row_month_selector.xml`), com total gasto, gasto por
   categoria (com barra proporcional) e contagem de ideias — tudo recalculado
@@ -108,7 +124,8 @@ digita e salva sem sair do que estava fazendo.
 ## Dados (`app/src/main/java/.../data/`)
 
 - `Entry.kt`: entidade Room — `id`, `type` (enum `GASTO`/`PENSAMENTO`),
-  `texto`, `valor: Double?`, `categoria: String?`, `timestamp`.
+  `titulo: String?` (só preenchido pela `ManualIdeiaActivity`, "bloco de
+  notas"), `texto`, `valor: Double?`, `categoria: String?`, `timestamp`.
 - `Category.kt` / `CategoryDao.kt`: categorias de gasto definidas pelo
   usuário (`id`, `nome`). Populadas com um seed padrão (Mercado, Transporte,
   Lazer, Contas, Outros) na primeira criação do banco, via
@@ -116,11 +133,11 @@ digita e salva sem sair do que estava fazendo.
 - `EntryDao.kt`: insert, `getAll()`/`getByType()`/`getByTypeAndRange()` como
   `Flow`, delete por id, e queries de relatório (`getGastoPorCategoria`,
   `getTotalGasto`, `getTotalIdeias`) filtradas por intervalo de tempo.
-- `AppDatabase.kt`: singleton do Room + `Converters` para o enum. **Versão 2**
-  (adicionou `categories`) usa `fallbackToDestructiveMigration()` — não tem
-  migração real escrita, então qualquer bump de versão futuro apaga os dados
-  locais existentes no aparelho do usuário. Aceitável agora (projeto ainda em
-  fase inicial/teste), mas revisar se isso virar um problema real.
+- `AppDatabase.kt`: singleton do Room + `Converters` para o enum. **Versão
+  4**: `MIGRATION_2_3` (adiciona `remoteId` em `entries`/`categories`, pro
+  backup) e `MIGRATION_3_4` (adiciona `titulo` em `entries`) são migrações
+  reais, não destrutivas — `fallbackToDestructiveMigration()` continua lá
+  só como rede de segurança pra um bump futuro sem migração escrita.
 - `Prefs.kt`: wrapper simples sobre `SharedPreferences` pra guardar o tipo
   padrão (`Gasto`/`Ideia`) que o `QuickCaptureActivity` usa ao abrir.
 

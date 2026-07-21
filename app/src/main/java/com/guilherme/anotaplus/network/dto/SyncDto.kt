@@ -4,6 +4,7 @@ data class CategoriaSyncRequest(val nome: String)
 
 data class EntrySyncRequest(
     val type: String,
+    val titulo: String?,
     val texto: String,
     val valor: Double?,
     val categoria: String?,
@@ -22,6 +23,7 @@ data class CategoriaRemota(val id: String, val nome: String)
 data class EntryRemota(
     val id: String,
     val type: String,
+    val titulo: String?,
     val texto: String,
     val valor: Double?,
     val categoria: String?,
