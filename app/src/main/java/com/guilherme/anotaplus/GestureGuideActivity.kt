@@ -34,14 +34,22 @@ class GestureGuideActivity : AppCompatActivity() {
 
         if (isMotorola) {
             binding.textIntro.text = getString(R.string.guia_gesto_intro_moto)
+            binding.textPasso1.text = getString(R.string.guia_gesto_passo_1_moto)
             binding.textPasso2.text = getString(R.string.guia_gesto_passo_2_moto)
             binding.textPasso3.text = getString(R.string.guia_gesto_passo_3_moto)
+            binding.textPasso4.text = getString(R.string.guia_gesto_passo_4_moto)
             binding.btnAbrirConfigMoto.text = getString(R.string.btn_abrir_config_moto)
         } else {
             binding.textIntro.text = getString(R.string.guia_gesto_intro_generico)
+            binding.textPasso1.text = getString(R.string.guia_gesto_passo_1_generico)
             binding.textPasso2.text = getString(R.string.guia_gesto_passo_2_generico)
             binding.textPasso3.text = getString(R.string.guia_gesto_passo_3_generico)
-            binding.btnAbrirConfigMoto.text = getString(R.string.btn_abrir_config_generico)
+            binding.textPasso4.text = getString(R.string.guia_gesto_passo_4_generico)
+            // Configurações Rápidas se edita puxando a barra e tocando no
+            // lápis — não existe Intent público pra abrir essa tela direto
+            // (diferente de Settings.ACTION_SETTINGS), então não tem pra
+            // onde levar o usuário com um botão aqui.
+            binding.btnAbrirConfigMoto.visibility = android.view.View.GONE
         }
 
         binding.btnAbrirConfigMoto.setOnClickListener { abrirConfiguracoesGesto() }

@@ -240,16 +240,48 @@ bullet própria do Premium na `PlansActivity`.
     onboarding) a partir de Configurações — "ver planos" e "como configurar
     o gesto" — nesse caso os extras não são passados e a tela só fecha ao
     concluir, sem redirecionar pra mais nada.
-- **GestureGuideActivity**: explica o gesto de abertura rápida com passo a
-  passo numerado (a numeração aqui faz sentido — é uma sequência real de
-  ações). Detecta o fabricante via `Build.MANUFACTURER`: no Moto, texto e
-  botão são específicos ("toque duas vezes na traseira", tenta abrir
-  `com.motorola.actions` direto via `packageManager.getLaunchIntentForPackage`)
-  e caem pra `Settings.ACTION_SETTINGS` se não encontrar; em qualquer outro
-  fabricante, o texto vira genérico (gesto de toque, clique duplo no botão
-  de energia, etc.) e o botão abre `Settings.ACTION_SETTINGS` direto — não
-  existe API pública pra linkar na tela específica do gesto em fabricantes
-  fora o caso Moto conhecido, então o guia escrito cobre esse gap.
+- **GestureGuideActivity**: explica o jeito de abrir na hora com passo a
+  passo numerado. Detecta o fabricante via `Build.MANUFACTURER`: no Moto,
+  texto e botão são específicos ("toque duas vezes na traseira", tenta
+  abrir `com.motorola.actions` direto via
+  `packageManager.getLaunchIntentForPackage`) e caem pra
+  `Settings.ACTION_SETTINGS` se não encontrar.
+  - **Confirmado (não é suposição)**: gesto de fabricante configurável por
+    apps de terceiros é exclusividade do Moto — testamos a hipótese de a
+    Xiaomi/HyperOS ter algo parecido (toque na traseira, atalho de app via
+    duplo toque na digital) e não tem confirmação de que libera escolher
+    um app de terceiros; provavelmente é restrito a apps do próprio
+    fabricante (câmera, carteira/pagamento). Por isso, em qualquer
+    aparelho que não seja Moto, o guia agora ensina a adicionar o
+    **ladrilho de Configurações Rápidas** (`CapturaRapidaTileService`,
+    ver seção própria abaixo) em vez de mandar caçar um gesto que
+    provavelmente não existe pro Anota+ — é o único caminho *garantido*
+    de funcionar em qualquer Android. Não tem botão de atalho pra essa
+    tela (diferente do Moto): editar ladrilhos só se faz puxando a barra
+    de notificação manualmente, não existe Intent público pra isso.
+
+## Ladrilho de Configurações Rápidas e widget de atalho (novo)
+
+- **`CapturaRapidaTileService`** (`android.service.quicksettings.TileService`):
+  ladrilho que aparece no painel de Configurações Rápidas (puxar a barra de
+  notificação + editar) — tocar nele abre a Captura Rápida em qualquer
+  Android, sem depender de gesto de fabricante nenhum. Suporta tela
+  bloqueada via `isLocked`/`unlockAndRun`. A partir do Android 14,
+  `startActivityAndCollapse(Intent)` foi removido — o código detecta a
+  versão e usa a variante com `PendingIntent` quando necessário.
+  - Cogitamos usar `AccessibilityService` como atalho (funcionaria até com
+    tela bloqueada, mais parecido com um gesto de verdade), mas descartado
+    de propósito: usar a API de Acessibilidade só como atalho de abrir
+    app (sem função de acessibilidade real) é contra a política da Play
+    Store e é motivo comum de rejeição/remoção.
+- **Segundo widget** (`widget/CapturaRapidaWidgetProvider.kt` +
+  `widget_captura_rapida.xml`/`widget_captura_rapida_info.xml`): widget
+  pequeno (1x1), só um atalho visual pra Captura Rápida — pra quem não
+  quer o widget de totais (`GastoWidgetProvider`) na tela inicial. Sem
+  consulta ao Room nenhuma, então `onUpdate` não precisa de
+  `goAsync`/coroutine, só monta o `PendingIntent` (sem `sourceBounds`,
+  igual todos os outros atalhos, pra cair no modal de captura e não no
+  Histórico).
 - **LoginActivity**: tela cheia (não é o modal translúcido) — desenhada
   como um "ticket sendo emitido": fundo escuro (`@color/scrim`, igual o
   scrim do modal de captura) com um card de papel centralizado que tem a

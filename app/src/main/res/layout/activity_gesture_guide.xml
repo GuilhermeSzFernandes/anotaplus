@@ -46,11 +46,12 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/text_passo_1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
-                android:text="@string/guia_gesto_passo_1"
-                android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
+                tools:text="@string/guia_gesto_passo_1_moto" />
 
             <TextView
                 android:id="@+id/text_passo_2"
@@ -69,10 +70,11 @@
                 tools:text="@string/guia_gesto_passo_3_moto" />
 
             <TextView
+                android:id="@+id/text_passo_4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/guia_gesto_passo_4"
-                android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
+                tools:text="@string/guia_gesto_passo_4_moto" />
 
         </LinearLayout>
 

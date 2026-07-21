@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Widget bem pequeno (1x1): só um atalho visual pra Captura Rápida,
+     separado do widget de totais (GastoWidgetProvider). RemoteViews só
+     infla views nativas do Android (nada de PerforationView aqui). -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_captura_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_widget_paper">
+
+    <ImageView
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_add"
+        android:contentDescription="@string/desc_widget_add" />
+
+</FrameLayout>
