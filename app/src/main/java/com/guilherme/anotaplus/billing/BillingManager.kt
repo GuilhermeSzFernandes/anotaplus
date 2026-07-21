@@ -46,12 +46,17 @@ class BillingManager(private val context: Context) : PurchasesUpdatedListener {
 
     private val billingClient = BillingClient.newBuilder(context)
         .setListener(this)
-        // enableOneTimeProducts() é obrigatório aqui mesmo só vendendo
-        // assinatura — sem ele, PendingPurchasesParams.build() lança
-        // IllegalArgumentException ("Pending purchases for one-time
-        // products must be supported") e derruba o app na hora (foi o que
-        // crashava Configurações/Planos/Login, que criam BillingManager).
-        .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
+        // Na Billing Library 7, tanto enableOneTimeProducts() quanto
+        // enablePrepaidPlans() são obrigatórios aqui — mesmo só vendendo
+        // assinatura sem plano pré-pago — senão PendingPurchasesParams.build()
+        // lança IllegalArgumentException e derruba o app na hora (foi o
+        // que crashava Configurações/Planos/Login, que criam BillingManager).
+        .enablePendingPurchases(
+            PendingPurchasesParams.newBuilder()
+                .enableOneTimeProducts()
+                .enablePrepaidPlans()
+                .build()
+        )
         .build()
 
     override fun onPurchasesUpdated(billingResult: BillingResult, purchases: MutableList<Purchase>?) {

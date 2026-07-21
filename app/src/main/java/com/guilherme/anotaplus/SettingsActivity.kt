@@ -46,8 +46,11 @@ class SettingsActivity : AppCompatActivity() {
         binding.btnRestaurarBackup.setOnClickListener { lifecycleScope.launch { restaurarBackupAgora() } }
 
         if (SessionPrefs.estaLogado(this)) {
+            // runCatching: Play Billing é uma dependência externa instável
+            // nesse estágio (app ainda não é instalado via Play Store) —
+            // uma falha aqui não pode derrubar a tela inteira.
             lifecycleScope.launch {
-                billingManager.atualizarStatusAssinatura()
+                runCatching { billingManager.atualizarStatusAssinatura() }
                 atualizarUiConta()
             }
         }
@@ -201,6 +204,6 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        billingManager.encerrar()
+        runCatching { billingManager.encerrar() }
     }
 }

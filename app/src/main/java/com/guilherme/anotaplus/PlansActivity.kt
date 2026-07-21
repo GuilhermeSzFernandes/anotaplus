@@ -32,9 +32,12 @@ class PlansActivity : AppCompatActivity() {
         super.onResume()
         // Cobre a volta do fluxo de compra (a tela da Play Store fecha e
         // devolve o controle aqui) e qualquer mudança feita em outro
-        // aparelho da mesma conta.
+        // aparelho da mesma conta. runCatching porque o Play Billing é uma
+        // dependência externa instável nesse estágio (app ainda não é
+        // instalado via Play Store) — uma falha aqui não pode derrubar a
+        // tela inteira.
         lifecycleScope.launch {
-            billingManager.atualizarStatusAssinatura()
+            runCatching { billingManager.atualizarStatusAssinatura() }
             atualizarUiPlano()
         }
     }
@@ -42,7 +45,7 @@ class PlansActivity : AppCompatActivity() {
     private fun carregarOferta() {
         lifecycleScope.launch {
             binding.btnAssinar.isEnabled = false
-            productDetailsAtual = billingManager.consultarProductDetails()
+            productDetailsAtual = runCatching { billingManager.consultarProductDetails() }.getOrNull()
             atualizarUiPlano()
         }
     }
@@ -53,7 +56,8 @@ class PlansActivity : AppCompatActivity() {
             Toast.makeText(this, R.string.assinatura_indisponivel, Toast.LENGTH_LONG).show()
             return
         }
-        if (!billingManager.iniciarCompra(this, detalhes)) {
+        val iniciou = runCatching { billingManager.iniciarCompra(this, detalhes) }.getOrDefault(false)
+        if (!iniciou) {
             Toast.makeText(this, R.string.assinatura_erro, Toast.LENGTH_LONG).show()
         }
     }
@@ -68,6 +72,6 @@ class PlansActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        billingManager.encerrar()
+        runCatching { billingManager.encerrar() }
     }
 }

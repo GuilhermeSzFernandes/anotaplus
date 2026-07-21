@@ -35,7 +35,10 @@ class LoginActivity : AppCompatActivity() {
             // Reconsulta o Play Billing (fonte da verdade) antes de decidir
             // se restaura backup — o valor que veio no login é só o último
             // que o backend tinha guardado, pode estar desatualizado.
-            billingManager.atualizarStatusAssinatura()
+            // runCatching: dependência externa instável nesse estágio (app
+            // ainda não é instalado via Play Store) — uma falha aqui não
+            // pode impedir o resto do login de completar.
+            runCatching { billingManager.atualizarStatusAssinatura() }
 
             if (SubscriptionPrefs.podeFazerBackup(this)) {
                 // Restaura primeiro (nuvem -> local, importante se for uma
@@ -65,6 +68,6 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        billingManager.encerrar()
+        runCatching { billingManager.encerrar() }
     }
 }
