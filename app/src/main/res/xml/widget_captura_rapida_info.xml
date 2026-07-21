@@ -6,6 +6,7 @@
     android:targetCellHeight="1"
     android:updatePeriodMillis="0"
     android:initialLayout="@layout/widget_captura_rapida"
+    android:previewLayout="@layout/widget_captura_rapida"
     android:previewImage="@mipmap/ic_launcher"
     android:resizeMode="none"
     android:widgetCategory="home_screen"
