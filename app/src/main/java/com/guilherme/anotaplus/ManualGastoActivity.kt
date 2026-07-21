@@ -3,6 +3,7 @@ package com.guilherme.anotaplus
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -39,6 +40,13 @@ class ManualGastoActivity : AppCompatActivity() {
         }
 
         binding.btnSalvar.setOnClickListener { salvar() }
+
+        // Tela é sempre de Gasto, então o valor já entra pronto pra digitar.
+        binding.editValor.requestFocus()
+        binding.editValor.post {
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(binding.editValor, InputMethodManager.SHOW_IMPLICIT)
+        }
     }
 
     private fun abrirSeletorData() {

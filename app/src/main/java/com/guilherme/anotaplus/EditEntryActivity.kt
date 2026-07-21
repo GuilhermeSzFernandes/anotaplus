@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -58,6 +59,7 @@ class EditEntryActivity : AppCompatActivity() {
             if (!isChecked) return@addOnButtonCheckedListener
             tipoSelecionado = if (checkedId == binding.btnTipoGasto.id) EntryType.GASTO else EntryType.PENSAMENTO
             atualizarCamposPorTipo(tipoSelecionado)
+            focarValorSeGasto(tipoSelecionado)
         }
 
         binding.btnSalvar.setOnClickListener { lifecycleScope.launch { salvar() } }
@@ -89,6 +91,18 @@ class EditEntryActivity : AppCompatActivity() {
         binding.editCategoria.setText(entry.categoria.orEmpty(), false)
         binding.editTexto.setText(entry.texto)
         atualizarTextoData()
+        focarValorSeGasto(entry.type)
+    }
+
+    // Ao abrir direto em Gasto (ou trocar pra Gasto), o valor é o campo que
+    // a pessoa mais provavelmente quer corrigir primeiro.
+    private fun focarValorSeGasto(tipo: EntryType) {
+        if (tipo != EntryType.GASTO) return
+        binding.editValor.requestFocus()
+        binding.editValor.post {
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(binding.editValor, InputMethodManager.SHOW_IMPLICIT)
+        }
     }
 
     private fun atualizarCamposPorTipo(tipo: EntryType) {

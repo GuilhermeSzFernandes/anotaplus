@@ -103,6 +103,7 @@ class QuickCaptureActivity : AppCompatActivity() {
             if (!isChecked) return@addOnButtonCheckedListener
             tipoSelecionado = if (checkedId == binding.btnTipoGasto.id) EntryType.GASTO else EntryType.PENSAMENTO
             atualizarCamposPorTipo(tipoSelecionado)
+            focarCampoPrincipal(tipoSelecionado)
         }
 
         binding.btnSalvar.setOnClickListener { salvar() }
@@ -112,7 +113,7 @@ class QuickCaptureActivity : AppCompatActivity() {
             finish()
         }
 
-        binding.editTexto.requestFocus()
+        focarCampoPrincipal(tipoPadrao)
     }
 
     private fun atualizarCamposPorTipo(tipo: EntryType) {
@@ -122,6 +123,14 @@ class QuickCaptureActivity : AppCompatActivity() {
         binding.editTexto.hint = getString(
             if (isGasto) R.string.hint_gasto else R.string.hint_pensamento
         )
+    }
+
+    // Em Gasto, o valor é o dado mais importante e o primeiro que a pessoa
+    // quer digitar (o texto é opcional); em Ideia, o texto é o próprio
+    // conteúdo, então continua sendo o campo focado.
+    private fun focarCampoPrincipal(tipo: EntryType) {
+        val campo = if (tipo == EntryType.GASTO) binding.editValor else binding.editTexto
+        campo.requestFocus()
     }
 
     private fun salvar() {
