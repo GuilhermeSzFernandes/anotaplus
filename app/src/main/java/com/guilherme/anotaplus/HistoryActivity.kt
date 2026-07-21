@@ -72,7 +72,7 @@ class HistoryActivity : AppCompatActivity() {
         binding.recyclerEntries.layoutManager = LinearLayoutManager(this)
         binding.recyclerEntries.adapter = adapter
 
-        exibirAnunciosSeFree()
+        mostrarIntersticialOcasionalSeFree()
 
         // O filtro por mês só existe na aba Gasto; em Ideia o histórico
         // continua mostrando tudo, sem recorte de período.
@@ -128,11 +128,23 @@ class HistoryActivity : AppCompatActivity() {
         mesSelecionado.value = calendar
     }
 
-    // Plano Free tem anúncio; PRO não. Banner fixo sempre que a tela abre
-    // (se Free); intersticial só de vez em quando, pra não ser tão chato.
+    override fun onResume() {
+        super.onResume()
+        // Em onResume (não só onCreate): status PRO pode ter mudado em
+        // Configurações (ex: switch de debug) sem essa Activity ser
+        // recriada — voltar com o botão "voltar" só chama onResume, então
+        // o banner precisa reavaliar toda vez, senão fica preso no estado
+        // de quando a tela abriu.
+        atualizarBanner()
+    }
+
     // runCatching em volta de tudo: anúncio é sempre secundário, uma
     // falha do AdMob não pode nunca mais derrubar a tela (já aconteceu).
-    private fun exibirAnunciosSeFree() {
+    private fun atualizarBanner() {
+        runCatching { adViewBanner?.destroy() }
+        binding.adContainer.removeAllViews()
+        adViewBanner = null
+
         if (SubscriptionPrefs.isPro(this)) return
 
         runCatching {
@@ -168,7 +180,22 @@ class HistoryActivity : AppCompatActivity() {
             adViewBanner = adView
             binding.adContainer.addView(adView)
             adView.loadAd(AdRequest.Builder().build())
+        }.onFailure {
+            // Se nem o Toast de onAdLoaded/onAdFailedToLoad aparece, é
+            // sinal de que uma exceção está sendo engolida bem antes
+            // disso (ex: ao montar o AdView) — sem isso, ficaria 100%
+            // silencioso e sem pista nenhuma.
+            if (BuildConfig.DEBUG) {
+                Toast.makeText(this, "Erro ao criar anúncio: ${it.message}", Toast.LENGTH_LONG).show()
+            }
         }
+    }
+
+    // Só na abertura de verdade (onCreate), não em todo onResume — senão
+    // voltar de EditEntryActivity/outra tela contaria como "abertura" e
+    // mostraria intersticial demais.
+    private fun mostrarIntersticialOcasionalSeFree() {
+        if (SubscriptionPrefs.isPro(this)) return
 
         val aberturas = Prefs.incrementarAberturasHistorico(this)
         if (aberturas % ABERTURAS_POR_INTERSTICIAL == 0) {
