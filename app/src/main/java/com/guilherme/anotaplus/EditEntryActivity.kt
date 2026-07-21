@@ -16,6 +16,7 @@ import com.guilherme.anotaplus.data.SessionPrefs
 import com.guilherme.anotaplus.databinding.ActivityEditEntryBinding
 import com.guilherme.anotaplus.network.ApiClient
 import com.guilherme.anotaplus.network.dto.EntrySyncRequest
+import com.guilherme.anotaplus.widget.WidgetUpdater
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -164,6 +165,7 @@ class EditEntryActivity : AppCompatActivity() {
 
         AppDatabase.getInstance(applicationContext).entryDao().update(entryAtualizada)
         propagarEdicaoPraNuvem(entryAtualizada)
+        WidgetUpdater.atualizarTodos(applicationContext)
         finish()
     }
 
@@ -204,6 +206,7 @@ class EditEntryActivity : AppCompatActivity() {
             }
         }
 
+        WidgetUpdater.atualizarTodos(applicationContext)
         finish()
     }
 }

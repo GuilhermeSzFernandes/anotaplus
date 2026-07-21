@@ -56,6 +56,13 @@ interface EntryDao {
     )
     fun getTotalGasto(inicio: Long, fim: Long): Flow<Double>
 
+    // Versão "de uma vez só" (sem Flow), usada pelo widget da tela inicial:
+    // ele não fica escutando o banco, só relê o total quando é atualizado.
+    @Query(
+        "SELECT COALESCE(SUM(valor), 0) FROM entries WHERE type = 'GASTO' AND timestamp BETWEEN :inicio AND :fim"
+    )
+    suspend fun getTotalGastoOnce(inicio: Long, fim: Long): Double
+
     @Query(
         "SELECT COUNT(*) FROM entries WHERE type = 'PENSAMENTO' AND timestamp BETWEEN :inicio AND :fim"
     )

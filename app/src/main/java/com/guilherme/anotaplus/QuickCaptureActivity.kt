@@ -13,6 +13,7 @@ import com.guilherme.anotaplus.data.EntryType
 import com.guilherme.anotaplus.data.Prefs
 import com.guilherme.anotaplus.data.SessionPrefs
 import com.guilherme.anotaplus.databinding.ActivityQuickCaptureBinding
+import com.guilherme.anotaplus.widget.WidgetUpdater
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -155,6 +156,9 @@ class QuickCaptureActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             AppDatabase.getInstance(applicationContext).entryDao().insert(entry)
+            if (tipoSelecionado == EntryType.GASTO) {
+                WidgetUpdater.atualizarTodos(applicationContext)
+            }
             if (SessionPrefs.estaLogado(this@QuickCaptureActivity)) {
                 SyncWorker.agendar(applicationContext)
             }

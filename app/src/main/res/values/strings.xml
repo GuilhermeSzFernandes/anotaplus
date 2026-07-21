@@ -93,4 +93,10 @@
     <string name="btn_excluir">Excluir</string>
     <string name="btn_cancelar">Cancelar</string>
     <string name="confirmar_exclusao">Excluir esse lançamento? Essa ação não pode ser desfeita.</string>
+
+    <string name="widget_hoje">Hoje</string>
+    <string name="widget_este_mes">Este mês</string>
+    <string name="widget_nome">Anota+ Gastos</string>
+    <string name="widget_descricao">Total gasto hoje e no mês. Toque no + pra lançar um gasto na hora.</string>
+    <string name="desc_widget_add">Novo lançamento</string>
 </resources>

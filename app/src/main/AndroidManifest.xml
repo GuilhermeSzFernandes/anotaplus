@@ -100,6 +100,22 @@
             android:exported="false"
             android:theme="@style/Theme.AnotaPlus" />
 
+        <!-- Widget de tela inicial: mostra o total gasto hoje e no mês,
+             sem precisar abrir o app. Atualizado sob demanda (ver
+             WidgetUpdater.kt) toda vez que um gasto é criado, editado,
+             excluído ou restaurado do backup. -->
+        <receiver
+            android:name=".widget.GastoWidgetProvider"
+            android:exported="false"
+            android:label="@string/widget_nome">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_gasto_info" />
+        </receiver>
+
     </application>
 
 </manifest>

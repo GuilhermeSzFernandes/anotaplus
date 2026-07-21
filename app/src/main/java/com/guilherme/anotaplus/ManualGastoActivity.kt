@@ -12,6 +12,7 @@ import com.guilherme.anotaplus.data.Entry
 import com.guilherme.anotaplus.data.EntryType
 import com.guilherme.anotaplus.data.SessionPrefs
 import com.guilherme.anotaplus.databinding.ActivityManualGastoBinding
+import com.guilherme.anotaplus.widget.WidgetUpdater
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -99,6 +100,7 @@ class ManualGastoActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             AppDatabase.getInstance(applicationContext).entryDao().insert(entry)
+            WidgetUpdater.atualizarTodos(applicationContext)
             if (SessionPrefs.estaLogado(this@ManualGastoActivity)) {
                 SyncWorker.agendar(applicationContext)
             }

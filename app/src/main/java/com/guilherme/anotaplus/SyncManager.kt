@@ -9,6 +9,7 @@ import com.guilherme.anotaplus.data.SessionPrefs
 import com.guilherme.anotaplus.network.ApiClient
 import com.guilherme.anotaplus.network.dto.CategoriaSyncRequest
 import com.guilherme.anotaplus.network.dto.EntrySyncRequest
+import com.guilherme.anotaplus.widget.WidgetUpdater
 import java.time.Instant
 
 /**
@@ -93,6 +94,10 @@ object SyncManager {
                     )
                 }.onSuccess { restaurados++ }
             }
+        }
+
+        if (restaurados > 0) {
+            WidgetUpdater.atualizarTodos(context)
         }
 
         return restaurados

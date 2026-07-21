@@ -297,6 +297,37 @@ próxima vez ela recarrega do zero em vez de continuar de onde parou. Dado
 que essas telas recarregam do Room local instantaneamente (sem chamada de
 rede), o custo é baixo perto do gesto ter que funcionar sempre.
 
+## Widget de tela inicial
+
+`GastoWidgetProvider` (`app/src/main/java/.../widget/`) mostra o total
+gasto **hoje** e **no mês** sem precisar abrir o app. Layout em
+`widget_gasto.xml`, metadados em `xml/widget_gasto_info.xml`.
+
+Ponto importante: `RemoteViews` (o mecanismo por trás de widgets) só infla
+views nativas do Android — nada de `PerforationView` (o Canvas customizado
+usado no resto do app). O divisor "picotado" do widget é um
+`@drawable/divider_dashed` (shape de linha tracejada) em vez da view real.
+
+O widget **não fica observando o Room** (nada de `Flow`/`LiveData` reativo
+por trás de um `AppWidgetProvider` — ele só existe pra reagir a broadcasts
+do sistema). Em vez disso, `WidgetUpdater.atualizarTodos(context)` é uma
+função "puxe sob demanda": lê os totais uma vez (`EntryDao.getTotalGastoOnce`)
+e redesenha todos os widgets existentes. Ela é chamada manualmente depois de
+toda mudança que pode afetar o total de gasto: `QuickCaptureActivity.salvar()`,
+`ManualGastoActivity.salvar()`, `EditEntryActivity.salvar()`/`excluir()` e
+`SyncManager.restaurarTudo()`. Fora isso, o próprio Android chama
+`onUpdate()` periodicamente (`updatePeriodMillis`) e quando o widget é
+adicionado à tela — nesse caminho, como `onUpdate()` roda dentro de um
+`BroadcastReceiver` (que o sistema pode matar assim que a função retorna),
+`GastoWidgetProvider` usa `goAsync()` pra manter o processo vivo até a
+consulta suspend no Room terminar.
+
+Toques no widget: tocar no corpo abre `HistoryActivity` direto; tocar no
+"+" abre `QuickCaptureActivity` via `PendingIntent` — como esse `Intent`
+não vem de um toque na tela (sem `sourceBounds`), ele naturalmente cai no
+mesmo caminho do gesto de abrir e mostra o modal de captura, sem precisar
+de nenhuma lógica extra pra diferenciar a origem.
+
 ## Build sem Android Studio
 
 O usuário **não tem Android Studio instalado** e não quer instalar. A solução
@@ -331,7 +362,6 @@ para instalar SDK e Gradle no runner (não depende de wrapper local).
 - Definir preço/features reais dos planos (o que tá na `PlansActivity` hoje
   é placeholder que eu escrevi, não decisão de negócio fechada).
 - Exportar histórico em CSV.
-- Widget de tela inicial com total de gastos do dia/mês.
 - Editar/renomear categoria existente (hoje só dá pra adicionar e remover).
 - Excluir categoria em Configurações **não propaga pro backend** (diferente
   de excluir/editar um `Entry`, que já propaga — ver `EditEntryActivity`) —
