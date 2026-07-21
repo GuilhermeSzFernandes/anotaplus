@@ -22,12 +22,22 @@
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
+            <!-- Atributos literais em vez de @style/TextAppearance.AnotaPlus.*:
+                 essas styles herdam de TextAppearance.Material3.*, que
+                 resolve atributos de tema (?attr/colorOnSurface etc.) — o
+                 host do widget (launcher) infla com seu próprio tema, sem
+                 o Theme.Material3 do app, e isso falha silenciosamente com
+                 "Can't load widget". -->
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/app_name"
-                android:textAppearance="@style/TextAppearance.AnotaPlus.Wordmark" />
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/ink"
+                android:textSize="15sp"
+                android:letterSpacing="0.08"
+                android:textAllCaps="true" />
 
             <ImageButton
                 android:id="@+id/btn_widget_add"
@@ -63,7 +73,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/widget_hoje"
-                    android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@color/ink_soft"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.06"
+                    android:textAllCaps="true" />
 
                 <TextView
                     android:id="@+id/text_valor_hoje"
@@ -94,7 +108,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/widget_este_mes"
-                    android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@color/ink_soft"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.06"
+                    android:textAllCaps="true" />
 
                 <TextView
                     android:id="@+id/text_valor_mes"
