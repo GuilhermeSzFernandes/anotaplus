@@ -40,8 +40,13 @@ class AnotaPlusApplication : Application() {
 
         // Inicialização pode levar um tempo (rede) e não precisa bloquear
         // nada — os primeiros loadAd() de banner/intersticial esperam ela
-        // terminar sozinhos internamente.
-        CoroutineScope(Dispatchers.IO).launch { MobileAds.initialize(this@AnotaPlusApplication) }
+        // terminar sozinhos internamente. runCatching porque isso roda em
+        // TODO início do app (Application.onCreate) sem nenhum outro try/
+        // catch por perto — uma exceção aqui sem proteção derruba o app
+        // inteiro em toda abertura, não só uma tela.
+        CoroutineScope(Dispatchers.IO).launch {
+            runCatching { MobileAds.initialize(this@AnotaPlusApplication) }
+        }
 
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityResumed(activity: Activity) {
