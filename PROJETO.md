@@ -69,18 +69,18 @@ digita e salva sem sair do que estava fazendo.
   visíveis por vez: o "+" alterna entre `action_add_gasto` e
   `action_add_ideia` conforme a aba selecionada (visibilidade trocada no
   listener do `TabLayout`), mais Relatório e Configurações, sempre fixos.
-  Tocar num item da lista abre `EditEntryActivity`.
+  Tocar num item da lista abre `EditEntryActivity` (Gasto) ou
+  `ManualIdeiaActivity` (Ideia), dependendo de `entry.type` — cada tipo
+  tem sua própria tela de edição, não é mais um editor genérico só.
 - **EditEntryActivity** (`res/layout/activity_edit_entry.xml`): edição e
-  exclusão de um lançamento existente — mesmo formulário do QuickCapture
-  (toggle Gasto/Ideia, valor+categoria, texto) mais o seletor de data/hora
-  do `ManualGastoActivity`, mas carregando os valores já salvos
-  (`EntryDao.getById`). Botão "Excluir" pede confirmação
-  (`MaterialAlertDialogBuilder` — não o `AlertDialog` puro do framework,
-  que não pega o tema Material3 do app). Se o lançamento já tinha
-  `remoteId` (já sincronizado antes), edição e exclusão também propagam
-  pro backend (`PATCH`/`DELETE /entries/:id`) — sem isso, um "Restaurar
-  backup" mais tarde ressuscitaria algo que foi editado/apagado só
-  localmente.
+  exclusão de um **Gasto** existente (só Gasto — ver abaixo o porquê de
+  não ter mais o toggle de tipo) — mesmo formulário do
+  `ManualGastoActivity` (valor, categoria, texto, data/hora), carregando
+  os valores já salvos (`EntryDao.getById`). Botão "Excluir" pede
+  confirmação (`MaterialAlertDialogBuilder` — não o `AlertDialog` puro do
+  framework, que não pega o tema Material3 do app). Se o lançamento já
+  tinha `remoteId` (já sincronizado antes), edição e exclusão também
+  propagam pro backend (`PATCH`/`DELETE /entries/:id`).
 - **ManualGastoActivity** (`res/layout/activity_manual_gasto.xml`):
   formulário pra lançar um gasto retroativo — mesmos campos do
   QuickCapture (valor, categoria em combobox, texto) mais um seletor de
@@ -89,19 +89,21 @@ digita e salva sem sair do que estava fazendo.
   "agora" como na captura rápida. Sempre grava como `EntryType.GASTO`.
   Acessada pelo ícone "+" no toolbar do Histórico (aba Gasto).
 - **ManualIdeiaActivity** (`res/layout/activity_manual_ideia.xml`): "bloco
-  de notas" — jeito separado (não é a Captura Rápida, que continua
-  pequena/instantânea de propósito) de criar uma Ideia de dentro do app,
-  acessado pelo ícone "+" no toolbar do Histórico (aba Ideia, espelhando o
-  "+" de Gasto). Campo `Título` grande (`edit_titulo`, opcional) + corpo
-  `Nota` sem caixa/sublinhado (`android:background="@null"`, dentro de um
-  `NestedScrollView` com `fillViewport` + `layout_weight` pra ocupar o
-  espaço todo da tela) — deliberadamente mais espaçoso que qualquer outro
-  formulário do app. Sempre grava como `EntryType.PENSAMENTO`. `titulo` é
-  exclusivo dessa tela: Gasto e Ideia via Captura Rápida/gesto continuam
-  sempre com `titulo = null`. `EditEntryActivity` também ganhou o campo
-  (visível só quando o tipo é Ideia) pra poder editar depois, e
-  `EntryAdapter`/`item_entry.xml` mostram o título em negrito acima do
-  texto quando existir.
+  de notas" — cria **e edita** uma Ideia (aceita `EXTRA_ENTRY_ID`
+  opcional; se vier, é modo edição: título vira "Editar ideia", mostra
+  botão "Excluir", `salvar()` faz `update` + propaga pro backend em vez
+  de `insert`). Sem toggle de tipo — uma Ideia nunca vira Gasto por essa
+  tela nem por `EditEntryActivity`, que é só Gasto agora — e por isso a
+  área de texto (`edit_nota`) consegue ocupar a tela toda de verdade
+  (`layout_weight="1"` dentro de um `NestedScrollView` com
+  `fillViewport`), sem o formulário genérico competindo por espaço com
+  campos de Gasto escondidos. `titulo` é exclusivo dessa tela: Gasto e
+  Ideia via Captura Rápida/gesto continuam sempre com `titulo = null`.
+  Depois de criar/editar/excluir, chama
+  `AnotacaoWidgetUpdater.atualizarTodos()` — sem isso, o widget "Uma
+  Ideia" (ver seção própria) ficava com o conteúdo antigo até a próxima
+  atualização periódica (`updatePeriodMillis`), o que parecia "não
+  atualiza nunca" pra quem editava a nota pelo app.
 - **ReportActivity** (`res/layout/activity_report.xml`): mesmo seletor de mês
   reutilizado (`row_month_selector.xml`), com total gasto, gasto por
   categoria (com barra proporcional) e contagem de ideias — tudo recalculado
@@ -321,9 +323,12 @@ bullet própria do Premium na `PlansActivity`.
     inserido exatamente um `\n`) e ajustado em `afterTextChanged`, com uma
     flag de reentrância (`ajustando`) pra não entrar em loop, já que o
     ajuste em si dispara o `TextWatcher` de novo.
-  - Barra de formatação (5 botões: T1/B/I/•/☑) em `ManualIdeiaActivity` e
-    em `EditEntryActivity` (só visível quando o tipo é Ideia) — cada botão
-    liga em `RichTextEngine.alternarX()`.
+  - Barra de formatação em `ManualIdeiaActivity` (dentro de um
+    `HorizontalScrollView`, são 8 botões — não cabe numa linha só em todo
+    aparelho): T1/T2 (título 1/2), B/I/S (negrito/itálico/sublinhado),
+    •/☑ (lista/checklist), ✕ (limpar formatação da linha atual). Cada
+    botão liga em `RichTextEngine.alternarX()`/`limparFormatacao()`.
+    Título 2 usa `RelativeSizeSpan` menor que o Título 1.
   - Tocar no "☐"/"☑" no começo da linha (dentro do próprio editor) marca/
     desmarca via `instalarToqueChecklist` (usa `getOffsetForPosition` pra
     saber se o toque caiu bem no caractere da marca, sem interferir no

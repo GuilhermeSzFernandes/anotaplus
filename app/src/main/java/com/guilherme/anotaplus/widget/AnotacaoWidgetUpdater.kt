@@ -2,11 +2,12 @@ package com.guilherme.anotaplus.widget
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.view.View
 import android.widget.RemoteViews
-import com.guilherme.anotaplus.EditEntryActivity
+import com.guilherme.anotaplus.ManualIdeiaActivity
 import com.guilherme.anotaplus.R
 import com.guilherme.anotaplus.RichTextEngine
 import com.guilherme.anotaplus.data.AppDatabase
@@ -64,8 +65,8 @@ object AnotacaoWidgetUpdater {
             PendingIntent.getActivity(
                 context,
                 appWidgetId,
-                Intent(context, EditEntryActivity::class.java)
-                    .putExtra(EditEntryActivity.EXTRA_ENTRY_ID, entry.id)
+                Intent(context, ManualIdeiaActivity::class.java)
+                    .putExtra(ManualIdeiaActivity.EXTRA_ENTRY_ID, entry.id)
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
@@ -110,5 +111,12 @@ object AnotacaoWidgetUpdater {
         }
 
         manager.updateAppWidget(appWidgetId, views)
+    }
+
+    /** Chamar depois de criar/editar/excluir uma Ideia — sem isso, o widget fica com o conteúdo antigo até a próxima atualização periódica. */
+    suspend fun atualizarTodos(context: Context) {
+        val manager = AppWidgetManager.getInstance(context)
+        val ids = manager.getAppWidgetIds(ComponentName(context, AnotacaoWidgetProvider::class.java))
+        ids.forEach { atualizar(context, it) }
     }
 }

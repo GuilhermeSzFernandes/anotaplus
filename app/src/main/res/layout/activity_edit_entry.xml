@@ -42,35 +42,9 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/toggle_tipo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:singleSelection="true"
-                app:selectionRequired="true">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_tipo_gasto"
-                    style="@style/Widget.AnotaPlus.Button.Tab"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/btn_gasto" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_tipo_pensamento"
-                    style="@style/Widget.AnotaPlus.Button.Tab"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/btn_pensamento" />
-
-            </com.google.android.material.button.MaterialButtonToggleGroup>
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
                 android:text="@string/label_data"
                 android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
 
@@ -100,14 +74,12 @@
                 app:toothColor="@color/ink_soft" />
 
             <LinearLayout
-                android:id="@+id/layout_valor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:background="@drawable/bg_amount_field"
-                android:visibility="gone">
+                android:background="@drawable/bg_amount_field">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -141,7 +113,6 @@
                 android:background="@drawable/bg_underline_field"
                 android:paddingHorizontal="4dp"
                 android:paddingBottom="6dp"
-                android:visibility="gone"
                 android:hint="@string/hint_categoria"
                 android:textColor="@color/ink"
                 android:textColorHint="@color/ink_soft"
@@ -150,99 +121,6 @@
                 android:drawableEnd="@drawable/ic_chevron_down"
                 android:drawablePadding="6dp"
                 android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
-
-            <!-- Só pra Ideia — Gasto não tem título -->
-            <EditText
-                android:id="@+id/edit_titulo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_underline_field"
-                android:paddingHorizontal="4dp"
-                android:paddingBottom="6dp"
-                android:visibility="gone"
-                android:hint="@string/hint_titulo_ideia"
-                android:textColor="@color/ink"
-                android:textColorHint="@color/ink_soft"
-                android:inputType="textCapSentences"
-                android:fontFamily="sans-serif-black"
-                android:textSize="17sp" />
-
-            <!-- Só pra Ideia — barra de formatação (ver RichTextEngine) -->
-            <LinearLayout
-                android:id="@+id/layout_formato"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal"
-                android:visibility="gone">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_formato_titulo"
-                    style="@style/Widget.AnotaPlus.Button.Link"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:insetLeft="0dp"
-                    android:insetTop="0dp"
-                    android:insetRight="0dp"
-                    android:insetBottom="0dp"
-                    android:minWidth="0dp"
-                    android:paddingHorizontal="10dp"
-                    android:text="@string/formato_titulo" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_formato_negrito"
-                    style="@style/Widget.AnotaPlus.Button.Link"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:insetLeft="0dp"
-                    android:insetTop="0dp"
-                    android:insetRight="0dp"
-                    android:insetBottom="0dp"
-                    android:minWidth="0dp"
-                    android:paddingHorizontal="10dp"
-                    android:text="@string/formato_negrito" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_formato_italico"
-                    style="@style/Widget.AnotaPlus.Button.Link"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:insetLeft="0dp"
-                    android:insetTop="0dp"
-                    android:insetRight="0dp"
-                    android:insetBottom="0dp"
-                    android:minWidth="0dp"
-                    android:paddingHorizontal="10dp"
-                    android:text="@string/formato_italico" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_formato_lista"
-                    style="@style/Widget.AnotaPlus.Button.Link"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:insetLeft="0dp"
-                    android:insetTop="0dp"
-                    android:insetRight="0dp"
-                    android:insetBottom="0dp"
-                    android:minWidth="0dp"
-                    android:paddingHorizontal="10dp"
-                    android:text="@string/formato_lista" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_formato_checklist"
-                    style="@style/Widget.AnotaPlus.Button.Link"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:insetLeft="0dp"
-                    android:insetTop="0dp"
-                    android:insetRight="0dp"
-                    android:insetBottom="0dp"
-                    android:minWidth="0dp"
-                    android:paddingHorizontal="10dp"
-                    android:text="@string/formato_checklist" />
-
-            </LinearLayout>
 
             <EditText
                 android:id="@+id/edit_texto"
@@ -255,6 +133,7 @@
                 android:minLines="2"
                 android:maxLines="5"
                 android:gravity="top"
+                android:hint="@string/hint_gasto"
                 android:textColor="@color/ink"
                 android:textColorHint="@color/ink_soft"
                 android:inputType="textMultiLine|textCapSentences"

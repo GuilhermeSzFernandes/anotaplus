@@ -11,6 +11,7 @@ import android.text.style.RelativeSizeSpan
 import android.text.style.ReplacementSpan
 import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
+import android.text.style.UnderlineSpan
 import android.view.MotionEvent
 import android.widget.EditText
 
@@ -41,13 +42,18 @@ object RichTextEngine {
 
     const val MARCA_CHECKLIST_VAZIA = "☐ "
     const val MARCA_CHECKLIST_MARCADA = "☑ "
-    private const val MARCA_TITULO = "# "
+    private const val MARCA_TITULO_1 = "# "
+    private const val MARCA_TITULO_2 = "## "
     private const val MARCA_LISTA = "- "
     private val PREFIXOS_DE_LISTA = listOf(MARCA_LISTA, MARCA_CHECKLIST_VAZIA, MARCA_CHECKLIST_MARCADA)
-    private val PREFIXOS_DE_LINHA = listOf(MARCA_TITULO) + PREFIXOS_DE_LISTA
+    // "## " tem que vir antes de "# " aqui: como os dois começam com "#",
+    // a ordem importa pra "firstOrNull { startsWith(it) }" não bater com
+    // "# " primeiro numa linha de título 2.
+    private val PREFIXOS_DE_LINHA = listOf(MARCA_TITULO_2, MARCA_TITULO_1) + PREFIXOS_DE_LISTA
 
     private val NEGRITO_REGEX = Regex("\\*\\*(.+?)\\*\\*")
     private val ITALICO_REGEX = Regex("_(.+?)_")
+    private val SUBLINHADO_REGEX = Regex("~(.+?)~")
 
     /** Span de largura zero: o texto continua existindo no Editable (cursor/backspace normais), só não desenha nada. */
     private class MarcadorOcultoSpan : ReplacementSpan() {
@@ -117,15 +123,21 @@ object RichTextEngine {
         editable.getSpans(0, editable.length, BulletSpan::class.java).forEach { editable.removeSpan(it) }
         editable.getSpans(0, editable.length, StrikethroughSpan::class.java).forEach { editable.removeSpan(it) }
         editable.getSpans(0, editable.length, StyleSpan::class.java).forEach { editable.removeSpan(it) }
+        editable.getSpans(0, editable.length, UnderlineSpan::class.java).forEach { editable.removeSpan(it) }
 
         val texto = editable.toString()
         var inicioLinha = 0
         texto.lineSequence().forEach { linha ->
             val fimLinha = inicioLinha + linha.length
             when {
-                linha.startsWith(MARCA_TITULO) -> {
-                    ocultar(editable, inicioLinha, inicioLinha + MARCA_TITULO.length)
-                    editable.setSpan(RelativeSizeSpan(1.3f), inicioLinha, fimLinha, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                linha.startsWith(MARCA_TITULO_2) -> {
+                    ocultar(editable, inicioLinha, inicioLinha + MARCA_TITULO_2.length)
+                    editable.setSpan(RelativeSizeSpan(1.15f), inicioLinha, fimLinha, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    editable.setSpan(StyleSpan(Typeface.BOLD), inicioLinha, fimLinha, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                }
+                linha.startsWith(MARCA_TITULO_1) -> {
+                    ocultar(editable, inicioLinha, inicioLinha + MARCA_TITULO_1.length)
+                    editable.setSpan(RelativeSizeSpan(1.35f), inicioLinha, fimLinha, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                     editable.setSpan(StyleSpan(Typeface.BOLD), inicioLinha, fimLinha, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                 }
                 linha.startsWith(MARCA_CHECKLIST_MARCADA) -> {
@@ -155,6 +167,13 @@ object RichTextEngine {
                 ocultar(editable, fim - 1, fim)
                 editable.setSpan(StyleSpan(Typeface.ITALIC), ini, fim, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             }
+            SUBLINHADO_REGEX.findAll(linha).forEach { m ->
+                val ini = inicioLinha + m.range.first
+                val fim = inicioLinha + m.range.last + 1
+                ocultar(editable, ini, ini + 1)
+                ocultar(editable, fim - 1, fim)
+                editable.setSpan(UnderlineSpan(), ini, fim, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
 
             inicioLinha = fimLinha + 1 // +1 pelo \n
         }
@@ -168,11 +187,30 @@ object RichTextEngine {
 
     // --- Ações da barra de formatação ---
 
-    fun alternarTitulo(editText: EditText) = alternarPrefixoDeLinha(editText, MARCA_TITULO)
+    fun alternarTitulo1(editText: EditText) = alternarPrefixoDeLinha(editText, MARCA_TITULO_1)
+    fun alternarTitulo2(editText: EditText) = alternarPrefixoDeLinha(editText, MARCA_TITULO_2)
     fun alternarLista(editText: EditText) = alternarPrefixoDeLinha(editText, MARCA_LISTA)
     fun alternarChecklist(editText: EditText) = alternarPrefixoDeLinha(editText, MARCA_CHECKLIST_VAZIA)
     fun alternarNegrito(editText: EditText) = envolverSelecao(editText, "**")
     fun alternarItalico(editText: EditText) = envolverSelecao(editText, "_")
+    fun alternarSublinhado(editText: EditText) = envolverSelecao(editText, "~")
+
+    /** Tira título/lista/checklist/negrito/itálico/sublinhado da linha atual, virando texto puro. */
+    fun limparFormatacao(editText: EditText) {
+        val editable = editText.text ?: return
+        val cursor = editText.selectionStart.coerceAtLeast(0)
+        val inicioLinha = inicioDaLinha(editable, cursor)
+        val fimLinha = fimDaLinha(editable, cursor)
+
+        var linha = editable.substring(inicioLinha, fimLinha)
+        PREFIXOS_DE_LINHA.forEach { linha = linha.removePrefix(it) }
+        linha = linha
+            .replace(NEGRITO_REGEX, "$1")
+            .replace(ITALICO_REGEX, "$1")
+            .replace(SUBLINHADO_REGEX, "$1")
+
+        editable.replace(inicioLinha, fimLinha, linha)
+    }
 
     private fun alternarPrefixoDeLinha(editText: EditText, prefixo: String) {
         val editable = editText.text ?: return
@@ -257,13 +295,15 @@ object RichTextEngine {
     fun textoSemMarcadores(texto: String): String {
         return texto.lineSequence().joinToString(" ") { linha ->
             linha
-                .removePrefix(MARCA_TITULO)
+                .removePrefix(MARCA_TITULO_2)
+                .removePrefix(MARCA_TITULO_1)
                 .removePrefix(MARCA_LISTA)
                 .removePrefix(MARCA_CHECKLIST_VAZIA)
                 .removePrefix(MARCA_CHECKLIST_MARCADA)
         }
             .replace(NEGRITO_REGEX, "$1")
             .replace(ITALICO_REGEX, "$1")
+            .replace(SUBLINHADO_REGEX, "$1")
             .trim()
     }
 }

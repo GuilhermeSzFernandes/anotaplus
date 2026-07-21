@@ -41,11 +41,15 @@
     <string name="desc_adicionar_ideia">Escrever uma ideia (bloco de notas)</string>
     <string name="hint_titulo_ideia">Título (opcional)</string>
     <string name="hint_nota_ideia">Escreva à vontade…</string>
-    <string name="formato_titulo">T1</string>
+    <string name="formato_titulo1">T1</string>
+    <string name="formato_titulo2">T2</string>
     <string name="formato_negrito">B</string>
     <string name="formato_italico">I</string>
+    <string name="formato_sublinhado">S</string>
     <string name="formato_lista">•</string>
     <string name="formato_checklist">☑</string>
+    <string name="formato_limpar">✕</string>
+    <string name="title_editar_ideia">Editar ideia</string>
 
     <string name="label_conta">Conta</string>
     <string name="btn_entrar_google">Entrar com Google</string>

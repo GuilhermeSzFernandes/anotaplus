@@ -3,8 +3,6 @@ package com.guilherme.anotaplus
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
-import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -23,6 +21,12 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.Calendar
 
+/**
+ * Edição/exclusão de um Gasto existente — Ideia tem a própria tela
+ * (ManualIdeiaActivity, que também edita, não só cria), sem o toggle de
+ * tipo: converter uma Ideia em Gasto (ou vice-versa) não fazia sentido
+ * pro usuário e só juntava campo de mais nessa tela.
+ */
 class EditEntryActivity : AppCompatActivity() {
 
     companion object {
@@ -31,7 +35,6 @@ class EditEntryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEditEntryBinding
     private var entryId: Long = -1
-    private var tipoSelecionado: EntryType = EntryType.PENSAMENTO
     private var remoteId: String? = null
     private val dataSelecionada: Calendar = Calendar.getInstance()
 
@@ -57,23 +60,8 @@ class EditEntryActivity : AppCompatActivity() {
             )
         }
 
-        binding.toggleTipo.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            if (!isChecked) return@addOnButtonCheckedListener
-            tipoSelecionado = if (checkedId == binding.btnTipoGasto.id) EntryType.GASTO else EntryType.PENSAMENTO
-            atualizarCamposPorTipo(tipoSelecionado)
-            focarValorSeGasto(tipoSelecionado)
-        }
-
         binding.btnSalvar.setOnClickListener { lifecycleScope.launch { salvar() } }
         binding.btnExcluir.setOnClickListener { confirmarExclusao() }
-
-        RichTextEngine.instalarFormatacaoLive(binding.editTexto)
-        RichTextEngine.instalarToqueChecklist(binding.editTexto)
-        binding.btnFormatoTitulo.setOnClickListener { RichTextEngine.alternarTitulo(binding.editTexto) }
-        binding.btnFormatoNegrito.setOnClickListener { RichTextEngine.alternarNegrito(binding.editTexto) }
-        binding.btnFormatoItalico.setOnClickListener { RichTextEngine.alternarItalico(binding.editTexto) }
-        binding.btnFormatoLista.setOnClickListener { RichTextEngine.alternarLista(binding.editTexto) }
-        binding.btnFormatoChecklist.setOnClickListener { RichTextEngine.alternarChecklist(binding.editTexto) }
 
         lifecycleScope.launch {
             val entry = AppDatabase.getInstance(applicationContext).entryDao().getById(entryId)
@@ -86,43 +74,15 @@ class EditEntryActivity : AppCompatActivity() {
     }
 
     private fun preencherCampos(entry: Entry) {
-        tipoSelecionado = entry.type
         remoteId = entry.remoteId
         dataSelecionada.timeInMillis = entry.timestamp
 
-        if (entry.type == EntryType.GASTO) {
-            binding.btnTipoGasto.isChecked = true
-        } else {
-            binding.btnTipoPensamento.isChecked = true
-        }
-        atualizarCamposPorTipo(entry.type)
-
         binding.editValor.setText(entry.valor?.let { String.format(MesUtil.locale, "%.2f", it) })
         binding.editCategoria.setText(entry.categoria.orEmpty(), false)
-        binding.editTitulo.setText(entry.titulo.orEmpty())
         binding.editTexto.setText(entry.texto)
         atualizarTextoData()
-        focarValorSeGasto(entry.type)
-    }
 
-    // Ao abrir direto em Gasto (ou trocar pra Gasto), o valor é o campo que
-    // a pessoa mais provavelmente quer corrigir primeiro.
-    private fun focarValorSeGasto(tipo: EntryType) {
-        if (tipo != EntryType.GASTO) return
         binding.editValor.requestFocus()
-        binding.editValor.post {
-            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.showSoftInput(binding.editValor, InputMethodManager.SHOW_IMPLICIT)
-        }
-    }
-
-    private fun atualizarCamposPorTipo(tipo: EntryType) {
-        val isGasto = tipo == EntryType.GASTO
-        binding.layoutValor.visibility = if (isGasto) View.VISIBLE else View.GONE
-        binding.editCategoria.visibility = if (isGasto) View.VISIBLE else View.GONE
-        binding.editTitulo.visibility = if (isGasto) View.GONE else View.VISIBLE
-        binding.layoutFormato.visibility = if (isGasto) View.GONE else View.VISIBLE
-        binding.editTexto.hint = getString(if (isGasto) R.string.hint_gasto else R.string.hint_pensamento)
     }
 
     private fun abrirSeletorData() {
@@ -156,23 +116,21 @@ class EditEntryActivity : AppCompatActivity() {
 
     private suspend fun salvar() {
         val texto = binding.editTexto.text?.toString()?.trim().orEmpty()
-        val titulo = binding.editTitulo.text?.toString()?.trim()
         val valorTexto = binding.editValor.text?.toString()?.trim()
         val categoria = binding.editCategoria.text?.toString()?.trim()
         val valor = valorTexto?.replace(",", ".")?.toDoubleOrNull()
 
-        if (tipoSelecionado == EntryType.GASTO && valor == null) {
+        if (valor == null) {
             binding.editValor.error = getString(R.string.error_valor_obrigatorio)
             return
         }
 
         val entryAtualizada = Entry(
             id = entryId,
-            type = tipoSelecionado,
-            titulo = if (tipoSelecionado == EntryType.PENSAMENTO) titulo?.ifEmpty { null } else null,
+            type = EntryType.GASTO,
             texto = texto,
-            valor = if (tipoSelecionado == EntryType.GASTO) valor else null,
-            categoria = if (tipoSelecionado == EntryType.GASTO) categoria?.ifEmpty { null } else null,
+            valor = valor,
+            categoria = categoria?.ifEmpty { null },
             timestamp = dataSelecionada.timeInMillis,
             remoteId = remoteId
         )

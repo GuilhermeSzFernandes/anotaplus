@@ -31,10 +31,19 @@ class HistoryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHistoryBinding
     private val adapter = EntryAdapter { entry ->
-        startActivity(
-            Intent(this, EditEntryActivity::class.java)
-                .putExtra(EditEntryActivity.EXTRA_ENTRY_ID, entry.id)
-        )
+        // Gasto edita em EditEntryActivity; Ideia usa o mesmo "bloco de
+        // notas" da criação (ManualIdeiaActivity), sem toggle de tipo.
+        if (entry.type == EntryType.GASTO) {
+            startActivity(
+                Intent(this, EditEntryActivity::class.java)
+                    .putExtra(EditEntryActivity.EXTRA_ENTRY_ID, entry.id)
+            )
+        } else {
+            startActivity(
+                Intent(this, ManualIdeiaActivity::class.java)
+                    .putExtra(ManualIdeiaActivity.EXTRA_ENTRY_ID, entry.id)
+            )
+        }
     }
     private val tipoSelecionado = MutableStateFlow(EntryType.GASTO)
     private val mesSelecionado = MutableStateFlow(Calendar.getInstance())
