@@ -67,7 +67,7 @@
                 app:toothGap="3dp"
                 app:toothColor="@color/ink_soft" />
 
-            <!-- Toggle Gasto / Ideia -->
+            <!-- Toggle Anotações / Gasto (Anotações à esquerda) -->
             <com.google.android.material.button.MaterialButtonToggleGroup
                 android:id="@+id/toggle_tipo"
                 android:layout_width="match_parent"
@@ -77,20 +77,20 @@
                 app:selectionRequired="true">
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_tipo_gasto"
-                    style="@style/Widget.AnotaPlus.Button.Tab"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/btn_gasto" />
-
-                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_tipo_pensamento"
                     style="@style/Widget.AnotaPlus.Button.Tab"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/btn_pensamento" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_tipo_gasto"
+                    style="@style/Widget.AnotaPlus.Button.Tab"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/btn_gasto" />
 
             </com.google.android.material.button.MaterialButtonToggleGroup>
 

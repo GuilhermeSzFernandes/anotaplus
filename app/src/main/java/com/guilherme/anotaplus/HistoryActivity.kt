@@ -83,11 +83,13 @@ class HistoryActivity : AppCompatActivity() {
 
         mostrarIntersticialOcasionalSeFree()
 
-        // O filtro por mês só existe na aba Gasto; em Ideia o histórico
-        // continua mostrando tudo, sem recorte de período.
+        // Anotações (Ideia) fica na posição 0 (esquerda), Gasto na 1
+        // (direita) — ordem trocada a pedido do usuário. O filtro por mês
+        // só existe na aba Gasto; em Anotações o histórico continua
+        // mostrando tudo, sem recorte de período.
         binding.tabTipo.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                val tipo = if (tab.position == 0) EntryType.GASTO else EntryType.PENSAMENTO
+                val tipo = if (tab.position == 1) EntryType.GASTO else EntryType.PENSAMENTO
                 tipoSelecionado.value = tipo
                 val isGasto = tipo == EntryType.GASTO
                 val visibility = if (isGasto) View.VISIBLE else View.GONE
@@ -99,6 +101,11 @@ class HistoryActivity : AppCompatActivity() {
             override fun onTabUnselected(tab: TabLayout.Tab) {}
             override fun onTabReselected(tab: TabLayout.Tab) {}
         })
+        // Gasto continua sendo a aba padrão ao abrir o Histórico, mesmo
+        // agora estando à direita — sem isso, o TabLayout selecionaria a
+        // posição 0 (Anotações) sozinho, ficando fora de sincronia com
+        // tipoSelecionado (que começa em GASTO).
+        binding.tabTipo.getTabAt(1)?.select()
 
         binding.rowMes.btnMesAnterior.setOnClickListener { mudarMes(-1) }
         binding.rowMes.btnMesProximo.setOnClickListener { mudarMes(1) }

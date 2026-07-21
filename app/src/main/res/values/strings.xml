@@ -4,7 +4,11 @@
     <string name="hint_gasto">Onde foi o gasto?</string>
     <string name="hint_pensamento">O que está passando pela sua cabeça?</string>
     <string name="btn_gasto">Gasto</string>
-    <string name="btn_pensamento">Ideia</string>
+    <!-- Nome interno do recurso ainda diz "pensamento" (histórico), mas o
+         texto exibido virou "Anotações" — mesmo padrão já usado pro
+         PRO/premium: trocar o id de todo mundo não muda nada pro usuário,
+         só dá risco de esquecer alguma referência. -->
+    <string name="btn_pensamento">Anotações</string>
     <string name="btn_salvar">Salvar</string>
     <string name="btn_historico">Histórico</string>
     <string name="link_historico">ver histórico →</string>
@@ -25,7 +29,7 @@
 
     <string name="label_gasto_no_mes">gasto no mês</string>
     <string name="label_por_categoria">Por categoria</string>
-    <string name="format_ideias_mes">%d ideia(s) registrada(s) este mês</string>
+    <string name="format_ideias_mes">%d anotação(ões) registrada(s) este mês</string>
     <string name="empty_report">Nenhum gasto registrado este mês ainda.</string>
     <string name="sem_categoria">Sem categoria</string>
 
@@ -37,8 +41,8 @@
     <string name="label_data">Data</string>
     <string name="error_valor_obrigatorio">Informe um valor</string>
 
-    <string name="title_nova_ideia">Nova ideia</string>
-    <string name="desc_adicionar_ideia">Escrever uma ideia (bloco de notas)</string>
+    <string name="title_nova_ideia">Nova anotação</string>
+    <string name="desc_adicionar_ideia">Escrever uma anotação (bloco de notas)</string>
     <string name="hint_titulo_ideia">Título (opcional)</string>
     <string name="hint_nota_ideia">Escreva à vontade…</string>
     <string name="formato_titulo1">T1</string>
@@ -49,7 +53,7 @@
     <string name="formato_lista">•</string>
     <string name="formato_checklist">☑</string>
     <string name="formato_limpar">✕</string>
-    <string name="title_editar_ideia">Editar ideia</string>
+    <string name="title_editar_ideia">Editar anotação</string>
 
     <string name="label_conta">Conta</string>
     <string name="btn_entrar_google">Entrar com Google</string>
@@ -137,10 +141,10 @@
     <string name="widget_captura_rapida_nome">Anota+ Captura Rápida</string>
     <string name="widget_captura_rapida_descricao">Atalho pra abrir a captura rápida na hora, direto da tela inicial.</string>
 
-    <string name="widget_anotacao_nome">Anota+ Uma Ideia</string>
-    <string name="widget_anotacao_descricao">Mostra uma ideia específica na tela inicial — se for um checklist, dá pra marcar os itens direto pelo widget.</string>
+    <string name="widget_anotacao_nome">Anota+ Uma Anotação</string>
+    <string name="widget_anotacao_descricao">Mostra uma anotação específica na tela inicial — se for um checklist, dá pra marcar os itens direto pelo widget.</string>
     <string name="widget_anotacao_sem_titulo">Sem título</string>
-    <string name="widget_anotacao_nao_configurado">Toque pra escolher uma ideia</string>
-    <string name="title_escolher_ideia">Escolha uma ideia</string>
-    <string name="empty_escolher_ideia">Nenhuma ideia ainda. Crie uma no app antes de configurar o widget.</string>
+    <string name="widget_anotacao_nao_configurado">Toque pra escolher uma anotação</string>
+    <string name="title_escolher_ideia">Escolha uma anotação</string>
+    <string name="empty_escolher_ideia">Nenhuma anotação ainda. Crie uma no app antes de configurar o widget.</string>
 </resources>
