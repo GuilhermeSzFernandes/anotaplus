@@ -301,13 +301,26 @@ bullet própria do Premium na `PlansActivity`.
   rico de verdade nem mudança de schema — o texto guardado (`Entry.texto`)
   continua sendo puro texto simples com marcadores tipo Markdown
   (`# título`, `- item`, `☐`/`☑` de checklist, `**negrito**`, `_itálico_`),
-  e um `TextWatcher` recalcula os spans visuais (`StyleSpan`, `BulletSpan`,
-  `RelativeSizeSpan`, `StrikethroughSpan` no item marcado) a cada tecla
-  digitada — o efeito aparece na hora, mas o dado salvo continua sendo uma
-  `String` comum. Escolhido assim (em vez de blocos estruturados ou HTML)
-  porque é bem mais simples de manter e faz o checklist do widget
-  funcionar de forma trivial (é só procurar a linha certa e trocar o
-  caractere ☐/☑, sem precisar parsear/gerar HTML nem JSON).
+  e um `TextWatcher` recalcula os spans visuais a cada tecla digitada.
+  Escolhido assim (em vez de blocos estruturados ou HTML) porque é bem
+  mais simples de manter e faz o checklist do widget funcionar de forma
+  trivial (é só procurar a linha certa e trocar o caractere ☐/☑, sem
+  precisar parsear/gerar HTML nem JSON).
+  - **Marcadores ficam ocultos** (`#`, `**`, `_`, `-`) — não é só
+    aplicar o estilo em cima do texto cru: um `ReplacementSpan` de
+    largura zero (`MarcadorOcultoSpan`) some com o caractere
+    visualmente, mas ele continua existindo no `Editable` (cursor,
+    backspace, o texto salvo — tudo normal, só não desenha). Único
+    marcador que fica visível de propósito é o `☐`/`☑` do checklist,
+    porque ele *é* o checkbox.
+  - **Enter continua a lista**: apertar Enter no fim de um item de
+    lista/checklist insere o mesmo marcador na linha seguinte (novo item
+    de checklist sempre nasce desmarcado, mesmo continuando um item
+    marcado); apertar Enter num item vazio sai da lista (quebra de linha
+    normal, sem marcador). Detectado em `onTextChanged` (conta que foi
+    inserido exatamente um `\n`) e ajustado em `afterTextChanged`, com uma
+    flag de reentrância (`ajustando`) pra não entrar em loop, já que o
+    ajuste em si dispara o `TextWatcher` de novo.
   - Barra de formatação (5 botões: T1/B/I/•/☑) em `ManualIdeiaActivity` e
     em `EditEntryActivity` (só visível quando o tipo é Ideia) — cada botão
     liga em `RichTextEngine.alternarX()`.
@@ -500,11 +513,6 @@ para instalar SDK e Gradle no runner (não depende de wrapper local).
   build com sucesso e gera um APK instalável.
 
 ## Próximos passos (ainda não implementados)
-- Pressionar Enter numa linha de lista/checklist não continua o marcador
-  automaticamente na linha seguinte (nem sai da lista sozinho numa linha
-  vazia) — corte de escopo deliberado no `RichTextEngine` pra manter o
-  motor de formatação simples; usuário precisa apertar o botão da barra
-  de novo.
 - `AnotacaoWidgetProvider` mostra no máximo 6 linhas por widget (ver seção
   própria) — virar um `RemoteViewsService`/coleção de verdade é o próximo
   passo se isso incomodar no uso real.
