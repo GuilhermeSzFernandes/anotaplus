@@ -284,6 +284,19 @@ bullet própria do Premium na `PlansActivity`.
   `goAsync`/coroutine, só monta o `PendingIntent` (sem `sourceBounds`,
   igual todos os outros atalhos, pra cair no modal de captura e não no
   Histórico).
+- **Quarto widget** (`widget/CapturaModalWidgetProvider.kt` +
+  `widget_captura_modal.xml`/`widget_captura_modal_info.xml`): "espelho"
+  visual do modal de Captura Rápida (toggle Anotações/Gasto, campo de
+  valor, campo de texto, botão Salvar) — pedido explicitamente como
+  "mesmo layout e função do modal". **Limitação de plataforma, não
+  nossa**: RemoteViews não suporta `EditText` — nenhum widget de nenhum
+  app consegue ter campo de texto editável de verdade, então "mesma
+  função" não é literalmente possível. O que existe: tocar em qualquer
+  parte abre `QuickCaptureActivity` pra digitar de verdade; tocar
+  especificamente no toggle Gasto/Anotações do widget já abre lá com
+  esse tipo pré-selecionado, via `QuickCaptureActivity.EXTRA_TIPO_FORCADO`
+  (novo extra — se ausente, cai no tipo padrão de Configurações como
+  sempre; usado só por este widget).
 - **LoginActivity**: tela cheia (não é o modal translúcido) — desenhada
   como um "ticket sendo emitido": fundo escuro (`@color/scrim`, igual o
   scrim do modal de captura) com um card de papel centralizado que tem a

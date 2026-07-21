@@ -141,6 +141,9 @@
     <string name="widget_captura_rapida_nome">Anota+ Captura Rápida</string>
     <string name="widget_captura_rapida_descricao">Atalho pra abrir a captura rápida na hora, direto da tela inicial.</string>
 
+    <string name="widget_captura_modal_nome">Anota+ Capturar</string>
+    <string name="widget_captura_modal_descricao">Mostra o visual da captura rápida na tela inicial. Nenhum campo funciona de verdade (widgets não suportam digitar texto) — tocar abre o app pra digitar, já com o tipo certo se você tocar no Gasto ou Anotações.</string>
+
     <string name="widget_anotacao_nome">Anota+ Uma Anotação</string>
     <string name="widget_anotacao_descricao">Mostra uma anotação específica na tela inicial — se for um checklist, dá pra marcar os itens direto pelo widget.</string>
     <string name="widget_anotacao_sem_titulo">Sem título</string>

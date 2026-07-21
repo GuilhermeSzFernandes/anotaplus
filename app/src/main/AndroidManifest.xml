@@ -191,6 +191,21 @@
             </intent-filter>
         </receiver>
 
+        <!-- Quarto widget: "espelho" visual do modal de Captura Rápida —
+             nenhum campo funciona de verdade (RemoteViews não suporta
+             EditText), tocar abre o modal de verdade pra digitar. -->
+        <receiver
+            android:name=".widget.CapturaModalWidgetProvider"
+            android:exported="false"
+            android:label="@string/widget_captura_modal_nome">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_captura_modal_info" />
+        </receiver>
+
     </application>
 
 </manifest>

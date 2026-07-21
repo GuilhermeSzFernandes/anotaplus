@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Widget "espelho" do modal de Captura Rápida: mesmo visual (toggle
+     Anotações/Gasto, campo de valor, campo de texto, botão Salvar), mas
+     tudo aqui é só aparência — RemoteViews não suporta EditText de
+     verdade (nenhum widget de nenhum app consegue ter campo de texto
+     editável), então nenhum campo funciona de fato. Tocar em qualquer
+     parte abre QuickCaptureActivity pra digitar de verdade; tocar
+     especificamente no toggle Gasto/Anotações já abre com esse tipo
+     pré-selecionado. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_modal_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_widget_paper">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="14dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-black"
+            android:textColor="@color/ink"
+            android:textSize="14sp"
+            android:letterSpacing="0.06"
+            android:text="@string/app_name" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:text=""
+            android:background="@drawable/divider_dashed" />
+
+        <!-- Toggle Anotações / Gasto — cada lado com seu próprio toque -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/toggle_anotacoes"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:gravity="center"
+                android:paddingVertical="6dp"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/ink"
+                android:textSize="12sp"
+                android:textAllCaps="true"
+                android:text="@string/btn_pensamento" />
+
+            <TextView
+                android:id="@+id/toggle_gasto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:gravity="center"
+                android:paddingVertical="6dp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/ink_soft"
+                android:textSize="12sp"
+                android:textAllCaps="true"
+                android:text="@string/btn_gasto" />
+
+        </LinearLayout>
+
+        <!-- Valor: só visual, hint estático -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
+                android:fontFamily="monospace"
+                android:textStyle="bold"
+                android:textColor="@color/ink_soft"
+                android:textSize="16sp"
+                android:text="@string/prefix_valor" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:fontFamily="monospace"
+                android:textStyle="bold"
+                android:textColor="@color/ink_soft"
+                android:textSize="16sp"
+                android:text="@string/hint_valor" />
+
+        </LinearLayout>
+
+        <!-- Texto: só visual, hint estático -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/ink_soft"
+            android:textSize="13sp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:text="@string/hint_pensamento" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:text=""
+            android:background="@drawable/divider_dashed" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="end"
+            android:background="@color/stamp_bg"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="6dp"
+            android:fontFamily="sans-serif-black"
+            android:textColor="@color/ink"
+            android:textSize="12sp"
+            android:textAllCaps="true"
+            android:text="@string/btn_salvar" />
+
+    </LinearLayout>
+
+</FrameLayout>

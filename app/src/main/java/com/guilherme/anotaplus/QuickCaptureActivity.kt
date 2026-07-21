@@ -25,6 +25,13 @@ import java.util.Locale
 
 class QuickCaptureActivity : AppCompatActivity() {
 
+    companion object {
+        // Usado pelo widget "modal" (CapturaModalWidgetProvider): tocar no
+        // toggle Gasto/Anotações do widget já abre aqui com esse tipo,
+        // em vez do tipo padrão de Configurações.
+        const val EXTRA_TIPO_FORCADO = "tipo_forcado"
+    }
+
     private lateinit var binding: ActivityQuickCaptureBinding
     private var tipoSelecionado: EntryType = EntryType.PENSAMENTO
 
@@ -95,7 +102,10 @@ class QuickCaptureActivity : AppCompatActivity() {
         val timestampFormat = SimpleDateFormat("dd MMM · HH:mm", Locale("pt", "BR"))
         binding.textTimestamp.text = timestampFormat.format(Date()).uppercase(Locale("pt", "BR"))
 
-        val tipoPadrao = Prefs.getTipoPadrao(this)
+        val tipoForcado = intent.getStringExtra(EXTRA_TIPO_FORCADO)?.let {
+            runCatching { EntryType.valueOf(it) }.getOrNull()
+        }
+        val tipoPadrao = tipoForcado ?: Prefs.getTipoPadrao(this)
         tipoSelecionado = tipoPadrao
         if (tipoPadrao == EntryType.GASTO) {
             binding.btnTipoGasto.isChecked = true
