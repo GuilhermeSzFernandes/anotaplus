@@ -3,9 +3,11 @@ package com.guilherme.anotaplus
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
@@ -143,6 +145,25 @@ class HistoryActivity : AppCompatActivity() {
             val adView = AdView(this).apply {
                 setAdSize(AdSize.BANNER)
                 adUnitId = BuildConfig.AD_BANNER_UNIT_ID
+                // Só em debug: sem isso, uma falha no pedido do anúncio
+                // (sem internet, sem preenchimento etc.) é 100% silenciosa
+                // — não dá pra saber se carregou, falhou, ou nem chegou a
+                // tentar.
+                if (BuildConfig.DEBUG) {
+                    adListener = object : AdListener() {
+                        override fun onAdLoaded() {
+                            Toast.makeText(this@HistoryActivity, "Anúncio (banner) carregou", Toast.LENGTH_SHORT).show()
+                        }
+
+                        override fun onAdFailedToLoad(error: LoadAdError) {
+                            Toast.makeText(
+                                this@HistoryActivity,
+                                "Anúncio (banner) falhou: ${error.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                }
             }
             adViewBanner = adView
             binding.adContainer.addView(adView)
@@ -164,6 +185,13 @@ class HistoryActivity : AppCompatActivity() {
                         override fun onAdFailedToLoad(error: LoadAdError) {
                             // Sem anúncio pra mostrar (sem internet, sem
                             // inventário etc.) — não bloqueia o uso do app.
+                            if (BuildConfig.DEBUG) {
+                                Toast.makeText(
+                                    this@HistoryActivity,
+                                    "Anúncio (intersticial) falhou: ${error.message}",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
                         }
                     }
                 )

@@ -91,6 +91,9 @@
     <string name="backup_exclusivo_pro">Backup na nuvem é exclusivo do plano PRO.</string>
     <string name="link_virar_pro">ver plano PRO →</string>
 
+    <string name="label_debug">Debug</string>
+    <string name="switch_forcar_pro_debug">Forçar PRO (debug)</string>
+
     <string name="title_guia_gesto">Abrir na hora</string>
     <string name="guia_gesto_intro_moto">O Anota+ funciona melhor com o gesto \"toque duas vezes na traseira\" do seu Moto — ele abre o app na hora, mesmo com a tela bloqueada.</string>
     <string name="guia_gesto_intro_generico">Muitos Android têm algum gesto rápido pra abrir um app na hora — toque na traseira, clique duplo no botão de energia, entre outros. Procure isso nas configurações do seu aparelho.</string>

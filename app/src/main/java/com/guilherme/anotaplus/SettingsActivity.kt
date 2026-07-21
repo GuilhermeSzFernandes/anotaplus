@@ -16,6 +16,8 @@ import com.guilherme.anotaplus.data.SessionPrefs
 import com.guilherme.anotaplus.data.SubscriptionPrefs
 import com.guilherme.anotaplus.databinding.ActivitySettingsBinding
 import com.guilherme.anotaplus.databinding.ItemCategoryBinding
+import com.guilherme.anotaplus.network.ApiClient
+import com.guilherme.anotaplus.network.dto.BillingSyncRequest
 import kotlinx.coroutines.launch
 
 class SettingsActivity : AppCompatActivity() {
@@ -52,6 +54,19 @@ class SettingsActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 runCatching { billingManager.atualizarStatusAssinatura() }
                 atualizarUiConta()
+            }
+        }
+
+        // Debug: sem conta no Play Console ainda, não tem como comprar de
+        // verdade — esse switch força "sou PRO" (local + backend) só pra
+        // testar a UI/backup. Nunca aparece fora de build debug.
+        if (BuildConfig.DEBUG) {
+            binding.cardDebug.visibility = View.VISIBLE
+            binding.switchForcarPro.isChecked = SubscriptionPrefs.isForcarProDebugAtivo(this)
+            binding.switchForcarPro.setOnCheckedChangeListener { _, ativo ->
+                SubscriptionPrefs.setForcarProDebug(this, ativo)
+                atualizarUiConta()
+                lifecycleScope.launch { sincronizarForcarProDebug(ativo) }
             }
         }
 
@@ -199,6 +214,25 @@ class SettingsActivity : AppCompatActivity() {
             binding.textBackupStatus.text = getString(R.string.backup_erro)
         } finally {
             binding.btnRestaurarBackup.isEnabled = true
+        }
+    }
+
+    // Sincroniza o override de debug com o backend, pra ProActiveGuard
+    // também liberar (senão o switch só mudaria a UI local, mas o backup
+    // continuaria tomando 403). Reaproveita o mesmo endpoint que o
+    // BillingManager usa pra compra de verdade — o backend não distingue
+    // uma coisa da outra, só confia no que o app relata.
+    private suspend fun sincronizarForcarProDebug(ativo: Boolean) {
+        if (!SessionPrefs.estaLogado(this)) return
+        runCatching {
+            ApiClient.api.sincronizarAssinatura(
+                "Bearer ${SessionPrefs.getAccessToken(this)}",
+                BillingSyncRequest(
+                    productId = "debug_forcado",
+                    purchaseToken = if (ativo) "debug" else "",
+                    active = ativo
+                )
+            )
         }
     }
 

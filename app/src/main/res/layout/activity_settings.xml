@@ -324,6 +324,51 @@
 
             </LinearLayout>
 
+            <!-- Só existe em build debug (visibility trocada no código,
+                 checando BuildConfig.DEBUG) — sem conta no Play Console
+                 ainda, não tem como testar assinatura de verdade, então
+                 esse switch força "sou PRO" localmente e no backend, sem
+                 precisar comprar nada. -->
+            <LinearLayout
+                android:id="@+id/card_debug"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_free"
+                android:padding="16dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_debug"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/switch_forcar_pro_debug"
+                        android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switch_forcar_pro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
