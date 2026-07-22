@@ -51,36 +51,178 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="14dp"
+            android:padding="20dp"
             android:paddingBottom="100dp">
 
+            <!-- Ticket "hero": saldo do mês, largura cheia -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_free"
+                android:padding="18dp">
 
-                <include
-                    android:id="@+id/stat_saldo"
-                    layout="@layout/item_dashboard_stat" />
+                <TextView
+                    android:id="@+id/text_saldo_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
+                    tools:text="Saldo estimado" />
 
-                <include
-                    android:id="@+id/stat_gasto_mes"
-                    layout="@layout/item_dashboard_stat" />
+                <TextView
+                    android:id="@+id/text_saldo_valor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="monospace"
+                    android:textStyle="bold"
+                    android:textSize="30sp"
+                    tools:text="R$ 320,00"
+                    tools:textColor="@color/color_positivo" />
 
             </LinearLayout>
 
+            <!-- Rasgo entre os dois tickets — mesma ideia da Captura Rápida -->
+            <com.guilherme.anotaplus.ui.PerforationView
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                app:toothWidth="8dp"
+                app:toothHeight="4dp"
+                app:toothGap="3dp"
+                app:toothColor="@color/ink_soft" />
+
+            <!-- Ticket de itens: linhas tipo nota fiscal, não cards em grade -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_free"
+                android:padding="18dp">
 
-                <include
-                    android:id="@+id/stat_categoria"
-                    layout="@layout/item_dashboard_stat" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
-                <include
-                    android:id="@+id/stat_anotacoes"
-                    layout="@layout/item_dashboard_stat" />
+                    <TextView
+                        android:id="@+id/text_gasto_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
+                        tools:text="gasto no mês" />
+
+                    <TextView
+                        android:id="@+id/text_gasto_valor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:textStyle="bold"
+                        android:textColor="@color/gasto_color"
+                        tools:text="R$ 210,00" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="12dp"
+                    android:background="@color/paper_dim" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="top">
+
+                    <TextView
+                        android:id="@+id/text_categoria_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
+                        tools:text="Categoria mais usada" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="end">
+
+                        <TextView
+                            android:id="@+id/text_categoria_valor"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="monospace"
+                            android:textStyle="bold"
+                            android:textColor="@color/brass"
+                            tools:text="Mercado" />
+
+                        <TextView
+                            android:id="@+id/text_categoria_sub"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
+                            android:textColor="@color/ink_soft"
+                            android:visibility="gone"
+                            tools:text="3 lançamento(s)"
+                            tools:visibility="visible" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="12dp"
+                    android:background="@color/paper_dim" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="top">
+
+                    <TextView
+                        android:id="@+id/text_anotacoes_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
+                        tools:text="Anotações" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="end">
+
+                        <TextView
+                            android:id="@+id/text_anotacoes_valor"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="monospace"
+                            android:textStyle="bold"
+                            android:textColor="@color/pensamento_color"
+                            tools:text="2 lançamento(s)" />
+
+                        <TextView
+                            android:id="@+id/text_anotacoes_sub"
+                            android:layout_width="120dp"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
+                            android:textColor="@color/ink_soft"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:visibility="gone"
+                            tools:text="Ideia pro app novo"
+                            tools:visibility="visible" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
 
             </LinearLayout>
 

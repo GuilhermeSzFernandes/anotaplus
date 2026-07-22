@@ -22,8 +22,9 @@ private data class DashboardDados(
     val ultimaIdeia: String?
 )
 
-// Início virou dashboard (cards do mês) — o extrato de verdade agora mora
-// nas abas Financeiro (Gasto/Recebimento) e Anotações.
+// Início virou dashboard estilo recibo: um ticket de saldo em destaque +
+// um ticket de itens (linhas, não cards em grade) — o extrato de verdade
+// mora nas abas Financeiro (Gasto/Recebimento) e Anotações.
 class HistoryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHistoryBinding
@@ -41,10 +42,10 @@ class HistoryActivity : AppCompatActivity() {
         val inicio = MesUtil.inicioDoMes(mes)
         val fim = MesUtil.fimDoMes(mes)
 
-        binding.statSaldo.textStatLabel.text = getString(R.string.stat_saldo_estimado)
-        binding.statGastoMes.textStatLabel.text = getString(R.string.label_gasto_no_mes)
-        binding.statCategoria.textStatLabel.text = getString(R.string.stat_categoria_mais_usada)
-        binding.statAnotacoes.textStatLabel.text = getString(R.string.title_anotacoes)
+        binding.textSaldoLabel.text = getString(R.string.stat_saldo_estimado)
+        binding.textGastoLabel.text = getString(R.string.label_gasto_no_mes)
+        binding.textCategoriaLabel.text = getString(R.string.stat_categoria_mais_usada)
+        binding.textAnotacoesLabel.text = getString(R.string.title_anotacoes)
 
         val dao = AppDatabase.getInstance(applicationContext).entryDao()
 
@@ -65,32 +66,29 @@ class HistoryActivity : AppCompatActivity() {
     private fun renderDashboard(dados: DashboardDados) {
         val locale = MesUtil.locale
         val saldo = dados.totalRecebimento - dados.totalGasto
-        binding.statSaldo.textStatValor.text = "R$ %.2f".format(locale, saldo)
-        binding.statSaldo.textStatValor.setTextColor(
+        binding.textSaldoValor.text = "R$ %.2f".format(locale, saldo)
+        binding.textSaldoValor.setTextColor(
             ContextCompat.getColor(this, if (saldo < 0) R.color.gasto_color else R.color.color_positivo)
         )
 
-        binding.statGastoMes.textStatValor.text = "R$ %.2f".format(locale, dados.totalGasto)
-        binding.statGastoMes.textStatValor.setTextColor(ContextCompat.getColor(this, R.color.gasto_color))
+        binding.textGastoValor.text = "R$ %.2f".format(locale, dados.totalGasto)
 
         val categoriaTop = dados.categoriaTop
         if (categoriaTop != null) {
-            binding.statCategoria.textStatValor.text = categoriaTop.categoria ?: getString(R.string.sem_categoria)
-            binding.statCategoria.textStatSub.visibility = View.VISIBLE
-            binding.statCategoria.textStatSub.text = getString(R.string.format_qtd_curto, categoriaTop.qtd)
+            binding.textCategoriaValor.text = categoriaTop.categoria ?: getString(R.string.sem_categoria)
+            binding.textCategoriaSub.visibility = View.VISIBLE
+            binding.textCategoriaSub.text = getString(R.string.format_qtd_curto, categoriaTop.qtd)
         } else {
-            binding.statCategoria.textStatValor.text = getString(R.string.stat_sem_dados)
-            binding.statCategoria.textStatSub.visibility = View.GONE
+            binding.textCategoriaValor.text = getString(R.string.stat_sem_dados)
+            binding.textCategoriaSub.visibility = View.GONE
         }
-        binding.statCategoria.textStatValor.setTextColor(ContextCompat.getColor(this, R.color.brass))
 
-        binding.statAnotacoes.textStatValor.text = getString(R.string.format_qtd_curto, dados.totalIdeias)
-        binding.statAnotacoes.textStatValor.setTextColor(ContextCompat.getColor(this, R.color.pensamento_color))
+        binding.textAnotacoesValor.text = getString(R.string.format_qtd_curto, dados.totalIdeias)
         if (dados.ultimaIdeia.isNullOrBlank()) {
-            binding.statAnotacoes.textStatSub.visibility = View.GONE
+            binding.textAnotacoesSub.visibility = View.GONE
         } else {
-            binding.statAnotacoes.textStatSub.visibility = View.VISIBLE
-            binding.statAnotacoes.textStatSub.text = dados.ultimaIdeia
+            binding.textAnotacoesSub.visibility = View.VISIBLE
+            binding.textAnotacoesSub.text = dados.ultimaIdeia
         }
     }
 }

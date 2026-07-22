@@ -16,7 +16,7 @@ enum class NavTab { ANOTACOES, FINANCEIRO, INICIO, RELATORIO, CONTA }
 fun AppCompatActivity.configurarBottomNav(binding: BottomNavBarBinding, atual: NavTab) {
     fun aplicarEstado(pill: android.widget.LinearLayout, icon: android.widget.ImageView, ativo: Boolean) {
         pill.background = if (ativo) ContextCompat.getDrawable(this, R.drawable.bg_nav_pill_active) else null
-        val cor = ContextCompat.getColor(this, if (ativo) R.color.brass else R.color.ink_soft)
+        val cor = ContextCompat.getColor(this, if (ativo) R.color.paper else R.color.ink_soft)
         ImageViewCompat.setImageTintList(icon, ColorStateList.valueOf(cor))
     }
 
