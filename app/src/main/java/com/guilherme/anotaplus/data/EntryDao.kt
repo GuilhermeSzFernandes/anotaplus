@@ -67,4 +67,54 @@ interface EntryDao {
         "SELECT COUNT(*) FROM entries WHERE type = 'PENSAMENTO' AND timestamp BETWEEN :inicio AND :fim"
     )
     fun getTotalIdeias(inicio: Long, fim: Long): Flow<Int>
+
+    // Total gasto por dia (fuso do aparelho, via modificador 'localtime' do
+    // SQLite) — base pro gráfico de tendência. Sempre granularidade diária;
+    // pra períodos maiores (90/365 dias) o reagrupamento em semanas
+    // acontece em Kotlin (ver ReportActivity), não aqui.
+    @Query(
+        """
+        SELECT strftime('%Y-%m-%d', timestamp / 1000, 'unixepoch', 'localtime') AS dia, SUM(valor) AS total
+        FROM entries
+        WHERE type = 'GASTO' AND timestamp BETWEEN :inicio AND :fim AND valor IS NOT NULL
+        GROUP BY dia
+        ORDER BY dia ASC
+        """
+    )
+    fun getGastoPorDia(inicio: Long, fim: Long): Flow<List<GastoDiario>>
+
+    @Query(
+        "SELECT * FROM entries WHERE type = 'GASTO' AND timestamp BETWEEN :inicio AND :fim AND valor IS NOT NULL ORDER BY valor DESC LIMIT 1"
+    )
+    fun getMaiorGasto(inicio: Long, fim: Long): Flow<Entry?>
+
+    @Query(
+        "SELECT COALESCE(AVG(valor), 0) FROM entries WHERE type = 'GASTO' AND timestamp BETWEEN :inicio AND :fim AND valor IS NOT NULL"
+    )
+    fun getMediaGasto(inicio: Long, fim: Long): Flow<Double>
+
+    // Categoria mais usada por FREQUÊNCIA (contagem de lançamentos) —
+    // diferente de getGastoPorCategoria, que ordena por soma de valor.
+    @Query(
+        """
+        SELECT categoria, COUNT(*) AS qtd FROM entries
+        WHERE type = 'GASTO' AND timestamp BETWEEN :inicio AND :fim
+        GROUP BY categoria
+        ORDER BY qtd DESC
+        LIMIT 1
+        """
+    )
+    fun getCategoriaMaisUsada(inicio: Long, fim: Long): Flow<CategoriaContagem?>
+
+    @Query(
+        """
+        SELECT strftime('%w', timestamp / 1000, 'unixepoch', 'localtime') AS diaSemana, SUM(valor) AS total
+        FROM entries
+        WHERE type = 'GASTO' AND timestamp BETWEEN :inicio AND :fim AND valor IS NOT NULL
+        GROUP BY diaSemana
+        ORDER BY total DESC
+        LIMIT 1
+        """
+    )
+    fun getDiaSemanaMaisGasto(inicio: Long, fim: Long): Flow<DiaSemanaTotal?>
 }

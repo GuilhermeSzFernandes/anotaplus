@@ -2,14 +2,18 @@ package com.guilherme.anotaplus
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.guilherme.anotaplus.billing.BillingManager
 import com.guilherme.anotaplus.data.AppDatabase
 import com.guilherme.anotaplus.data.Category
+import com.guilherme.anotaplus.data.CategoryDao
 import com.guilherme.anotaplus.data.EntryType
 import com.guilherme.anotaplus.data.Prefs
 import com.guilherme.anotaplus.data.SessionPrefs
@@ -110,6 +114,18 @@ class SettingsActivity : AppCompatActivity() {
                         false
                     )
                     row.textNomeCategoria.text = categoria.nome
+                    if (categoria.limite != null) {
+                        row.textLimiteCategoria.visibility = View.VISIBLE
+                        row.textLimiteCategoria.text = getString(
+                            R.string.format_limite_categoria,
+                            String.format(MesUtil.locale, "%.2f", categoria.limite)
+                        )
+                    } else {
+                        row.textLimiteCategoria.visibility = View.GONE
+                    }
+                    row.rowCategoriaClicavel.setOnClickListener {
+                        mostrarDialogoLimite(categoria, categoryDao)
+                    }
                     row.btnRemoverCategoria.setOnClickListener {
                         lifecycleScope.launch { categoryDao.deleteById(categoria.id) }
                     }
@@ -117,6 +133,39 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    // Limite mensal por categoria (orçamento): grava local sempre; só
+    // propaga pro backend se o usuário for PRO (mesmo gate do backup) —
+    // categoria ainda sem remoteId nem precisa de push isolado aqui, o
+    // limite já viaja junto na primeira sincronização.
+    private fun mostrarDialogoLimite(categoria: Category, categoryDao: CategoryDao) {
+        val editLimite = EditText(this).apply {
+            inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+            hint = getString(R.string.hint_limite_categoria)
+            setPadding(48, 24, 48, 24)
+            categoria.limite?.let { setText(String.format(MesUtil.locale, "%.2f", it)) }
+        }
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.title_definir_limite, categoria.nome))
+            .setView(editLimite)
+            .setPositiveButton(R.string.btn_salvar_limite) { _, _ ->
+                val novoLimite = editLimite.text?.toString()?.trim()?.replace(",", ".")?.toDoubleOrNull()
+                lifecycleScope.launch {
+                    categoryDao.atualizarLimite(categoria.id, novoLimite)
+                    if (SubscriptionPrefs.podeFazerBackup(this@SettingsActivity)) {
+                        val atualizada = categoria.copy(limite = novoLimite)
+                        if (atualizada.remoteId != null) {
+                            SyncManager.enviarLimiteCategoria(applicationContext, atualizada)
+                        } else {
+                            SyncWorker.agendar(applicationContext)
+                        }
+                    }
+                }
+            }
+            .setNegativeButton(R.string.btn_cancelar, null)
+            .show()
     }
 
     private fun atualizarUiConta() {

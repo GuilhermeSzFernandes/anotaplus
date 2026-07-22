@@ -26,6 +26,10 @@
     <string name="hint_nova_categoria">nova categoria</string>
     <string name="content_desc_remover_categoria">Remover categoria</string>
     <string name="empty_categorias">Nenhuma categoria ainda. Adicione uma acima.</string>
+    <string name="title_definir_limite">Limite mensal — %s</string>
+    <string name="hint_limite_categoria">Deixe em branco pra não ter limite</string>
+    <string name="btn_salvar_limite">Salvar</string>
+    <string name="format_limite_categoria">limite: R$ %s/mês</string>
 
     <string name="label_gasto_no_mes">gasto no mês</string>
     <string name="label_por_categoria">Por categoria</string>
@@ -35,6 +39,32 @@
 
     <string name="desc_mes_anterior">Mês anterior</string>
     <string name="desc_mes_proximo">Próximo mês</string>
+
+    <string name="comparativo_alta">▲ %d%% vs mês anterior</string>
+    <string name="comparativo_queda">▼ %d%% vs mês anterior</string>
+    <string name="format_valor_limite">%1$s / %2$s</string>
+
+    <string name="label_tendencia">Tendência de gastos</string>
+    <string name="periodo_30_dias">30 dias</string>
+    <string name="periodo_90_dias">90 dias</string>
+    <string name="periodo_365_dias">365 dias</string>
+    <string name="empty_tendencia">Sem dados suficientes pra mostrar a tendência ainda.</string>
+
+    <string name="label_estatisticas">Estatísticas</string>
+    <string name="stat_maior_gasto">Maior gasto</string>
+    <string name="stat_media_gasto">Média por lançamento</string>
+    <string name="stat_categoria_mais_usada">Categoria mais usada</string>
+    <string name="stat_dia_semana_top">Dia com mais gasto</string>
+    <string name="stat_sem_dados">—</string>
+    <string name="format_stat_qtd">%1$s (%2$d)</string>
+
+    <string name="dia_semana_dom">Domingo</string>
+    <string name="dia_semana_seg">Segunda</string>
+    <string name="dia_semana_ter">Terça</string>
+    <string name="dia_semana_qua">Quarta</string>
+    <string name="dia_semana_qui">Quinta</string>
+    <string name="dia_semana_sex">Sexta</string>
+    <string name="dia_semana_sab">Sábado</string>
 
     <string name="title_novo_gasto">Novo gasto</string>
     <string name="desc_adicionar_gasto">Adicionar gasto manualmente</string>

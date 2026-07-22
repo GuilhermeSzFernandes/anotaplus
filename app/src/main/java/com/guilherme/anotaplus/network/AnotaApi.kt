@@ -3,6 +3,7 @@ package com.guilherme.anotaplus.network
 import com.guilherme.anotaplus.network.dto.AuthResponse
 import com.guilherme.anotaplus.network.dto.BillingSyncRequest
 import com.guilherme.anotaplus.network.dto.BillingSyncResponse
+import com.guilherme.anotaplus.network.dto.CategoriaLimiteRequest
 import com.guilherme.anotaplus.network.dto.CategoriaRemota
 import com.guilherme.anotaplus.network.dto.CategoriaSyncRequest
 import com.guilherme.anotaplus.network.dto.EntryRemota
@@ -44,6 +45,13 @@ interface AnotaApi {
     suspend fun excluirEntry(
         @Header("Authorization") auth: String,
         @Path("id") remoteId: String
+    )
+
+    @PATCH("categories/{id}")
+    suspend fun atualizarCategoria(
+        @Header("Authorization") auth: String,
+        @Path("id") remoteId: String,
+        @Body body: CategoriaLimiteRequest
     )
 
     @GET("categories")

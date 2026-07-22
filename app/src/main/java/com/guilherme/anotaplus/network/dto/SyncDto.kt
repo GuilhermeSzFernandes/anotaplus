@@ -1,6 +1,8 @@
 package com.guilherme.anotaplus.network.dto
 
-data class CategoriaSyncRequest(val nome: String)
+data class CategoriaSyncRequest(val nome: String, val limite: Double? = null)
+
+data class CategoriaLimiteRequest(val limite: Double?)
 
 data class EntrySyncRequest(
     val type: String,
@@ -18,7 +20,7 @@ data class SyncResponse(val id: String)
 
 // Resposta de GET /categories e GET /entries — usado pra restaurar backup
 // (nuvem -> local), ex: depois de reinstalar o app.
-data class CategoriaRemota(val id: String, val nome: String)
+data class CategoriaRemota(val id: String, val nome: String, val limite: Double? = null)
 
 data class EntryRemota(
     val id: String,

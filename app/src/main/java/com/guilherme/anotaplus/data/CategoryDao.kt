@@ -31,4 +31,7 @@ interface CategoryDao {
 
     @Query("UPDATE categories SET remoteId = :remoteId WHERE id = :id")
     suspend fun marcarSincronizada(id: Long, remoteId: String)
+
+    @Query("UPDATE categories SET limite = :limite WHERE id = :id")
+    suspend fun atualizarLimite(id: Long, limite: Double?)
 }

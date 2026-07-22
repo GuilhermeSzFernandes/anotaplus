@@ -7,6 +7,7 @@ import com.guilherme.anotaplus.data.Entry
 import com.guilherme.anotaplus.data.EntryType
 import com.guilherme.anotaplus.data.SessionPrefs
 import com.guilherme.anotaplus.network.ApiClient
+import com.guilherme.anotaplus.network.dto.CategoriaLimiteRequest
 import com.guilherme.anotaplus.network.dto.CategoriaSyncRequest
 import com.guilherme.anotaplus.network.dto.EntrySyncRequest
 import com.guilherme.anotaplus.widget.WidgetUpdater
@@ -27,7 +28,10 @@ object SyncManager {
 
         db.categoryDao().getPendentesDeSync().forEach { categoria ->
             runCatching {
-                val resposta = ApiClient.api.criarCategoria(auth, CategoriaSyncRequest(categoria.nome))
+                val resposta = ApiClient.api.criarCategoria(
+                    auth,
+                    CategoriaSyncRequest(categoria.nome, categoria.limite)
+                )
                 db.categoryDao().marcarSincronizada(categoria.id, resposta.id)
             }.onSuccess { sincronizados++ }
         }
@@ -71,11 +75,16 @@ object SyncManager {
             val existente = categoriasLocais.find { it.nome == remota.nome }
             when {
                 existente == null -> {
-                    db.categoryDao().insert(Category(nome = remota.nome, remoteId = remota.id))
+                    db.categoryDao().insert(
+                        Category(nome = remota.nome, remoteId = remota.id, limite = remota.limite)
+                    )
                     restaurados++
                 }
                 existente.remoteId == null -> {
                     db.categoryDao().marcarSincronizada(existente.id, remota.id)
+                    if (existente.limite == null && remota.limite != null) {
+                        db.categoryDao().atualizarLimite(existente.id, remota.limite)
+                    }
                 }
             }
         }
@@ -103,5 +112,25 @@ object SyncManager {
         }
 
         return restaurados
+    }
+
+    /**
+     * Propaga edição de limite de uma categoria já sincronizada antes (tem
+     * remoteId) — diferente de sincronizarTudo(), que só empurra categorias
+     * ainda sem remoteId. Usada pela SettingsActivity quando o usuário
+     * edita o limite de uma categoria PRO já sincronizada. Categoria ainda
+     * sem remoteId não precisa disso: o limite já viaja junto na primeira
+     * sincronização (sincronizarTudo -> criarCategoria).
+     */
+    suspend fun enviarLimiteCategoria(context: Context, categoria: Category): Boolean {
+        val remoteId = categoria.remoteId ?: return false
+        val token = SessionPrefs.getAccessToken(context) ?: return false
+        return runCatching {
+            ApiClient.api.atualizarCategoria(
+                "Bearer $token",
+                remoteId,
+                CategoriaLimiteRequest(categoria.limite)
+            )
+        }.isSuccess
     }
 }

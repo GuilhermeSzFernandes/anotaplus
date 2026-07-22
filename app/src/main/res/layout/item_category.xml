@@ -1,23 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/row_categoria_clicavel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
+        android:background="?attr/selectableItemBackground"
         android:paddingVertical="10dp">
 
-        <TextView
-            android:id="@+id/text_nome_categoria"
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/text_nome_categoria"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
+
+            <TextView
+                android:id="@+id/text_limite_categoria"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
+                android:textColor="@color/ink_soft"
+                android:visibility="gone"
+                tools:text="limite: R$ 500,00/mês"
+                tools:visibility="visible" />
+
+        </LinearLayout>
 
         <ImageButton
             android:id="@+id/btn_remover_categoria"

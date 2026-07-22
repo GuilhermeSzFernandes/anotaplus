@@ -15,6 +15,9 @@
     <color name="gasto_color">#96362A</color>
     <color name="pensamento_color">#33397E</color>
 
+    <!-- Verde oliva: queda de gasto vs mês anterior / dentro do orçamento -->
+    <color name="color_positivo">#4C6B3E</color>
+
     <!-- Latão: a única cor de ação (selo/confirmação) -->
     <color name="brass">#B8862E</color>
     <color name="brass_pressed">#9C7025</color>

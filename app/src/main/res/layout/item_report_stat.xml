@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:layout_margin="4dp"
+    android:orientation="vertical"
+    android:background="@drawable/bg_card_free"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/text_stat_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
+        android:textColor="@color/ink_soft"
+        tools:text="Maior gasto" />
+
+    <TextView
+        android:id="@+id/text_stat_valor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
+        android:textColor="@color/ink"
+        android:textStyle="bold"
+        android:maxLines="2"
+        android:ellipsize="end"
+        tools:text="R$ 320,00" />
+
+</LinearLayout>

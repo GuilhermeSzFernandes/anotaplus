@@ -40,7 +40,15 @@ val MIGRATION_3_4 = object : Migration(3, 4) {
     }
 }
 
-@Database(entities = [Entry::class, Category::class], version = 4, exportSchema = false)
+// v4 -> v5: adiciona limite (Double?) em categories, pra feature de
+// orçamento mensal por categoria.
+val MIGRATION_4_5 = object : Migration(4, 5) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE categories ADD COLUMN limite REAL")
+    }
+}
+
+@Database(entities = [Entry::class, Category::class], version = 5, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun entryDao(): EntryDao
@@ -59,7 +67,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "anotaplus.db"
                 )
-                    .addMigrations(MIGRATION_2_3, MIGRATION_3_4)
+                    .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                     .fallbackToDestructiveMigration()
                     .addCallback(object : RoomDatabase.Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {

@@ -36,6 +36,12 @@ object MesUtil {
         return c.timeInMillis - 1
     }
 
+    fun mesAnterior(calendar: Calendar): Calendar {
+        val c = calendar.clone() as Calendar
+        c.add(Calendar.MONTH, -1)
+        return c
+    }
+
     fun estaNoMesAtual(calendar: Calendar): Boolean {
         val agora = Calendar.getInstance()
         return calendar.get(Calendar.YEAR) == agora.get(Calendar.YEAR) &&
