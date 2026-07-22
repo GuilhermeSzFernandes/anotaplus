@@ -1,33 +1,36 @@
 package com.guilherme.anotaplus
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.guilherme.anotaplus.data.AppDatabase
-import com.guilherme.anotaplus.data.CategoriaContagem
-import com.guilherme.anotaplus.data.EntryType
 import com.guilherme.anotaplus.databinding.ActivityHistoryBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.Calendar
 
-private data class DashboardDados(
-    val totalGasto: Double,
-    val totalRecebimento: Double,
-    val categoriaTop: CategoriaContagem?,
-    val totalIdeias: Int,
-    val ultimaIdeia: String?
-)
+// Rótulos curtos de dia da semana, indexados por Calendar.DAY_OF_WEEK - 1
+// (0 = domingo .. 6 = sábado) — só usados no gráfico de barras do Início.
+private val NOMES_DIA_CURTO = arrayOf("D", "S", "T", "Q", "Q", "S", "S")
 
-// Início virou dashboard estilo recibo: um ticket de saldo em destaque +
-// um ticket de itens (linhas, não cards em grade) — o extrato de verdade
-// mora nas abas Financeiro (Gasto/Recebimento) e Anotações.
+// Início virou dashboard estilo recibo: ticket de saldo em destaque,
+// gráfico de barras dos últimos 7 dias, e preview dos últimos lançamentos
+// (Gasto + Recebimento) — o extrato completo mora na aba Financeiro.
 class HistoryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHistoryBinding
+    private val adapterRecentes = EntryAdapter { entry ->
+        startActivity(
+            Intent(this, EditEntryActivity::class.java)
+                .putExtra(EditEntryActivity.EXTRA_ENTRY_ID, entry.id)
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,56 +42,69 @@ class HistoryActivity : AppCompatActivity() {
 
         val mes = Calendar.getInstance()
         binding.textMesAtual.text = MesUtil.formatar(mes)
-        val inicio = MesUtil.inicioDoMes(mes)
-        val fim = MesUtil.fimDoMes(mes)
 
-        binding.textSaldoLabel.text = getString(R.string.stat_saldo_estimado)
-        binding.textGastoLabel.text = getString(R.string.label_gasto_no_mes)
-        binding.textCategoriaLabel.text = getString(R.string.stat_categoria_mais_usada)
-        binding.textAnotacoesLabel.text = getString(R.string.title_anotacoes)
+        binding.linkVerTudo.setOnClickListener {
+            startActivity(Intent(this, FinanceiroActivity::class.java))
+        }
+
+        binding.recyclerRecentes.layoutManager = LinearLayoutManager(this)
+        binding.recyclerRecentes.adapter = adapterRecentes
+        binding.recyclerRecentes.isNestedScrollingEnabled = false
 
         val dao = AppDatabase.getInstance(applicationContext).entryDao()
 
+        // Saldo do mês (Recebimento - Gasto)
+        val inicioMes = MesUtil.inicioDoMes(mes)
+        val fimMes = MesUtil.fimDoMes(mes)
         lifecycleScope.launch {
-            combine(
-                dao.getTotalGasto(inicio, fim),
-                dao.getTotalRecebimento(inicio, fim),
-                dao.getCategoriaMaisUsada(inicio, fim),
-                dao.getTotalIdeias(inicio, fim),
-                dao.getByType(EntryType.PENSAMENTO)
-            ) { totalGasto, totalRecebimento, categoriaTop, totalIdeias, ideias ->
-                val ultimaIdeia = ideias.firstOrNull()?.texto?.let { RichTextEngine.textoSemMarcadores(it) }
-                DashboardDados(totalGasto, totalRecebimento, categoriaTop, totalIdeias, ultimaIdeia)
-            }.collectLatest { dados -> renderDashboard(dados) }
+            combine(dao.getTotalGasto(inicioMes, fimMes), dao.getTotalRecebimento(inicioMes, fimMes)) { gasto, recebimento ->
+                recebimento - gasto
+            }.collectLatest { saldo ->
+                binding.textSaldoValor.text = "R$ %.2f".format(MesUtil.locale, saldo)
+                binding.textSaldoValor.setTextColor(
+                    ContextCompat.getColor(this@HistoryActivity, if (saldo < 0) R.color.gasto_color else R.color.color_positivo)
+                )
+            }
         }
-    }
+        binding.textSaldoLabel.text = getString(R.string.stat_saldo_estimado)
 
-    private fun renderDashboard(dados: DashboardDados) {
-        val locale = MesUtil.locale
-        val saldo = dados.totalRecebimento - dados.totalGasto
-        binding.textSaldoValor.text = "R$ %.2f".format(locale, saldo)
-        binding.textSaldoValor.setTextColor(
-            ContextCompat.getColor(this, if (saldo < 0) R.color.gasto_color else R.color.color_positivo)
+        // Gráfico de barras: últimos 7 dias (janela corrida, não é o mês
+        // do calendário) — rótulos abaixo já saem prontos, sem precisar de
+        // Flow pra isso.
+        val diasFormat = SimpleDateFormat("yyyy-MM-dd", MesUtil.locale)
+        val calendarHoje = Calendar.getInstance()
+        val diasDaSemana = (0..6).map { offset ->
+            (calendarHoje.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, -(6 - offset)) }
+        }
+        val labelViews = listOf(
+            binding.textDia0, binding.textDia1, binding.textDia2, binding.textDia3,
+            binding.textDia4, binding.textDia5, binding.textDia6
         )
+        diasDaSemana.forEachIndexed { i, c ->
+            labelViews[i].text = NOMES_DIA_CURTO[c.get(Calendar.DAY_OF_WEEK) - 1]
+        }
+        val inicioPeriodo = (diasDaSemana.first().clone() as Calendar).apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+        val fimPeriodo = System.currentTimeMillis()
 
-        binding.textGastoValor.text = "R$ %.2f".format(locale, dados.totalGasto)
-
-        val categoriaTop = dados.categoriaTop
-        if (categoriaTop != null) {
-            binding.textCategoriaValor.text = categoriaTop.categoria ?: getString(R.string.sem_categoria)
-            binding.textCategoriaSub.visibility = View.VISIBLE
-            binding.textCategoriaSub.text = getString(R.string.format_qtd_curto, categoriaTop.qtd)
-        } else {
-            binding.textCategoriaValor.text = getString(R.string.stat_sem_dados)
-            binding.textCategoriaSub.visibility = View.GONE
+        lifecycleScope.launch {
+            dao.getGastoPorDia(inicioPeriodo, fimPeriodo).collectLatest { porDia ->
+                val mapa = porDia.associate { it.dia to it.total }
+                val valores = diasDaSemana.map { c -> mapa[diasFormat.format(c.time)] ?: 0.0 }
+                binding.chartSemana.setDados(valores)
+            }
         }
 
-        binding.textAnotacoesValor.text = getString(R.string.format_qtd_curto, dados.totalIdeias)
-        if (dados.ultimaIdeia.isNullOrBlank()) {
-            binding.textAnotacoesSub.visibility = View.GONE
-        } else {
-            binding.textAnotacoesSub.visibility = View.VISIBLE
-            binding.textAnotacoesSub.text = dados.ultimaIdeia
+        // Últimos lançamentos (Gasto + Recebimento)
+        lifecycleScope.launch {
+            dao.getRecentesFinanceiro(4).collectLatest { entries ->
+                adapterRecentes.submitList(entries)
+                binding.textEmptyRecentes.visibility = if (entries.isEmpty()) View.VISIBLE else View.GONE
+            }
         }
     }
 }

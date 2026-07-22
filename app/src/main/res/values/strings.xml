@@ -26,6 +26,10 @@
     <string name="btn_financeiro">Financeiro</string>
     <string name="stat_saldo_estimado">Saldo estimado</string>
     <string name="format_qtd_curto">%d lançamento(s)</string>
+    <string name="label_ultimos_7_dias">Últimos 7 dias</string>
+    <string name="label_ultimos_lancamentos">Últimos lançamentos</string>
+    <string name="link_ver_tudo">ver tudo →</string>
+    <string name="label_por_categoria_financeiro">Por categoria este mês</string>
     <string name="empty_history">Nenhum lançamento ainda.\nToque duas vezes na traseira do celular pra começar.</string>
     <string name="entry_number_format">Nº %04d</string>
     <string name="prefix_valor">R$</string>

@@ -29,6 +29,13 @@ interface EntryDao {
     )
     fun getByTypeAndRange(type: EntryType, inicio: Long, fim: Long): Flow<List<Entry>>
 
+    // Gasto + Recebimento misturados, mais recente primeiro — preview de
+    // "últimos lançamentos" no dashboard do Início.
+    @Query(
+        "SELECT * FROM entries WHERE type IN ('GASTO', 'RECEBIMENTO') ORDER BY timestamp DESC LIMIT :limite"
+    )
+    fun getRecentesFinanceiro(limite: Int): Flow<List<Entry>>
+
     @Query("DELETE FROM entries WHERE id = :id")
     suspend fun deleteById(id: Long)
 

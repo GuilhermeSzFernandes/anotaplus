@@ -2,10 +2,12 @@ package com.guilherme.anotaplus
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.ads.AdListener
@@ -16,16 +18,20 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.guilherme.anotaplus.data.AppDatabase
+import com.guilherme.anotaplus.data.CategoriaTotal
 import com.guilherme.anotaplus.data.EntryType
 import com.guilherme.anotaplus.data.Prefs
 import com.guilherme.anotaplus.data.SubscriptionPrefs
 import com.guilherme.anotaplus.databinding.ActivityFinanceiroBinding
+import com.guilherme.anotaplus.databinding.ItemCategoriaCardBinding
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import kotlin.math.roundToInt
 
 // Extrato de Gasto + Recebimento (o "Início" antigo, antes dele virar
 // dashboard) — toggle escolhe o tipo, mês continua filtrando os dois.
@@ -90,6 +96,48 @@ class FinanceiroActivity : AppCompatActivity() {
                     binding.textEmpty.visibility =
                         if (entries.isEmpty()) View.VISIBLE else View.GONE
                 }
+        }
+
+        // Gráfico por categoria: só existe pra Gasto (getGastoPorCategoria é
+        // hardcoded pra type = 'GASTO'; Recebimento ainda não tem essa
+        // granularidade). Some por completo no toggle de Recebimento.
+        lifecycleScope.launch {
+            combine(tipoSelecionado, mesSelecionado) { tipo, mes -> tipo to mes }
+                .flatMapLatest { (tipo, mes) ->
+                    if (tipo == EntryType.GASTO) {
+                        dao.getGastoPorCategoria(MesUtil.inicioDoMes(mes), MesUtil.fimDoMes(mes))
+                    } else {
+                        flowOf(emptyList())
+                    }
+                }
+                .collectLatest { categorias -> renderCategorias(categorias) }
+        }
+    }
+
+    private fun renderCategorias(categorias: List<CategoriaTotal>) {
+        if (categorias.isEmpty()) {
+            binding.sectionCategorias.visibility = View.GONE
+            return
+        }
+        binding.sectionCategorias.visibility = View.VISIBLE
+
+        val total = categorias.sumOf { it.total }
+        binding.chartCategorias.setDados(categorias.map { it.total })
+        binding.textDonutTotal.text = "R$ %.2f".format(MesUtil.locale, total)
+
+        binding.containerCategoriaCards.removeAllViews()
+        categorias.forEachIndexed { index, item ->
+            val row = ItemCategoriaCardBinding.inflate(
+                LayoutInflater.from(this),
+                binding.containerCategoriaCards,
+                false
+            )
+            row.textNomeCategoriaCard.text = item.categoria ?: getString(R.string.sem_categoria)
+            row.textValorCategoriaCard.text = "R$ %.2f".format(MesUtil.locale, item.total)
+            val percentual = if (total > 0) (item.total / total * 100).roundToInt() else 0
+            row.textPctCategoriaCard.text = "$percentual%"
+            row.viewCorCategoria.setBackgroundColor(ContextCompat.getColor(this, CORES_CATEGORIA[index % CORES_CATEGORIA.size]))
+            binding.containerCategoriaCards.addView(row.root)
         }
     }
 
@@ -208,5 +256,16 @@ class FinanceiroActivity : AppCompatActivity() {
 
     companion object {
         private const val ABERTURAS_POR_INTERSTICIAL = 4
+
+        // Mesma ordem de cores do DonutChartView — cards e fatias precisam
+        // bater (índice da categoria na lista == índice da cor).
+        private val CORES_CATEGORIA = intArrayOf(
+            R.color.brass,
+            R.color.gasto_color,
+            R.color.color_positivo,
+            R.color.pensamento_color,
+            R.color.chart_teal,
+            R.color.chart_dusty_rose
+        )
     }
 }
