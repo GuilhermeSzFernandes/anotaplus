@@ -3,43 +3,95 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardBackgroundColor="@color/ink"
+    app:cardBackgroundColor="@color/paper"
     app:cardCornerRadius="28dp"
-    app:cardElevation="8dp"
+    app:cardElevation="6dp"
     app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingVertical="10dp">
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="8dp">
 
         <LinearLayout
             android:id="@+id/nav_inicio"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:gravity="center"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true">
 
-            <ImageView
-                android:id="@+id/icon_inicio"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@drawable/ic_home"
-                android:contentDescription="@string/title_inicio" />
-
-            <TextView
-                android:id="@+id/label_inicio"
+            <LinearLayout
+                android:id="@+id/pill_inicio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@string/title_inicio"
-                android:textAppearance="@style/TextAppearance.AnotaPlus.Label"
-                android:textColor="@color/paper" />
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="8dp">
+
+                <ImageView
+                    android:id="@+id/icon_inicio"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_home"
+                    android:contentDescription="@string/title_inicio" />
+
+                <TextView
+                    android:id="@+id/label_inicio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="@string/title_inicio"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.Label"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nav_anotacoes"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true">
+
+            <LinearLayout
+                android:id="@+id/pill_anotacoes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="8dp">
+
+                <ImageView
+                    android:id="@+id/icon_anotacoes"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_note"
+                    android:contentDescription="@string/title_anotacoes" />
+
+                <TextView
+                    android:id="@+id/label_anotacoes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="@string/title_anotacoes"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.Label"
+                    android:visibility="gone" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -48,56 +100,78 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:gravity="center"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true">
 
-            <ImageView
-                android:id="@+id/icon_relatorio"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@drawable/ic_report"
-                android:contentDescription="@string/title_relatorio" />
-
-            <TextView
-                android:id="@+id/label_relatorio"
+            <LinearLayout
+                android:id="@+id/pill_relatorio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@string/title_relatorio"
-                android:textAppearance="@style/TextAppearance.AnotaPlus.Label"
-                android:textColor="@color/paper" />
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="8dp">
+
+                <ImageView
+                    android:id="@+id/icon_relatorio"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_report"
+                    android:contentDescription="@string/title_relatorio" />
+
+                <TextView
+                    android:id="@+id/label_relatorio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="@string/title_relatorio"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.Label"
+                    android:visibility="gone" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/nav_configuracoes"
+            android:id="@+id/nav_conta"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:gravity="center"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true">
 
-            <ImageView
-                android:id="@+id/icon_configuracoes"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@drawable/ic_settings"
-                android:contentDescription="@string/title_configuracoes" />
-
-            <TextView
-                android:id="@+id/label_configuracoes"
+            <LinearLayout
+                android:id="@+id/pill_conta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@string/title_configuracoes"
-                android:textAppearance="@style/TextAppearance.AnotaPlus.Label"
-                android:textColor="@color/paper" />
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="8dp">
+
+                <ImageView
+                    android:id="@+id/icon_conta"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_account"
+                    android:contentDescription="@string/title_conta" />
+
+                <TextView
+                    android:id="@+id/label_conta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="@string/title_conta"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.Label"
+                    android:visibility="gone" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

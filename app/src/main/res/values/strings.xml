@@ -19,8 +19,9 @@
     <string name="prefix_valor">R$</string>
 
     <string name="title_relatorio">Relatório</string>
-    <string name="title_configuracoes">Configurações</string>
     <string name="title_inicio">Início</string>
+    <string name="title_anotacoes">Anotações</string>
+    <string name="title_conta">Conta</string>
 
     <string name="label_tipo_padrao">Tipo padrão ao abrir</string>
     <string name="label_categorias">Categorias</string>

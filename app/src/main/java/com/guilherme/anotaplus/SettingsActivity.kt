@@ -33,8 +33,9 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        aplicarEdgeToEdge(binding.root, binding.header, binding.bottomNav.root)
 
-        configurarBottomNav(binding.bottomNav, NavTab.CONFIGURACOES)
+        configurarBottomNav(binding.bottomNav, NavTab.CONTA)
 
         atualizarUiConta()
         binding.btnEntrarGoogle.setOnClickListener { lifecycleScope.launch { entrarComGoogle() } }

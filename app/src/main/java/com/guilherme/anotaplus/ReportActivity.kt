@@ -45,6 +45,7 @@ class ReportActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityReportBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        aplicarEdgeToEdge(binding.root, binding.header, binding.bottomNav.root)
 
         configurarBottomNav(binding.bottomNav, NavTab.RELATORIO)
 

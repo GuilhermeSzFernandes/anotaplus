@@ -3,22 +3,23 @@
     <color name="scrim">#14140F</color>
     <color name="modal_scrim">#E014140F</color>
 
-    <!-- Papel: a superfície do "recibo" -->
-    <color name="paper">#F1EEE4</color>
-    <color name="paper_dim">#E4E0D2</color>
+    <!-- Superfície: fundo neutro frio, não creme -->
+    <color name="paper">#F6F6F3</color>
+    <color name="paper_dim">#EAEAE5</color>
 
-    <!-- Tinta: texto sobre papel -->
-    <color name="ink">#211D18</color>
-    <color name="ink_soft">#6E6759</color>
+    <!-- Texto/ícones: preto neutro -->
+    <color name="ink">#1B1B1D</color>
+    <color name="ink_soft">#78787A</color>
 
-    <!-- Duas tintas de carimbo: gasto (oxblood) e ideia (índigo) -->
-    <color name="gasto_color">#96362A</color>
-    <color name="pensamento_color">#33397E</color>
+    <!-- Dois tons dessaturados: gasto (clay) e ideia (slate) -->
+    <color name="gasto_color">#9C5B45</color>
+    <color name="pensamento_color">#4A5568</color>
 
     <!-- Verde oliva: queda de gasto vs mês anterior / dentro do orçamento -->
     <color name="color_positivo">#4C6B3E</color>
 
-    <!-- Latão: a única cor de ação (selo/confirmação) -->
-    <color name="brass">#B8862E</color>
-    <color name="brass_pressed">#9C7025</color>
+    <!-- Único acento de destaque -->
+    <color name="brass">#A8823A</color>
+    <color name="brass_pressed">#8C6B2E</color>
+    <color name="brass_pill_bg">#1FA8823A</color>
 </resources>

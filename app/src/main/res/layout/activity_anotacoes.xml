@@ -22,42 +22,31 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/title_inicio"
+            android:text="@string/title_anotacoes"
             android:textAppearance="@style/TextAppearance.AnotaPlus.Wordmark"
             android:textSize="20sp" />
 
         <ImageButton
-            android:id="@+id/btn_add_gasto"
+            android:id="@+id/btn_add_ideia"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/desc_adicionar_gasto"
+            android:contentDescription="@string/desc_adicionar_ideia"
             android:padding="8dp"
             android:src="@drawable/ic_add"
             app:tint="@color/brass" />
 
     </LinearLayout>
 
-    <include
-        android:id="@+id/row_mes"
-        layout="@layout/row_month_selector"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="6dp"
-        app:layout_constraintTop_toBottomOf="@id/header"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
     <com.guilherme.anotaplus.ui.PerforationView
-        android:id="@+id/row_mes_perforation"
+        android:id="@+id/header_perforation"
         android:layout_width="0dp"
         android:layout_height="5dp"
         app:toothWidth="7dp"
         app:toothHeight="3dp"
         app:toothGap="3dp"
         app:toothColor="@color/paper_dim"
-        app:layout_constraintTop_toBottomOf="@id/row_mes"
+        app:layout_constraintTop_toBottomOf="@id/header"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -68,19 +57,11 @@
         android:paddingHorizontal="12dp"
         android:paddingTop="12dp"
         android:clipToPadding="false"
-        app:layout_constraintTop_toBottomOf="@id/row_mes_perforation"
+        app:layout_constraintTop_toBottomOf="@id/header_perforation"
         app:layout_constraintBottom_toTopOf="@id/ad_container"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Só visível pra quem não é PRO (ver HistoryActivity). Quando GONE,
-         o RecyclerView (constrainedBottom_toTopOf este id) volta a ocupar
-         o espaço inteiro sozinho, sem precisar de outra constraint.
-         Container vazio em vez de declarar <AdView> aqui: o AdMob exige
-         que adSize/adUnitId sejam setados "do mesmo jeito" (os dois via
-         XML ou os dois via código) — declarar a tag aqui sem esses
-         atributos conflitava com setar por código depois. O AdView em si
-         é criado 100% programaticamente (ver HistoryActivity.kt). -->
     <FrameLayout
         android:id="@+id/ad_container"
         android:layout_width="wrap_content"
