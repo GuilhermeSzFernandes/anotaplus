@@ -10,6 +10,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // JitPack: só pro MPAndroidChart (gráfico de saldo do Financeiro),
+        // não está no Maven Central.
+        maven { url = uri("https://jitpack.io") }
     }
 }
 

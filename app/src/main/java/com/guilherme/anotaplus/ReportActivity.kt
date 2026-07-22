@@ -13,19 +13,15 @@ import com.guilherme.anotaplus.data.CategoriaTotal
 import com.guilherme.anotaplus.data.Category
 import com.guilherme.anotaplus.data.DiaSemanaTotal
 import com.guilherme.anotaplus.data.Entry
-import com.guilherme.anotaplus.data.GastoDiario
 import com.guilherme.anotaplus.databinding.ActivityReportBinding
 import com.guilherme.anotaplus.databinding.ItemReportCategoriaBinding
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import kotlin.math.roundToInt
-
-private const val DIA_MS = 24L * 60 * 60 * 1000
 
 private data class EstatisticasMes(
     val maiorGasto: Entry?,
@@ -39,7 +35,6 @@ class ReportActivity : AppCompatActivity() {
     private lateinit var binding: ActivityReportBinding
     private val locale = MesUtil.locale
     private val mesSelecionado = MutableStateFlow(Calendar.getInstance())
-    private val periodoTendencia = MutableStateFlow(30)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,19 +42,10 @@ class ReportActivity : AppCompatActivity() {
         setContentView(binding.root)
         aplicarEdgeToEdge(binding.root, binding.header, binding.bottomNav.root)
 
-        configurarBottomNav(binding.bottomNav, NavTab.RELATORIO)
+        configurarBottomNav(binding.bottomNav, NavTab.INICIO)
 
         binding.rowMes.btnMesAnterior.setOnClickListener { mudarMes(-1) }
         binding.rowMes.btnMesProximo.setOnClickListener { mudarMes(1) }
-
-        binding.togglePeriodoTendencia.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            if (!isChecked) return@addOnButtonCheckedListener
-            periodoTendencia.value = when (checkedId) {
-                binding.btnPeriodo90.id -> 90
-                binding.btnPeriodo365.id -> 365
-                else -> 30
-            }
-        }
 
         val db = AppDatabase.getInstance(applicationContext)
         val dao = db.entryDao()
@@ -111,14 +97,6 @@ class ReportActivity : AppCompatActivity() {
             }.collectLatest { (atual, anteriorLista, categorias) ->
                 renderCategorias(atual, anteriorLista, categorias)
             }
-        }
-
-        lifecycleScope.launch {
-            periodoTendencia.flatMapLatest { dias ->
-                val fim = System.currentTimeMillis()
-                val inicio = fim - dias * DIA_MS
-                dao.getGastoPorDia(inicio, fim).map { pontos -> dias to pontos }
-            }.collectLatest { (dias, pontos) -> renderTendencia(dias, pontos) }
         }
 
         lifecycleScope.launch {
@@ -219,24 +197,6 @@ class ReportActivity : AppCompatActivity() {
 
             binding.containerCategorias.addView(row.root)
         }
-    }
-
-    // Pra períodos maiores que 30 dias, reagrupa a série diária em buckets
-    // de 7 pontos (aproximação de semana) — senão o gráfico de 365 dias
-    // teria um ponto por dia e viraria ilegível.
-    private fun renderTendencia(dias: Int, pontosDiarios: List<GastoDiario>) {
-        if (pontosDiarios.size < 2) {
-            binding.chartTendencia.visibility = View.GONE
-            binding.textEmptyTendencia.visibility = View.VISIBLE
-            return
-        }
-        binding.chartTendencia.visibility = View.VISIBLE
-        binding.textEmptyTendencia.visibility = View.GONE
-
-        val valores = pontosDiarios.map { it.total }
-        binding.chartTendencia.setDados(
-            if (dias > 30) valores.chunked(7).map { it.sum() } else valores
-        )
     }
 
     private fun renderEstatisticas(stats: EstatisticasMes) {

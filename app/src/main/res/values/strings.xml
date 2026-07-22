@@ -24,17 +24,12 @@
     <string name="desc_adicionar_recebimento">Adicionar recebimento manualmente</string>
     <string name="btn_recebimento">Recebimento</string>
     <string name="btn_financeiro">Financeiro</string>
-    <string name="stat_saldo_estimado">Saldo estimado</string>
-    <string name="format_qtd_curto">%d lançamento(s)</string>
-    <string name="label_ultimos_7_dias">Últimos 7 dias</string>
-    <string name="label_ultimos_lancamentos">Últimos lançamentos</string>
-    <string name="link_ver_tudo">ver tudo →</string>
-    <string name="label_por_categoria_financeiro">Por categoria este mês</string>
+    <string name="stat_saldo_estimado">Saldo do mês</string>
+    <string name="label_saldo_periodo">Saldo ao longo do mês</string>
     <string name="empty_history">Nenhum lançamento ainda.\nToque duas vezes na traseira do celular pra começar.</string>
     <string name="entry_number_format">Nº %04d</string>
     <string name="prefix_valor">R$</string>
 
-    <string name="title_relatorio">Relatório</string>
     <string name="title_inicio">Início</string>
     <string name="title_anotacoes">Anotações</string>
     <string name="title_financeiro">Financeiro</string>
@@ -62,12 +57,6 @@
     <string name="comparativo_alta">▲ %d%% vs mês anterior</string>
     <string name="comparativo_queda">▼ %d%% vs mês anterior</string>
     <string name="format_valor_limite">%1$s / %2$s</string>
-
-    <string name="label_tendencia">Tendência de gastos</string>
-    <string name="periodo_30_dias">30 dias</string>
-    <string name="periodo_90_dias">90 dias</string>
-    <string name="periodo_365_dias">365 dias</string>
-    <string name="empty_tendencia">Sem dados suficientes pra mostrar a tendência ainda.</string>
 
     <string name="label_estatisticas">Estatísticas</string>
     <string name="stat_maior_gasto">Maior gasto</string>

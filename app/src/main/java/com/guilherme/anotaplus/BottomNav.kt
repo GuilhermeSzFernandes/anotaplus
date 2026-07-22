@@ -7,12 +7,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import com.guilherme.anotaplus.databinding.BottomNavBarBinding
 
-enum class NavTab { ANOTACOES, FINANCEIRO, INICIO, RELATORIO, CONTA }
+enum class NavTab { ANOTACOES, FINANCEIRO, INICIO, CONTA }
 
-// Barra inferior fixa das 5 telas-raiz. Troca de aba nunca empilha
-// Activity: sempre finish() na atual antes de abrir a nova, senão apertar
-// voltar depois de circular pelas abas ia empilhando instâncias repetidas
-// em vez de sair do app.
+// Barra inferior fixa das 4 telas-raiz. Início = ReportActivity (o antigo
+// Relatório passou a ocupar esse lugar; a tela de dashboard separada
+// saiu). Troca de aba nunca empilha Activity: sempre finish() na atual
+// antes de abrir a nova, senão apertar voltar depois de circular pelas
+// abas ia empilhando instâncias repetidas em vez de sair do app.
 fun AppCompatActivity.configurarBottomNav(binding: BottomNavBarBinding, atual: NavTab) {
     fun aplicarEstado(pill: android.widget.LinearLayout, icon: android.widget.ImageView, ativo: Boolean) {
         pill.background = if (ativo) ContextCompat.getDrawable(this, R.drawable.bg_nav_pill_active) else null
@@ -23,13 +24,11 @@ fun AppCompatActivity.configurarBottomNav(binding: BottomNavBarBinding, atual: N
     aplicarEstado(binding.pillAnotacoes, binding.iconAnotacoes, atual == NavTab.ANOTACOES)
     aplicarEstado(binding.pillFinanceiro, binding.iconFinanceiro, atual == NavTab.FINANCEIRO)
     aplicarEstado(binding.pillInicio, binding.iconInicio, atual == NavTab.INICIO)
-    aplicarEstado(binding.pillRelatorio, binding.iconRelatorio, atual == NavTab.RELATORIO)
     aplicarEstado(binding.pillConta, binding.iconConta, atual == NavTab.CONTA)
 
     binding.navAnotacoes.setOnClickListener { trocarTab(atual, NavTab.ANOTACOES, AnotacoesActivity::class.java) }
     binding.navFinanceiro.setOnClickListener { trocarTab(atual, NavTab.FINANCEIRO, FinanceiroActivity::class.java) }
-    binding.navInicio.setOnClickListener { trocarTab(atual, NavTab.INICIO, HistoryActivity::class.java) }
-    binding.navRelatorio.setOnClickListener { trocarTab(atual, NavTab.RELATORIO, ReportActivity::class.java) }
+    binding.navInicio.setOnClickListener { trocarTab(atual, NavTab.INICIO, ReportActivity::class.java) }
     binding.navConta.setOnClickListener { trocarTab(atual, NavTab.CONTA, SettingsActivity::class.java) }
 }
 

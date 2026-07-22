@@ -71,7 +71,7 @@ class QuickCaptureActivity : AppCompatActivity() {
         }
 
         if (abrirHistorico) {
-            startActivity(Intent(this, HistoryActivity::class.java))
+            startActivity(Intent(this, ReportActivity::class.java))
             finish()
             return
         }

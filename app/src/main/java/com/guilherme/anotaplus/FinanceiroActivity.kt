@@ -2,7 +2,6 @@ package com.guilherme.anotaplus
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.PopupMenu
 import android.widget.Toast
@@ -10,6 +9,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.Entry as ChartEntry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
@@ -18,23 +21,22 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.guilherme.anotaplus.data.AppDatabase
-import com.guilherme.anotaplus.data.CategoriaTotal
-import com.guilherme.anotaplus.data.EntryType
+import com.guilherme.anotaplus.data.GastoDiario
 import com.guilherme.anotaplus.data.Prefs
 import com.guilherme.anotaplus.data.SubscriptionPrefs
 import com.guilherme.anotaplus.databinding.ActivityFinanceiroBinding
-import com.guilherme.anotaplus.databinding.ItemCategoriaCardBinding
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.Calendar
-import kotlin.math.roundToInt
 
-// Extrato de Gasto + Recebimento (o "Início" antigo, antes dele virar
-// dashboard) — toggle escolhe o tipo, mês continua filtrando os dois.
+// Extrato único de Gasto + Recebimento (como uma conta bancária de
+// verdade, sem separar por tipo): saldo do mês em destaque, gráfico de
+// saldo acumulado dia a dia (MPAndroidChart), e a lista combinada logo
+// abaixo — sinal +/- por lançamento já indica qual é qual (ver EntryAdapter).
 class FinanceiroActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityFinanceiroBinding
@@ -44,7 +46,6 @@ class FinanceiroActivity : AppCompatActivity() {
                 .putExtra(EditEntryActivity.EXTRA_ENTRY_ID, entry.id)
         )
     }
-    private val tipoSelecionado = MutableStateFlow(EntryType.GASTO)
     private val mesSelecionado = MutableStateFlow(Calendar.getInstance())
     private var adViewBanner: AdView? = null
 
@@ -57,15 +58,7 @@ class FinanceiroActivity : AppCompatActivity() {
         configurarBottomNav(binding.bottomNav, NavTab.FINANCEIRO)
 
         binding.btnAddLancamento.setOnClickListener { mostrarMenuAdicionar() }
-
-        binding.toggleTipoFinanceiro.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            if (!isChecked) return@addOnButtonCheckedListener
-            tipoSelecionado.value = if (checkedId == binding.btnTipoFinanceiroRecebimento.id) {
-                EntryType.RECEBIMENTO
-            } else {
-                EntryType.GASTO
-            }
-        }
+        configurarGrafico()
 
         binding.recyclerEntries.layoutManager = LinearLayoutManager(this)
         binding.recyclerEntries.adapter = adapter
@@ -87,58 +80,105 @@ class FinanceiroActivity : AppCompatActivity() {
         val dao = AppDatabase.getInstance(applicationContext).entryDao()
 
         lifecycleScope.launch {
-            combine(tipoSelecionado, mesSelecionado) { tipo, mes -> tipo to mes }
-                .flatMapLatest { (tipo, mes) ->
-                    dao.getByTypeAndRange(tipo, MesUtil.inicioDoMes(mes), MesUtil.fimDoMes(mes))
-                }
-                .collectLatest { entries ->
-                    adapter.submitList(entries)
-                    binding.textEmpty.visibility =
-                        if (entries.isEmpty()) View.VISIBLE else View.GONE
-                }
+            mesSelecionado.flatMapLatest { mes ->
+                dao.getFinanceiroPorMes(MesUtil.inicioDoMes(mes), MesUtil.fimDoMes(mes))
+            }.collectLatest { entries ->
+                adapter.submitList(entries)
+                binding.textEmpty.visibility = if (entries.isEmpty()) View.VISIBLE else View.GONE
+            }
         }
 
-        // Gráfico por categoria: só existe pra Gasto (getGastoPorCategoria é
-        // hardcoded pra type = 'GASTO'; Recebimento ainda não tem essa
-        // granularidade). Some por completo no toggle de Recebimento.
         lifecycleScope.launch {
-            combine(tipoSelecionado, mesSelecionado) { tipo, mes -> tipo to mes }
-                .flatMapLatest { (tipo, mes) ->
-                    if (tipo == EntryType.GASTO) {
-                        dao.getGastoPorCategoria(MesUtil.inicioDoMes(mes), MesUtil.fimDoMes(mes))
-                    } else {
-                        flowOf(emptyList())
-                    }
-                }
-                .collectLatest { categorias -> renderCategorias(categorias) }
+            mesSelecionado.flatMapLatest { mes ->
+                val inicio = MesUtil.inicioDoMes(mes)
+                val fim = MesUtil.fimDoMes(mes)
+                combine(
+                    dao.getTotalGasto(inicio, fim),
+                    dao.getTotalRecebimento(inicio, fim)
+                ) { gasto, recebimento -> recebimento - gasto }
+            }.collectLatest { saldo -> renderSaldo(saldo) }
+        }
+
+        lifecycleScope.launch {
+            mesSelecionado.flatMapLatest { mes ->
+                val inicio = MesUtil.inicioDoMes(mes)
+                val fim = MesUtil.fimDoMes(mes)
+                combine(
+                    dao.getGastoPorDia(inicio, fim),
+                    dao.getRecebimentoPorDia(inicio, fim)
+                ) { gastos, recebimentos -> calcularSaldoAcumulado(mes, gastos, recebimentos) }
+            }.collectLatest { pontos -> renderGrafico(pontos) }
         }
     }
 
-    private fun renderCategorias(categorias: List<CategoriaTotal>) {
-        if (categorias.isEmpty()) {
-            binding.sectionCategorias.visibility = View.GONE
-            return
-        }
-        binding.sectionCategorias.visibility = View.VISIBLE
+    private fun renderSaldo(saldo: Double) {
+        binding.textSaldoValor.text = "R$ %.2f".format(MesUtil.locale, saldo)
+        binding.textSaldoValor.setTextColor(
+            ContextCompat.getColor(this, if (saldo < 0) R.color.gasto_color else R.color.color_positivo)
+        )
+    }
 
-        val total = categorias.sumOf { it.total }
-        binding.chartCategorias.setDados(categorias.map { it.total })
-        binding.textDonutTotal.text = "R$ %.2f".format(MesUtil.locale, total)
+    // O banco não guarda saldo corrido, então reconstrói aqui: pega o net
+    // (recebimento - gasto) de cada dia que teve lançamento, preenche os
+    // dias sem lançamento com 0, e acumula em soma corrida do dia 1 até o
+    // último dia do mês selecionado.
+    private fun calcularSaldoAcumulado(
+        mes: Calendar,
+        gastos: List<GastoDiario>,
+        recebimentos: List<GastoDiario>
+    ): List<Double> {
+        val diasFormat = SimpleDateFormat("yyyy-MM-dd", MesUtil.locale)
+        val gastosPorDia = gastos.associate { it.dia to it.total }
+        val recebimentosPorDia = recebimentos.associate { it.dia to it.total }
+        val ultimoDia = (mes.clone() as Calendar).getActualMaximum(Calendar.DAY_OF_MONTH)
 
-        binding.containerCategoriaCards.removeAllViews()
-        categorias.forEachIndexed { index, item ->
-            val row = ItemCategoriaCardBinding.inflate(
-                LayoutInflater.from(this),
-                binding.containerCategoriaCards,
-                false
-            )
-            row.textNomeCategoriaCard.text = item.categoria ?: getString(R.string.sem_categoria)
-            row.textValorCategoriaCard.text = "R$ %.2f".format(MesUtil.locale, item.total)
-            val percentual = if (total > 0) (item.total / total * 100).roundToInt() else 0
-            row.textPctCategoriaCard.text = "$percentual%"
-            row.viewCorCategoria.setBackgroundColor(ContextCompat.getColor(this, CORES_CATEGORIA[index % CORES_CATEGORIA.size]))
-            binding.containerCategoriaCards.addView(row.root)
+        var acumulado = 0.0
+        return (1..ultimoDia).map { dia ->
+            val data = (mes.clone() as Calendar).apply { set(Calendar.DAY_OF_MONTH, dia) }
+            val chave = diasFormat.format(data.time)
+            val net = (recebimentosPorDia[chave] ?: 0.0) - (gastosPorDia[chave] ?: 0.0)
+            acumulado += net
+            acumulado
         }
+    }
+
+    // Configuração visual pra não parecer o padrão de fábrica da lib —
+    // sem legenda/descrição/eixo direito, sem grade, sem interação (é só
+    // um gráfico de leitura, não precisa de zoom/pan).
+    private fun configurarGrafico() {
+        binding.chartSaldo.apply {
+            description.isEnabled = false
+            legend.isEnabled = false
+            setTouchEnabled(false)
+            setPinchZoom(false)
+            setScaleEnabled(false)
+            setDrawGridBackground(false)
+            axisRight.isEnabled = false
+            axisLeft.setDrawGridLines(false)
+            axisLeft.setDrawAxisLine(false)
+            axisLeft.setDrawLabels(false)
+            xAxis.setDrawGridLines(false)
+            xAxis.setDrawAxisLine(false)
+            xAxis.setDrawLabels(false)
+            xAxis.position = XAxis.XAxisPosition.BOTTOM
+        }
+    }
+
+    private fun renderGrafico(pontos: List<Double>) {
+        val chartEntries = pontos.mapIndexed { index, valor -> ChartEntry((index + 1).toFloat(), valor.toFloat()) }
+        val cor = ContextCompat.getColor(this, R.color.brass)
+        val dataSet = LineDataSet(chartEntries, "saldo").apply {
+            color = cor
+            lineWidth = 2f
+            setDrawCircles(false)
+            setDrawValues(false)
+            mode = LineDataSet.Mode.CUBIC_BEZIER
+            setDrawFilled(true)
+            fillColor = cor
+            fillAlpha = 40
+        }
+        binding.chartSaldo.data = LineData(dataSet)
+        binding.chartSaldo.invalidate()
     }
 
     private fun mostrarMenuAdicionar() {
@@ -256,16 +296,5 @@ class FinanceiroActivity : AppCompatActivity() {
 
     companion object {
         private const val ABERTURAS_POR_INTERSTICIAL = 4
-
-        // Mesma ordem de cores do DonutChartView — cards e fatias precisam
-        // bater (índice da categoria na lista == índice da cor).
-        private val CORES_CATEGORIA = intArrayOf(
-            R.color.brass,
-            R.color.gasto_color,
-            R.color.color_positivo,
-            R.color.pensamento_color,
-            R.color.chart_teal,
-            R.color.chart_dusty_rose
-        )
     }
 }

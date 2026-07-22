@@ -47,7 +47,9 @@ class EntryAdapter(private val onItemClick: (Entry) -> Unit) :
             )
 
             binding.textTipoValor.text = if (ehFinanceiro) {
-                val valorTexto = entry.valor?.let { "R$ %.2f".format(locale, it) } ?: "R$ --"
+                // Sinal de extrato: Recebimento soma, Gasto subtrai.
+                val sinal = if (entry.type == EntryType.RECEBIMENTO) "+ " else "- "
+                val valorTexto = entry.valor?.let { "$sinal" + "R$ %.2f".format(locale, it) } ?: "R$ --"
                 val categoria = entry.categoria?.let { " · $it" } ?: ""
                 "$valorTexto$categoria"
             } else {

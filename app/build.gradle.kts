@@ -113,4 +113,7 @@ dependencies {
     // Assinatura PRO (Google Play Billing) e anúncios do plano Free (AdMob)
     implementation("com.android.billingclient:billing-ktx:7.1.1")
     implementation("com.google.android.gms:play-services-ads:23.5.0")
+
+    // Gráfico de saldo do Financeiro — via JitPack (ver settings.gradle.kts)
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }

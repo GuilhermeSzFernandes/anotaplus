@@ -57,7 +57,7 @@ class AnotacoesActivity : AppCompatActivity() {
     }
 
     // runCatching em volta de tudo: anúncio é sempre secundário, uma falha
-    // do AdMob não pode derrubar a tela (ver HistoryActivity, mesmo padrão).
+    // do AdMob não pode derrubar a tela (ver FinanceiroActivity, mesmo padrão).
     private fun atualizarBanner() {
         runCatching { adViewBanner?.destroy() }
         binding.adContainer.removeAllViews()

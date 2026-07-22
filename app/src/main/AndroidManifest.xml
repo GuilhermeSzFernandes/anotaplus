@@ -58,11 +58,6 @@
         </activity>
 
         <activity
-            android:name=".HistoryActivity"
-            android:exported="false"
-            android:theme="@style/Theme.AnotaPlus" />
-
-        <activity
             android:name=".AnotacoesActivity"
             android:exported="false"
             android:theme="@style/Theme.AnotaPlus" />

@@ -24,17 +24,12 @@ interface EntryDao {
     @Query("SELECT * FROM entries WHERE type = :type ORDER BY timestamp DESC")
     fun getByType(type: EntryType): Flow<List<Entry>>
 
+    // Gasto + Recebimento misturados (extrato único do Financeiro, sem
+    // separar por tipo — sinal +/- de cada linha já indica qual é qual).
     @Query(
-        "SELECT * FROM entries WHERE type = :type AND timestamp BETWEEN :inicio AND :fim ORDER BY timestamp DESC"
+        "SELECT * FROM entries WHERE type IN ('GASTO', 'RECEBIMENTO') AND timestamp BETWEEN :inicio AND :fim ORDER BY timestamp DESC"
     )
-    fun getByTypeAndRange(type: EntryType, inicio: Long, fim: Long): Flow<List<Entry>>
-
-    // Gasto + Recebimento misturados, mais recente primeiro — preview de
-    // "últimos lançamentos" no dashboard do Início.
-    @Query(
-        "SELECT * FROM entries WHERE type IN ('GASTO', 'RECEBIMENTO') ORDER BY timestamp DESC LIMIT :limite"
-    )
-    fun getRecentesFinanceiro(limite: Int): Flow<List<Entry>>
+    fun getFinanceiroPorMes(inicio: Long, fim: Long): Flow<List<Entry>>
 
     @Query("DELETE FROM entries WHERE id = :id")
     suspend fun deleteById(id: Long)
@@ -81,9 +76,8 @@ interface EntryDao {
     fun getTotalRecebimento(inicio: Long, fim: Long): Flow<Double>
 
     // Total gasto por dia (fuso do aparelho, via modificador 'localtime' do
-    // SQLite) — base pro gráfico de tendência. Sempre granularidade diária;
-    // pra períodos maiores (90/365 dias) o reagrupamento em semanas
-    // acontece em Kotlin (ver ReportActivity), não aqui.
+    // SQLite) — base do gráfico de saldo acumulado do Financeiro (junto
+    // com getRecebimentoPorDia).
     @Query(
         """
         SELECT strftime('%Y-%m-%d', timestamp / 1000, 'unixepoch', 'localtime') AS dia, SUM(valor) AS total
@@ -94,6 +88,17 @@ interface EntryDao {
         """
     )
     fun getGastoPorDia(inicio: Long, fim: Long): Flow<List<GastoDiario>>
+
+    @Query(
+        """
+        SELECT strftime('%Y-%m-%d', timestamp / 1000, 'unixepoch', 'localtime') AS dia, SUM(valor) AS total
+        FROM entries
+        WHERE type = 'RECEBIMENTO' AND timestamp BETWEEN :inicio AND :fim AND valor IS NOT NULL
+        GROUP BY dia
+        ORDER BY dia ASC
+        """
+    )
+    fun getRecebimentoPorDia(inicio: Long, fim: Long): Flow<List<GastoDiario>>
 
     @Query(
         "SELECT * FROM entries WHERE type = 'GASTO' AND timestamp BETWEEN :inicio AND :fim AND valor IS NOT NULL ORDER BY valor DESC LIMIT 1"
