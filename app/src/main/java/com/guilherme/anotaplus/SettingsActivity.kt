@@ -34,7 +34,7 @@ class SettingsActivity : AppCompatActivity() {
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.toolbar.setNavigationOnClickListener { finish() }
+        configurarBottomNav(binding.bottomNav, NavTab.CONFIGURACOES)
 
         atualizarUiConta()
         binding.btnEntrarGoogle.setOnClickListener { lifecycleScope.launch { entrarComGoogle() } }

@@ -54,7 +54,7 @@ class HistoryActivity : AppCompatActivity() {
         binding = ActivityHistoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.toolbar.setNavigationOnClickListener { finish() }
+        configurarBottomNav(binding.bottomNav, NavTab.INICIO)
         binding.toolbar.inflateMenu(R.menu.history_menu)
         binding.toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
@@ -64,14 +64,6 @@ class HistoryActivity : AppCompatActivity() {
                 }
                 R.id.action_add_ideia -> {
                     startActivity(Intent(this, ManualIdeiaActivity::class.java))
-                    true
-                }
-                R.id.action_report -> {
-                    startActivity(Intent(this, ReportActivity::class.java))
-                    true
-                }
-                R.id.action_settings -> {
-                    startActivity(Intent(this, SettingsActivity::class.java))
                     true
                 }
                 else -> false

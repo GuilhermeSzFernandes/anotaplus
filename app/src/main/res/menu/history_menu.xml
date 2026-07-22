@@ -15,16 +15,4 @@
         android:visible="false"
         app:showAsAction="always" />
 
-    <item
-        android:id="@+id/action_report"
-        android:title="@string/title_relatorio"
-        android:icon="@drawable/ic_report"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/action_settings"
-        android:title="@string/title_configuracoes"
-        android:icon="@drawable/ic_settings"
-        app:showAsAction="always" />
-
 </menu>

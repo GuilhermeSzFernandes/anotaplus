@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.AnotaPlus" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.AnotaPlus" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/ink</item>
         <item name="colorOnPrimary">@color/paper</item>
         <item name="android:windowBackground">@color/paper</item>
@@ -13,7 +13,7 @@
         cheia de tela. É isso que dá a sensação de "apareceu um cartão por cima"
         em vez de "abriu um app".
     -->
-    <style name="Theme.AnotaPlus.Modal" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.AnotaPlus.Modal" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/ink</item>
         <item name="colorOnPrimary">@color/paper</item>
         <item name="android:windowIsTranslucent">true</item>

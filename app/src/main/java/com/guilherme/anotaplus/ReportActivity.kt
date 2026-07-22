@@ -46,7 +46,7 @@ class ReportActivity : AppCompatActivity() {
         binding = ActivityReportBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.toolbar.setNavigationOnClickListener { finish() }
+        configurarBottomNav(binding.bottomNav, NavTab.RELATORIO)
 
         binding.rowMes.btnMesAnterior.setOnClickListener { mudarMes(-1) }
         binding.rowMes.btnMesProximo.setOnClickListener { mudarMes(1) }
