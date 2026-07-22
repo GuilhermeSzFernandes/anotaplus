@@ -8,6 +8,7 @@ object Prefs {
     private const val KEY_TIPO_PADRAO = "tipo_padrao"
     private const val KEY_ONBOARDING_CONCLUIDO = "onboarding_concluido"
     private const val KEY_ABERTURAS_HISTORICO = "aberturas_historico"
+    private const val KEY_NOTIFICACAO_CAPTURA_ATIVA = "notificacao_captura_ativa"
 
     fun getTipoPadrao(context: Context): EntryType {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -42,5 +43,17 @@ object Prefs {
         val novoValor = prefs.getInt(KEY_ABERTURAS_HISTORICO, 0) + 1
         prefs.edit { putInt(KEY_ABERTURAS_HISTORICO, novoValor) }
         return novoValor
+    }
+
+    // Notificação persistente de captura rápida (ver NotificationQuickAdd.kt)
+    // — ligada por padrão, com opção de desligar em Conta.
+    fun isNotificacaoCapturaAtiva(context: Context): Boolean =
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getBoolean(KEY_NOTIFICACAO_CAPTURA_ATIVA, true)
+
+    fun setNotificacaoCapturaAtiva(context: Context, ativa: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit {
+            putBoolean(KEY_NOTIFICACAO_CAPTURA_ATIVA, ativa)
+        }
     }
 }

@@ -4,6 +4,11 @@
     <!-- Login com Google + sync com o backend (Anota+ Cloud) -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- Notificação persistente de captura rápida (ver NotificationQuickAdd.kt)
+         — obrigatória a partir do Android 13 (API 33), pedida em runtime
+         quando o usuário liga o atalho em Conta. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:name=".AnotaPlusApplication"
         android:allowBackup="true"
@@ -55,6 +60,13 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- Atalhos de segurar o ícone (long-press) — outra forma de
+                 captura rápida pra aparelho sem gesto de fabricante
+                 configurável (ver res/xml/shortcuts.xml). -->
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
 
         <activity

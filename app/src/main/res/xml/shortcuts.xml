@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Atalhos estáticos (segurar o ícone do app) — mesma ideia dos widgets e
+     do ladrilho de Configurações Rápidas: outro jeito de cair direto na
+     Captura Rápida já com o tipo certo, sem depender de gesto de
+     fabricante. Reaproveita QuickCaptureActivity.EXTRA_TIPO_FORCADO, igual
+     os widgets. -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <shortcut
+        android:shortcutId="novo_gasto"
+        android:enabled="true"
+        android:icon="@drawable/ic_wallet"
+        android:shortcutShortLabel="@string/shortcut_gasto_curto"
+        android:shortcutLongLabel="@string/shortcut_gasto_longo">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.guilherme.anotaplus"
+            android:targetClass="com.guilherme.anotaplus.QuickCaptureActivity">
+            <extra android:key="tipo_forcado" android:value="GASTO" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="nova_anotacao"
+        android:enabled="true"
+        android:icon="@drawable/ic_note"
+        android:shortcutShortLabel="@string/shortcut_nota_curto"
+        android:shortcutLongLabel="@string/shortcut_nota_longo">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.guilherme.anotaplus"
+            android:targetClass="com.guilherme.anotaplus.QuickCaptureActivity">
+            <extra android:key="tipo_forcado" android:value="PENSAMENTO" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="novo_recebimento"
+        android:enabled="true"
+        android:icon="@drawable/ic_add"
+        android:shortcutShortLabel="@string/shortcut_recebimento_curto"
+        android:shortcutLongLabel="@string/shortcut_recebimento_longo">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.guilherme.anotaplus"
+            android:targetClass="com.guilherme.anotaplus.QuickCaptureActivity">
+            <extra android:key="tipo_forcado" android:value="RECEBIMENTO" />
+        </intent>
+    </shortcut>
+
+</shortcuts>

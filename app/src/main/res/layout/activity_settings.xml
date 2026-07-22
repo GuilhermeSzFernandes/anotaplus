@@ -268,6 +268,45 @@
 
             </LinearLayout>
 
+            <!-- NOTIFICAÇÃO DE CAPTURA RÁPIDA -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_free"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/label_notificacao_captura"
+                        android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switch_notificacao_captura"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/desc_notificacao_captura"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
+                    android:textColor="@color/ink_soft" />
+
+            </LinearLayout>
+
             <!-- Só existe em build debug (visibility trocada no código,
                  checando BuildConfig.DEBUG) — sem conta no Play Console
                  ainda, não tem como testar assinatura de verdade, então

@@ -1,9 +1,12 @@
 package com.guilherme.anotaplus
 
+import android.Manifest
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.guilherme.anotaplus.billing.BillingManager
@@ -20,6 +23,20 @@ class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
     private val billingManager by lazy { BillingManager(applicationContext) }
+
+    // Precisa ser registrado como campo (antes de STARTED) — não dá pra
+    // chamar registerForActivityResult dentro do onCreate depois de outras
+    // coisas ou dentro de um listener.
+    private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { concedida ->
+        if (concedida) {
+            Prefs.setNotificacaoCapturaAtiva(this, true)
+            NotificationQuickAdd.atualizar(this)
+        } else {
+            binding.switchNotificacaoCaptura.isChecked = false
+            Prefs.setNotificacaoCapturaAtiva(this, false)
+            Toast.makeText(this, R.string.aviso_notificacao_permissao_negada, Toast.LENGTH_LONG).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,6 +98,25 @@ class SettingsActivity : AppCompatActivity() {
                 else -> EntryType.PENSAMENTO
             }
             Prefs.setTipoPadrao(this, tipo)
+        }
+
+        // Só mostra "ligado" se o pref diz ativo E a permissão (Android 13+)
+        // já foi concedida — senão a notificação não aparece de verdade e o
+        // switch ficaria mentindo pro usuário.
+        binding.switchNotificacaoCaptura.isChecked =
+            Prefs.isNotificacaoCapturaAtiva(this) && NotificationQuickAdd.temPermissao(this)
+        binding.switchNotificacaoCaptura.setOnCheckedChangeListener { _, ativo ->
+            if (ativo) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !NotificationQuickAdd.temPermissao(this)) {
+                    permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                } else {
+                    Prefs.setNotificacaoCapturaAtiva(this, true)
+                    NotificationQuickAdd.atualizar(this)
+                }
+            } else {
+                Prefs.setNotificacaoCapturaAtiva(this, false)
+                NotificationQuickAdd.cancelar(this)
+            }
         }
     }
 

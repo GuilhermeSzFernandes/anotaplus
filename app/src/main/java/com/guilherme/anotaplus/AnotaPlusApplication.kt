@@ -53,6 +53,11 @@ class AnotaPlusApplication : Application() {
             runCatching { MobileAds.initialize(this@AnotaPlusApplication) }
         }
 
+        // Garante que a notificação de captura rápida reflete o switch de
+        // Conta a cada início de processo — não sobrevive a reboot (ver
+        // NotificationQuickAdd.kt), isso aqui é o que traz ela de volta.
+        runCatching { NotificationQuickAdd.atualizar(this) }
+
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityResumed(activity: Activity) {
                 activityAtual = activity
