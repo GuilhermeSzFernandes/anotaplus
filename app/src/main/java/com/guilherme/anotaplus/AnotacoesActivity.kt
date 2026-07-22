@@ -2,6 +2,8 @@ package com.guilherme.anotaplus
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +14,7 @@ import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.guilherme.anotaplus.data.AppDatabase
+import com.guilherme.anotaplus.data.Entry
 import com.guilherme.anotaplus.data.EntryType
 import com.guilherme.anotaplus.data.SubscriptionPrefs
 import com.guilherme.anotaplus.databinding.ActivityAnotacoesBinding
@@ -31,6 +34,8 @@ class AnotacoesActivity : AppCompatActivity() {
         onSelecaoMudou = { atualizarBarraSelecao() }
     )
     private var adViewBanner: AdView? = null
+    private var todasAsNotas: List<Entry> = emptyList()
+    private var textoBusca: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,14 +58,45 @@ class AnotacoesActivity : AppCompatActivity() {
         binding.recyclerEntries.layoutManager = GridLayoutManager(this, 2)
         binding.recyclerEntries.adapter = adapter
 
+        binding.editBusca.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                textoBusca = s?.toString().orEmpty()
+                aplicarFiltro()
+            }
+        })
+
         val dao = AppDatabase.getInstance(applicationContext).entryDao()
 
         lifecycleScope.launch {
             dao.getByType(EntryType.PENSAMENTO).collectLatest { entries ->
-                adapter.submitList(entries)
-                binding.layoutEmpty.visibility = if (entries.isEmpty()) View.VISIBLE else View.GONE
+                todasAsNotas = entries
+                aplicarFiltro()
             }
         }
+    }
+
+    // Filtro client-side sobre a lista já carregada (não é uma query nova
+    // no banco): título e corpo do texto, sem diferenciar maiúscula/minúscula.
+    private fun aplicarFiltro() {
+        val query = textoBusca.trim()
+        val filtradas = if (query.isEmpty()) {
+            todasAsNotas
+        } else {
+            todasAsNotas.filter {
+                it.texto.contains(query, ignoreCase = true) ||
+                    it.titulo?.contains(query, ignoreCase = true) == true
+            }
+        }
+        adapter.submitList(filtradas)
+        binding.layoutEmpty.visibility = if (filtradas.isEmpty()) View.VISIBLE else View.GONE
+        binding.textEmpty.text = if (query.isNotEmpty() && todasAsNotas.isNotEmpty()) {
+            getString(R.string.empty_busca_sem_resultado)
+        } else {
+            getString(R.string.empty_history)
+        }
+        binding.btnEmptyAdd.visibility = if (query.isNotEmpty() && todasAsNotas.isNotEmpty()) View.GONE else View.VISIBLE
     }
 
     // Header normal vs barra de seleção múltipla — nunca os dois juntos.

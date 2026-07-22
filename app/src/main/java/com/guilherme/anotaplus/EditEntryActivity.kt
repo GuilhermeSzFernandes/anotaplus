@@ -151,6 +151,9 @@ class EditEntryActivity : AppCompatActivity() {
         AppDatabase.getInstance(applicationContext).entryDao().update(entryAtualizada)
         propagarEdicaoPraNuvem(entryAtualizada)
         WidgetUpdater.atualizarTodos(applicationContext)
+        if (tipoOriginal == EntryType.GASTO) {
+            BudgetAlertNotifier.verificarLimite(applicationContext, entryAtualizada.categoria)
+        }
         finish()
     }
 

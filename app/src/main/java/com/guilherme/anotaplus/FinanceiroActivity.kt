@@ -2,6 +2,8 @@ package com.guilherme.anotaplus
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.PopupMenu
 import android.widget.Toast
@@ -21,6 +23,7 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.guilherme.anotaplus.data.AppDatabase
+import com.guilherme.anotaplus.data.Entry
 import com.guilherme.anotaplus.data.GastoDiario
 import com.guilherme.anotaplus.data.Prefs
 import com.guilherme.anotaplus.data.SubscriptionPrefs
@@ -48,6 +51,8 @@ class FinanceiroActivity : AppCompatActivity() {
     }
     private val mesSelecionado = MutableStateFlow(Calendar.getInstance())
     private var adViewBanner: AdView? = null
+    private var lancamentosDoMes: List<Entry> = emptyList()
+    private var textoBusca: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +71,15 @@ class FinanceiroActivity : AppCompatActivity() {
 
         binding.recyclerEntries.layoutManager = LinearLayoutManager(this)
         binding.recyclerEntries.adapter = adapter
+
+        binding.editBusca.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                textoBusca = s?.toString().orEmpty()
+                aplicarFiltro()
+            }
+        })
 
         mostrarIntersticialOcasionalSeFree()
 
@@ -87,8 +101,8 @@ class FinanceiroActivity : AppCompatActivity() {
             mesSelecionado.flatMapLatest { mes ->
                 dao.getFinanceiroPorMes(MesUtil.inicioDoMes(mes), MesUtil.fimDoMes(mes))
             }.collectLatest { entries ->
-                adapter.submitList(entries)
-                binding.layoutEmpty.visibility = if (entries.isEmpty()) View.VISIBLE else View.GONE
+                lancamentosDoMes = entries
+                aplicarFiltro()
             }
         }
 
@@ -113,6 +127,29 @@ class FinanceiroActivity : AppCompatActivity() {
                 ) { gastos, recebimentos -> calcularSaldoAcumulado(mes, gastos, recebimentos) }
             }.collectLatest { pontos -> renderGrafico(pontos) }
         }
+    }
+
+    // Filtro client-side sobre a lista já carregada do mês selecionado (não
+    // é uma query nova): texto livre e categoria, sem diferenciar
+    // maiúscula/minúscula.
+    private fun aplicarFiltro() {
+        val query = textoBusca.trim()
+        val filtrados = if (query.isEmpty()) {
+            lancamentosDoMes
+        } else {
+            lancamentosDoMes.filter {
+                it.texto.contains(query, ignoreCase = true) ||
+                    it.categoria?.contains(query, ignoreCase = true) == true
+            }
+        }
+        adapter.submitList(filtrados)
+        binding.layoutEmpty.visibility = if (filtrados.isEmpty()) View.VISIBLE else View.GONE
+        binding.textEmpty.text = if (query.isNotEmpty() && lancamentosDoMes.isNotEmpty()) {
+            getString(R.string.empty_busca_sem_resultado)
+        } else {
+            getString(R.string.empty_history)
+        }
+        binding.btnEmptyAdd.visibility = if (query.isNotEmpty() && lancamentosDoMes.isNotEmpty()) View.GONE else View.VISIBLE
     }
 
     private fun renderSaldo(saldo: Double) {

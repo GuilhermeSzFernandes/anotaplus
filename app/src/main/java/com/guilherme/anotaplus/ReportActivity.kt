@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.guilherme.anotaplus.data.AppDatabase
 import com.guilherme.anotaplus.data.CategoriaContagem
+import com.guilherme.anotaplus.data.CategoriaEstilo
 import com.guilherme.anotaplus.data.CategoriaTotal
 import com.guilherme.anotaplus.data.Category
 import com.guilherme.anotaplus.data.DiaSemanaTotal
@@ -147,6 +148,7 @@ class ReportActivity : AppCompatActivity() {
 
         val maiorTotal = categorias.maxOfOrNull { it.total } ?: 0.0
         val limitesPorNome = todasCategorias.associate { it.nome to it.limite }
+        val categoriasPorNome = todasCategorias.associateBy { it.nome }
 
         categorias.forEach { item ->
             val row = ItemReportCategoriaBinding.inflate(
@@ -155,7 +157,9 @@ class ReportActivity : AppCompatActivity() {
                 false
             )
             val nomeCategoria = item.categoria?.takeIf { it.isNotBlank() }
-            row.textNomeCategoria.text = nomeCategoria ?: getString(R.string.sem_categoria)
+            val categoriaInfo = nomeCategoria?.let { categoriasPorNome[it] }
+            val icone = categoriaInfo?.icone?.let { "$it " }.orEmpty()
+            row.textNomeCategoria.text = icone + (nomeCategoria ?: getString(R.string.sem_categoria))
 
             val limite = nomeCategoria?.let { limitesPorNome[it] }
             val params = row.barFill.layoutParams as LinearLayout.LayoutParams
@@ -176,7 +180,9 @@ class ReportActivity : AppCompatActivity() {
                     2
                 }
                 params.weight = percentual.toFloat()
-                row.barFill.setBackgroundColor(ContextCompat.getColor(this, R.color.gasto_color))
+                val corCategoria = categoriaInfo?.cor?.let { CategoriaEstilo.corInt(it) }
+                    ?: ContextCompat.getColor(this, R.color.gasto_color)
+                row.barFill.setBackgroundColor(corCategoria)
             }
             row.barFill.layoutParams = params
 

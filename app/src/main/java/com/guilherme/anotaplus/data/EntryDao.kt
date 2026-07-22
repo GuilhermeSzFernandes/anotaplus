@@ -41,6 +41,12 @@ interface EntryDao {
     @Query("UPDATE entries SET categoria = :categoria WHERE id IN (:ids)")
     suspend fun atualizarCategoriaEmMassa(ids: List<Long>, categoria: String?)
 
+    // Renomear categoria (CategoriasActivity): categoria é string livre em
+    // Entry, não FK — sem isso, lançamentos antigos ficariam presos ao
+    // nome antigo depois de renomear.
+    @Query("UPDATE entries SET categoria = :novoNome WHERE categoria = :nomeAntigo")
+    suspend fun renomearCategoriaEmTodosLancamentos(nomeAntigo: String, novoNome: String)
+
     @Query("SELECT * FROM entries WHERE remoteId IS NULL")
     suspend fun getPendentesDeSync(): List<Entry>
 
@@ -59,6 +65,26 @@ interface EntryDao {
         """
     )
     fun getGastoPorCategoria(inicio: Long, fim: Long): Flow<List<CategoriaTotal>>
+
+    // Versão "de uma vez só" (sem Flow), usada pelo widget de categorias
+    // (CategoriasWidgetUpdater): ele não fica escutando o banco, só relê
+    // sob demanda, mesmo padrão de getTotalGastoOnce.
+    @Query(
+        """
+        SELECT categoria, SUM(valor) AS total FROM entries
+        WHERE type = 'GASTO' AND timestamp BETWEEN :inicio AND :fim AND valor IS NOT NULL
+        GROUP BY categoria
+        ORDER BY total DESC
+        """
+    )
+    suspend fun getGastoPorCategoriaOnce(inicio: Long, fim: Long): List<CategoriaTotal>
+
+    // Total gasto numa categoria específica no mês — base do alerta de
+    // orçamento (BudgetAlertNotifier), chamado logo depois de salvar um Gasto.
+    @Query(
+        "SELECT COALESCE(SUM(valor), 0) FROM entries WHERE type = 'GASTO' AND categoria = :categoria AND timestamp BETWEEN :inicio AND :fim"
+    )
+    suspend fun getTotalGastoPorCategoriaOnce(categoria: String, inicio: Long, fim: Long): Double
 
     @Query(
         "SELECT COALESCE(SUM(valor), 0) FROM entries WHERE type = 'GASTO' AND timestamp BETWEEN :inicio AND :fim"

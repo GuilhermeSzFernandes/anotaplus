@@ -21,6 +21,12 @@ import java.util.Calendar
 object WidgetUpdater {
 
     suspend fun atualizarTodos(context: Context) {
+        // Widget de categorias tem sua própria lógica de dados (top 6 por
+        // categoria), atualizado junto de propósito: todo chamador daqui já
+        // é "algo mudou nos gastos", então cobre os dois widgets sem
+        // precisar editar cada call site pra chamar os dois separadamente.
+        CategoriasWidgetUpdater.atualizarTodos(context)
+
         val manager = AppWidgetManager.getInstance(context)
         val ids = manager.getAppWidgetIds(ComponentName(context, GastoWidgetProvider::class.java))
         if (ids.isEmpty()) return

@@ -254,6 +254,20 @@
                 android:resource="@xml/widget_adicionar_info" />
         </receiver>
 
+        <!-- Sexto widget: gasto do mês em cada categoria, maior pra menor
+             (até 6 linhas) — ver CategoriasWidgetUpdater.kt. -->
+        <receiver
+            android:name=".widget.CategoriasWidgetProvider"
+            android:exported="false"
+            android:label="@string/widget_categorias_nome">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_categorias_info" />
+        </receiver>
+
     </application>
 
 </manifest>

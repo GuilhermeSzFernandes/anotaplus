@@ -34,4 +34,13 @@ interface CategoryDao {
 
     @Query("UPDATE categories SET limite = :limite WHERE id = :id")
     suspend fun atualizarLimite(id: Long, limite: Double?)
+
+    @Query("SELECT * FROM categories WHERE nome = :nome LIMIT 1")
+    suspend fun getByNome(nome: String): Category?
+
+    // Edição completa (CategoriasActivity): nome (renomear), cor, ícone e
+    // limite de uma vez só — nenhum desses 4 campos sincroniza sozinho com
+    // o backend (só limite tem endpoint próprio, ver SyncManager).
+    @Query("UPDATE categories SET nome = :nome, cor = :cor, icone = :icone, limite = :limite WHERE id = :id")
+    suspend fun atualizar(id: Long, nome: String, cor: String?, icone: String?, limite: Double?)
 }

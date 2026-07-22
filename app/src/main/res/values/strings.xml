@@ -81,6 +81,32 @@
     <string name="btn_salvar_limite">Salvar</string>
     <string name="format_limite_categoria">limite: R$ %s/mês</string>
 
+    <!-- Alerta de orçamento (BudgetAlertNotifier.kt) -->
+    <string name="canal_alertas_orcamento_nome">Alertas de orçamento</string>
+    <string name="canal_alertas_orcamento_descricao">Avisa quando um gasto passa do limite mensal definido pra uma categoria.</string>
+    <string name="alerta_orcamento_titulo">Limite de %s estourado</string>
+    <string name="alerta_orcamento_texto">Você já gastou %1$s de um limite de %2$s este mês.</string>
+
+    <!-- Editar categoria: rename + cor + ícone (CategoriasActivity) -->
+    <string name="title_editar_categoria">Editar categoria</string>
+    <string name="hint_nome_categoria">nome</string>
+    <string name="label_cor_categoria">Cor</string>
+    <string name="label_icone_categoria">Ícone</string>
+    <string name="content_desc_editar_categoria">Editar categoria</string>
+    <string name="error_nome_categoria_obrigatorio">Informe um nome</string>
+
+    <!-- Busca/filtro (AnotacoesActivity e FinanceiroActivity) -->
+    <string name="hint_buscar_anotacoes">Buscar anotações…</string>
+    <string name="hint_buscar_lancamentos">Buscar lançamentos…</string>
+    <string name="content_desc_buscar">Buscar</string>
+    <string name="empty_busca_sem_resultado">Nada encontrado pra essa busca.</string>
+
+    <!-- Widget de categorias (CategoriasWidgetProvider) -->
+    <string name="widget_categorias_nome">Anota+ Categorias</string>
+    <string name="widget_categorias_descricao">Mostra o gasto do mês em cada categoria, na tela inicial.</string>
+    <string name="widget_categorias_titulo">Gasto por categoria</string>
+    <string name="widget_categorias_vazio">Nenhum gasto este mês</string>
+
     <string name="label_gasto_no_mes">gasto no mês</string>
     <string name="label_por_categoria">Por categoria</string>
     <string name="format_ideias_mes">%d anotação(ões) registrada(s) este mês</string>
@@ -217,7 +243,7 @@
     <string name="tutorial_titulo_categorias">Categorias e limites</string>
     <string name="tutorial_corpo_categorias">Toque no ícone de etiqueta no topo do Financeiro pra criar categorias, definir um limite mensal de gasto pra cada uma, e cadastrar suas carteiras (dinheiro, cartão, VR...).</string>
     <string name="tutorial_titulo_widgets">Widgets e atalhos</string>
-    <string name="tutorial_corpo_widgets">Adicione o widget \"Adicionar\" na tela inicial do celular, ou segure o ícone do app pra abrir direto um Gasto, uma Anotação ou um Recebimento. Também dá pra manter uma notificação fixa de captura rápida.</string>
+    <string name="tutorial_corpo_widgets">Esse interruptor liga uma notificação fixa com atalhos de Gasto, Anotação e Recebimento — útil se seu aparelho não tem o gesto de tocar duas vezes na traseira. Também dá pra adicionar o widget \"Adicionar\" na tela inicial do celular, ou segurar o ícone do app pra atalhos rápidos.</string>
     <string name="tutorial_titulo_conta">Conta</string>
     <string name="tutorial_corpo_conta">Na aba Conta você gerencia categorias e carteiras, liga ou desliga a notificação de captura rápida, faz login pra fazer backup na nuvem, e pode rever este tutorial sempre que quiser.</string>
 

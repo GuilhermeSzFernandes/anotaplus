@@ -111,6 +111,7 @@ class ManualGastoActivity : AppCompatActivity() {
         lifecycleScope.launch {
             AppDatabase.getInstance(applicationContext).entryDao().insert(entry)
             WidgetUpdater.atualizarTodos(applicationContext)
+            BudgetAlertNotifier.verificarLimite(applicationContext, entry.categoria)
             if (SubscriptionPrefs.podeFazerBackup(this@ManualGastoActivity)) {
                 SyncWorker.agendar(applicationContext)
             }

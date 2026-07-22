@@ -1,22 +1,32 @@
 package com.guilherme.anotaplus
 
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.text.InputType
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.guilherme.anotaplus.data.AppDatabase
 import com.guilherme.anotaplus.data.Carteira
 import com.guilherme.anotaplus.data.Category
+import com.guilherme.anotaplus.data.CategoriaEstilo
 import com.guilherme.anotaplus.data.CategoryDao
 import com.guilherme.anotaplus.data.SubscriptionPrefs
 import com.guilherme.anotaplus.databinding.ActivityCategoriasBinding
+import com.guilherme.anotaplus.databinding.DialogEditarCategoriaBinding
 import com.guilherme.anotaplus.databinding.ItemCarteiraBinding
 import com.guilherme.anotaplus.databinding.ItemCategoryBinding
+import com.guilherme.anotaplus.widget.WidgetUpdater
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 // Gestão de Categorias e Carteiras — saiu de Conta pra cá porque só faz
 // sentido perto de onde você categoriza Gasto/Recebimento (aberta a
@@ -60,6 +70,11 @@ class CategoriasActivity : AppCompatActivity() {
                         false
                     )
                     row.textNomeCategoria.text = categoria.nome
+                    row.textIconeCategoria.text = categoria.icone.orEmpty()
+                    row.frameSwatchCategoria.background = GradientDrawable().apply {
+                        shape = GradientDrawable.OVAL
+                        setColor(CategoriaEstilo.corInt(categoria.cor))
+                    }
                     if (categoria.limite != null) {
                         row.textLimiteCategoria.visibility = View.VISIBLE
                         row.textLimiteCategoria.text = getString(
@@ -70,7 +85,7 @@ class CategoriasActivity : AppCompatActivity() {
                         row.textLimiteCategoria.visibility = View.GONE
                     }
                     row.rowCategoriaClicavel.setOnClickListener {
-                        mostrarDialogoLimite(categoria, categoryDao)
+                        mostrarDialogoEditarCategoria(categoria, categoryDao)
                     }
                     row.btnRemoverCategoria.setOnClickListener {
                         lifecycleScope.launch { categoryDao.deleteById(categoria.id) }
@@ -117,26 +132,43 @@ class CategoriasActivity : AppCompatActivity() {
         }
     }
 
-    // Limite mensal por categoria (orçamento): grava local sempre; só
-    // propaga pro backend se o usuário for PRO (mesmo gate do backup) —
-    // categoria ainda sem remoteId nem precisa de push isolado aqui, o
-    // limite já viaja junto na primeira sincronização.
-    private fun mostrarDialogoLimite(categoria: Category, categoryDao: CategoryDao) {
-        val editLimite = EditText(this).apply {
-            inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
-            hint = getString(R.string.hint_limite_categoria)
-            setPadding(48, 24, 48, 24)
-            categoria.limite?.let { setText(String.format(MesUtil.locale, "%.2f", it)) }
-        }
+    // Edição completa de uma categoria: renomear, cor, ícone e limite
+    // mensal (orçamento), tudo num dialog só. Renomear é só local (não
+    // sincroniza — ver comentário em Category.kt), mas propaga pros
+    // lançamentos existentes (categoria é string livre em Entry, não FK).
+    private fun mostrarDialogoEditarCategoria(categoria: Category, categoryDao: CategoryDao) {
+        val dialogBinding = DialogEditarCategoriaBinding.inflate(layoutInflater)
+        dialogBinding.editNomeCategoria.setText(categoria.nome)
+        dialogBinding.editLimiteCategoria.setText(
+            categoria.limite?.let { String.format(MesUtil.locale, "%.2f", it) }
+        )
+
+        var corSelecionada = categoria.cor ?: CategoriaEstilo.CORES.first()
+        var iconeSelecionado = categoria.icone
+
+        popularCores(dialogBinding.containerCores, corSelecionada) { corSelecionada = it }
+        popularIcones(dialogBinding.containerIcones, iconeSelecionado) { iconeSelecionado = it }
 
         MaterialAlertDialogBuilder(this)
-            .setTitle(getString(R.string.title_definir_limite, categoria.nome))
-            .setView(editLimite)
-            .setPositiveButton(R.string.btn_salvar_limite) { _, _ ->
-                val novoLimite = editLimite.text?.toString()?.trim()?.replace(",", ".")?.toDoubleOrNull()
+            .setTitle(getString(R.string.title_editar_categoria))
+            .setView(dialogBinding.root)
+            .setPositiveButton(R.string.btn_salvar) { _, _ ->
+                val novoNome = dialogBinding.editNomeCategoria.text?.toString()?.trim().orEmpty()
+                if (novoNome.isEmpty()) {
+                    Toast.makeText(this, R.string.error_nome_categoria_obrigatorio, Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+                val novoLimite = dialogBinding.editLimiteCategoria.text?.toString()?.trim()
+                    ?.replace(",", ".")?.toDoubleOrNull()
+
                 lifecycleScope.launch {
-                    categoryDao.atualizarLimite(categoria.id, novoLimite)
-                    if (SubscriptionPrefs.podeFazerBackup(this@CategoriasActivity)) {
+                    categoryDao.atualizar(categoria.id, novoNome, corSelecionada, iconeSelecionado, novoLimite)
+                    if (novoNome != categoria.nome) {
+                        AppDatabase.getInstance(applicationContext).entryDao()
+                            .renomearCategoriaEmTodosLancamentos(categoria.nome, novoNome)
+                        WidgetUpdater.atualizarTodos(applicationContext)
+                    }
+                    if (novoLimite != categoria.limite && SubscriptionPrefs.podeFazerBackup(this@CategoriasActivity)) {
                         val atualizada = categoria.copy(limite = novoLimite)
                         if (atualizada.remoteId != null) {
                             SyncManager.enviarLimiteCategoria(applicationContext, atualizada)
@@ -149,4 +181,76 @@ class CategoriasActivity : AppCompatActivity() {
             .setNegativeButton(R.string.btn_cancelar, null)
             .show()
     }
+
+    // Redesenha a lista inteira de swatches a cada toque (paleta é pequena,
+    // 6 cores — sem custo perceptível) só pra manter o anel de seleção
+    // sempre coerente com a cor escolhida no momento.
+    private fun popularCores(container: LinearLayout, corInicial: String, aoSelecionar: (String) -> Unit) {
+        var corAtual = corInicial
+
+        fun redesenhar() {
+            container.removeAllViews()
+            val tamanho = dpParaPx(36)
+            CategoriaEstilo.CORES.forEach { hex ->
+                val selecionada = hex.equals(corAtual, ignoreCase = true)
+                val frame = FrameLayout(this).apply {
+                    layoutParams = LinearLayout.LayoutParams(tamanho, tamanho).apply {
+                        marginEnd = dpParaPx(10)
+                    }
+                    background = GradientDrawable().apply {
+                        shape = GradientDrawable.OVAL
+                        setColor(Color.parseColor(hex))
+                        if (selecionada) {
+                            setStroke(dpParaPx(3), ContextCompat.getColor(this@CategoriasActivity, R.color.ink))
+                        }
+                    }
+                    setOnClickListener {
+                        corAtual = hex
+                        aoSelecionar(hex)
+                        redesenhar()
+                    }
+                }
+                container.addView(frame)
+            }
+        }
+        redesenhar()
+    }
+
+    // Ícone é opcional: tocar de novo no já selecionado desmarca.
+    private fun popularIcones(container: LinearLayout, iconeInicial: String?, aoSelecionar: (String?) -> Unit) {
+        var iconeAtual = iconeInicial
+
+        fun redesenhar() {
+            container.removeAllViews()
+            val tamanho = dpParaPx(40)
+            CategoriaEstilo.ICONES.forEach { emoji ->
+                val selecionado = emoji == iconeAtual
+                val texto = TextView(this).apply {
+                    layoutParams = LinearLayout.LayoutParams(tamanho, tamanho).apply {
+                        marginEnd = dpParaPx(8)
+                    }
+                    gravity = Gravity.CENTER
+                    textSize = 18f
+                    text = emoji
+                    background = if (selecionado) {
+                        GradientDrawable().apply {
+                            shape = GradientDrawable.OVAL
+                            setColor(ContextCompat.getColor(this@CategoriasActivity, R.color.brass_pill_bg))
+                        }
+                    } else {
+                        null
+                    }
+                    setOnClickListener {
+                        iconeAtual = if (iconeAtual == emoji) null else emoji
+                        aoSelecionar(iconeAtual)
+                        redesenhar()
+                    }
+                }
+                container.addView(texto)
+            }
+        }
+        redesenhar()
+    }
+
+    private fun dpParaPx(dp: Int): Int = (dp * resources.displayMetrics.density).roundToInt()
 }

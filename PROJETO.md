@@ -427,6 +427,49 @@ bullet própria do Premium na `PlansActivity`.
   `Prefs.incrementarAberturasHistorico`) — os dois só pro plano Free.
   Trocar pelos IDs reais assim que a conta AdMob existir.
 
+## Busca, categorias com cor/ícone, alerta de orçamento e widget de categorias (novo)
+
+- **Busca/filtro**: campo de busca em Anotações (título + corpo do texto) e
+  em Financeiro (texto livre + categoria), abaixo do cabeçalho/gráfico.
+  Client-side sobre a lista já carregada (não é query nova no banco) —
+  simples porque as listas de um mês/tipo já são pequenas o bastante pra
+  filtrar em memória sem serrote.
+- **Categoria com cor e ícone**: `Category` ganhou `cor` (hex) e `icone`
+  (emoji) — `CategoriaEstilo.kt` concentra a paleta fixa (6 cores, 12
+  emojis) usada tanto no picker de `CategoriasActivity` quanto no widget
+  novo. Guardado como hex cru (não `@color` resource id) de propósito:
+  funciona igual dentro do app e dentro de `RemoteViews`, que não sabe
+  resolver cor por nome de recurso. **Só local, não sincroniza com o
+  backend** (schema Prisma não tem essas colunas).
+- **Editar categoria** (renomear + cor + ícone + limite, tudo num dialog
+  só — `dialog_editar_categoria.xml`): tocar numa categoria em
+  `CategoriasActivity` agora abre esse editor completo em vez de só o
+  campo de limite de antes. Renomear é local (mesmo motivo do cor/ícone),
+  mas propaga pros lançamentos já salvos com aquele nome
+  (`EntryDao.renomearCategoriaEmTodosLancamentos`), já que `categoria` é
+  string livre em `Entry`, não uma FK — sem isso, gastos antigos ficariam
+  "órfãos" do nome antigo depois de renomear.
+- **Alerta de orçamento** (`BudgetAlertNotifier.kt`): até agora o limite
+  de categoria só tinha efeito visual (barra vermelha/verde no Início).
+  Agora, depois de salvar/editar um Gasto com categoria
+  (`ManualGastoActivity`, `QuickCaptureActivity`, `EditEntryActivity`),
+  confere se o total do mês nessa categoria passou do limite e dispara
+  uma notificação (canal `alertas_orcamento`, importância padrão — não é
+  "ongoing" como a de captura rápida). Notificação usa um id fixo por
+  categoria (`categoria.hashCode()`): estourar de novo no mesmo mês
+  atualiza a notificação existente em vez de empilhar, sem precisar
+  guardar "já notificou" em lugar nenhum. Tocar nela abre `CategoriasActivity`.
+- **Sexto widget** (`CategoriasWidgetProvider` + `CategoriasWidgetUpdater`):
+  gasto do mês em cada categoria, maior pra menor, até 6 linhas fixas
+  (mesmo padrão de linhas fixas do widget "Uma Anotação", pelo mesmo
+  motivo de simplicidade/robustez). Sem tela de configuração — mesma
+  lista pra qualquer instância, igual o widget de totais. Atualizado a
+  partir de dentro de `WidgetUpdater.atualizarTodos` (não precisou tocar
+  em nenhum call site existente: todo lugar que já chamava esse updater
+  passou a cobrir os dois widgets de graça).
+- **Migração de banco**: `MIGRATION_6_7` (versão 6 → 7) adiciona `cor` e
+  `icone` em `categories`.
+
 ## Bug corrigido (em três partes): gesto parava de ficar translúcido depois da 1ª abertura
 
 `QuickCaptureActivity` tinha `android:launchMode="singleTask"` no manifest,
@@ -550,7 +593,6 @@ para instalar SDK e Gradle no runner (não depende de wrapper local).
   de uma service account do Google Cloud com Android Publisher API,
   vinculada no Play Console (só faz sentido depois que a conta existir).
 - Exportar histórico em CSV.
-- Editar/renomear categoria existente (hoje só dá pra adicionar e remover).
 - Excluir categoria em Configurações **não propaga pro backend** (diferente
   de excluir/editar um `Entry`, que já propaga — ver `EditEntryActivity`) —
   um "Restaurar backup" depois ressuscitaria uma categoria apagada

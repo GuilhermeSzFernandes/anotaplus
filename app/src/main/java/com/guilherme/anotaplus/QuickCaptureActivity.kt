@@ -237,6 +237,9 @@ class QuickCaptureActivity : AppCompatActivity() {
             if (ehFinanceiro) {
                 WidgetUpdater.atualizarTodos(applicationContext)
             }
+            if (tipoSelecionado == EntryType.GASTO) {
+                BudgetAlertNotifier.verificarLimite(applicationContext, entry.categoria)
+            }
             if (SubscriptionPrefs.podeFazerBackup(this@QuickCaptureActivity)) {
                 SyncWorker.agendar(applicationContext)
             }
