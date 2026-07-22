@@ -75,6 +75,8 @@ class AnotacoesActivity : AppCompatActivity() {
                 aplicarFiltro()
             }
         }
+
+        TutorialTourManager.processar(this, TelaTutorial.ANOTACOES)
     }
 
     // Filtro client-side sobre a lista já carregada (não é uma query nova

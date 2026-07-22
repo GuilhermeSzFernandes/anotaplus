@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_card_free"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/text_titulo_coach"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AnotaPlus.Wordmark"
+        android:textSize="18sp"
+        tools:text="Anotações" />
+
+    <TextView
+        android:id="@+id/text_corpo_coach"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
+        android:textColor="@color/ink_soft"
+        tools:text="Toque num card pra abrir, ou segure pra selecionar vários de uma vez." />
+
+    <LinearLayout
+        android:id="@+id/layout_indicadores_coach"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:orientation="horizontal"
+        android:gravity="center" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_pular_coach"
+            style="@style/Widget.AnotaPlus.Button.Link"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/link_pular_tutorial" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_voltar_coach"
+            style="@style/Widget.AnotaPlus.Button.Link"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_voltar" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_avancar_coach"
+            style="@style/Widget.AnotaPlus.Button.Stamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:minWidth="0dp"
+            android:paddingHorizontal="20dp"
+            android:text="@string/btn_avancar" />
+
+    </LinearLayout>
+
+</LinearLayout>

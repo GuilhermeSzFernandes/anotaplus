@@ -56,6 +56,14 @@
     <string name="label_notificacao_captura">Notificação de captura rápida</string>
     <string name="desc_notificacao_captura">Fica fixa na barra de notificações com atalhos pra Gasto/Anotação/Recebimento — útil se seu aparelho não tem o gesto de tocar duas vezes na traseira.</string>
     <string name="aviso_notificacao_permissao_negada">Sem permissão de notificação, o Android não deixa mostrar. Ative em Configurações do aparelho → Apps → Anota+ → Notificações.</string>
+
+    <!-- Gesto de toque duplo via acelerômetro (TapBackGestureService.kt) -->
+    <string name="canal_gesto_toque_duplo_nome">Gesto de toque duplo</string>
+    <string name="canal_gesto_toque_duplo_descricao">Notificação fixa que indica que o Anota+ está escutando o acelerômetro pra detectar toque duplo na traseira.</string>
+    <string name="notificacao_gesto_toque_duplo_titulo">Toque duplo ativo</string>
+    <string name="notificacao_gesto_toque_duplo_texto">Toque duas vezes na traseira do aparelho pra abrir a Captura Rápida</string>
+    <string name="label_gesto_acelerometro">Toque duplo na traseira (via sensor)</string>
+    <string name="desc_gesto_acelerometro">Sugerido pra quem não tem esse gesto pelo sistema (Xiaomi e outros). Usa o acelerômetro em segundo plano — consome mais bateria, por isso vem desligado; ligue só se quiser essa alternativa.</string>
     <string name="btn_empty_adicionar">Adicionar lançamento</string>
     <string name="btn_empty_adicionar_anotacao">Adicionar anotação</string>
     <string name="btn_financeiro">Financeiro</string>
@@ -214,7 +222,7 @@
          nem Xiaomi/HyperOS libera isso. Pra qualquer outro aparelho, o
          caminho garantido é o ladrilho de Configurações Rápidas em vez de
          torcer pra existir um gesto configurável. -->
-    <string name="guia_gesto_intro_generico">Seu aparelho provavelmente não deixa nenhum app de terceiros usar um gesto (toque na traseira, botão de energia etc.) — isso costuma ser exclusivo de apps do próprio fabricante. O jeito garantido de abrir o Anota+ na hora aqui é um ladrilho nas Configurações Rápidas (o painel que abre arrastando a barra de notificações pra baixo).</string>
+    <string name="guia_gesto_intro_generico">Seu aparelho provavelmente não deixa nenhum app de terceiros usar um gesto (toque na traseira, botão de energia etc.) — isso costuma ser exclusivo de apps do próprio fabricante. O jeito garantido de abrir o Anota+ na hora aqui é um ladrilho nas Configurações Rápidas (o painel que abre arrastando a barra de notificações pra baixo). Se mesmo assim quiser o toque duplo na traseira, tem uma alternativa via sensor em Configurações → Conta (consome mais bateria, por isso vem desligada).</string>
     <string name="guia_gesto_passo_1_moto">1. Abra as Configurações do celular</string>
     <string name="guia_gesto_passo_2_moto">2. Procure por \"Moto\" ou \"Gestos\"</string>
     <string name="guia_gesto_passo_3_moto">3. Ative \"Toque duas vezes na traseira\"</string>

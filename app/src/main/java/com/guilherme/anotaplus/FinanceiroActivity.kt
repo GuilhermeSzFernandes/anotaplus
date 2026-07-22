@@ -127,6 +127,8 @@ class FinanceiroActivity : AppCompatActivity() {
                 ) { gastos, recebimentos -> calcularSaldoAcumulado(mes, gastos, recebimentos) }
             }.collectLatest { pontos -> renderGrafico(pontos) }
         }
+
+        TutorialTourManager.processar(this, TelaTutorial.FINANCEIRO)
     }
 
     // Filtro client-side sobre a lista já carregada do mês selecionado (não

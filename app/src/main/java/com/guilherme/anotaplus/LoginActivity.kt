@@ -60,11 +60,8 @@ class LoginActivity : AppCompatActivity() {
         if (intent.getBooleanExtra(GestureGuideActivity.EXTRA_ONBOARDING, false)) {
             Prefs.marcarOnboardingConcluido(this)
             val abrirHistorico = intent.getBooleanExtra(GestureGuideActivity.EXTRA_ABRIR_HISTORICO, false)
-            startActivity(
-                Intent(this, TutorialActivity::class.java)
-                    .putExtra(TutorialActivity.EXTRA_ONBOARDING, true)
-                    .putExtra(TutorialActivity.EXTRA_ABRIR_HISTORICO, abrirHistorico)
-            )
+            TutorialTourManager.iniciar(onboarding = true, abrirHistorico = abrirHistorico)
+            startActivity(Intent(this, AnotacoesActivity::class.java))
         }
         finish()
     }
