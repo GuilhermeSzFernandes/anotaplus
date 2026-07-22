@@ -9,6 +9,7 @@ object Prefs {
     private const val KEY_ONBOARDING_CONCLUIDO = "onboarding_concluido"
     private const val KEY_ABERTURAS_HISTORICO = "aberturas_historico"
     private const val KEY_NOTIFICACAO_CAPTURA_ATIVA = "notificacao_captura_ativa"
+    private const val KEY_GESTO_ACELEROMETRO_ATIVO = "gesto_acelerometro_ativo"
 
     fun getTipoPadrao(context: Context): EntryType {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -54,6 +55,21 @@ object Prefs {
     fun setNotificacaoCapturaAtiva(context: Context, ativa: Boolean) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit {
             putBoolean(KEY_NOTIFICACAO_CAPTURA_ATIVA, ativa)
+        }
+    }
+
+    // Gesto de toque duplo na traseira via acelerômetro (ver
+    // TapBackGestureService) — alternativa pra aparelhos sem esse gesto
+    // configurável pelo sistema (MIUI da Xiaomi, por exemplo). Desligado por
+    // padrão: só é sugerido, nunca ativado sozinho, porque roda um
+    // foreground service o tempo todo. Ligado/desligado pelo switch em Conta.
+    fun isGestoAcelerometroAtivo(context: Context): Boolean =
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getBoolean(KEY_GESTO_ACELEROMETRO_ATIVO, false)
+
+    fun setGestoAcelerometroAtivo(context: Context, ativo: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit {
+            putBoolean(KEY_GESTO_ACELEROMETRO_ATIVO, ativo)
         }
     }
 }

@@ -7,6 +7,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.google.android.gms.ads.MobileAds
+import com.guilherme.anotaplus.data.Prefs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -57,6 +58,13 @@ class AnotaPlusApplication : Application() {
         // Conta a cada início de processo — não sobrevive a reboot (ver
         // NotificationQuickAdd.kt), isso aqui é o que traz ela de volta.
         runCatching { NotificationQuickAdd.atualizar(this) }
+
+        // Mesma lógica pro gesto de toque duplo via acelerômetro: se o
+        // usuário tinha ligado, o serviço também não sobrevive a reboot
+        // (ver TapBackGestureService.kt) — reinicia aqui.
+        if (Prefs.isGestoAcelerometroAtivo(this)) {
+            runCatching { TapBackGestureService.iniciar(this) }
+        }
 
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityResumed(activity: Activity) {

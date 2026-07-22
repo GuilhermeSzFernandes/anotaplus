@@ -84,7 +84,7 @@ object TutorialTourManager {
         val ultimoPasso = indice == passos.lastIndex
 
         overlay.configurar(
-            targetView = passo.viewId?.let { activity.findViewById(it) },
+            targetView = passo.viewId?.let { activity.findViewById<View>(it) },
             titulo = activity.getString(passo.titulo),
             corpo = activity.getString(passo.corpo),
             indicePagina = indice,
