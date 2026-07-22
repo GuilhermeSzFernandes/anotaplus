@@ -51,8 +51,6 @@ class NotaAdapter(
         onSelecaoMudou()
     }
 
-    fun entryNaPosicao(position: Int): Entry = items[position]
-
     private fun alternarSelecao(id: Long) {
         if (!selecionados.remove(id)) selecionados.add(id)
         notifyDataSetChanged()

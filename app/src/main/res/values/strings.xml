@@ -32,8 +32,6 @@
     <string name="btn_toggle_recebimento">Receita</string>
 
     <!-- Grid de Anotações: swipe pra excluir + seleção múltipla (toque longo) -->
-    <string name="nota_excluida">Anotação excluída</string>
-    <string name="btn_desfazer">Desfazer</string>
     <string name="format_qtd_selecionadas">%d selecionada(s)</string>
     <string name="content_desc_fechar_selecao">Cancelar seleção</string>
     <string name="content_desc_tag_selecao">Adicionar tag</string>
