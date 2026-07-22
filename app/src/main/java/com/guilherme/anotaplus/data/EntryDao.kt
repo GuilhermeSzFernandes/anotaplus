@@ -34,6 +34,13 @@ interface EntryDao {
     @Query("DELETE FROM entries WHERE id = :id")
     suspend fun deleteById(id: Long)
 
+    // Seleção múltipla das Anotações: excluir/marcar tag em lote.
+    @Query("DELETE FROM entries WHERE id IN (:ids)")
+    suspend fun deleteByIds(ids: List<Long>)
+
+    @Query("UPDATE entries SET categoria = :categoria WHERE id IN (:ids)")
+    suspend fun atualizarCategoriaEmMassa(ids: List<Long>, categoria: String?)
+
     @Query("SELECT * FROM entries WHERE remoteId IS NULL")
     suspend fun getPendentesDeSync(): List<Entry>
 

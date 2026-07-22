@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/paper">
@@ -35,6 +36,64 @@
             android:padding="8dp"
             android:src="@drawable/ic_add"
             app:tint="@color/brass" />
+
+    </LinearLayout>
+
+    <!-- Some no lugar do header normal enquanto tiver alguma nota
+         selecionada (seleção múltipla via toque longo) -->
+    <LinearLayout
+        android:id="@+id/layout_selecao"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="12dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="8dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageButton
+            android:id="@+id/btn_fechar_selecao"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/content_desc_fechar_selecao"
+            android:padding="8dp"
+            android:src="@drawable/ic_close"
+            app:tint="@color/ink" />
+
+        <TextView
+            android:id="@+id/text_qtd_selecionadas"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
+            android:textStyle="bold"
+            tools:text="3 selecionada(s)" />
+
+        <ImageButton
+            android:id="@+id/btn_tag_selecao"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/content_desc_tag_selecao"
+            android:padding="8dp"
+            android:src="@drawable/ic_tag"
+            app:tint="@color/brass" />
+
+        <ImageButton
+            android:id="@+id/btn_excluir_selecao"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/content_desc_excluir_selecao"
+            android:padding="8dp"
+            android:src="@drawable/ic_delete"
+            app:tint="@color/gasto_color" />
 
     </LinearLayout>
 

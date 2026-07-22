@@ -31,6 +31,17 @@
     <string name="btn_toggle_pensamento">Nota</string>
     <string name="btn_toggle_recebimento">Receita</string>
 
+    <!-- Grid de Anotações: swipe pra excluir + seleção múltipla (toque longo) -->
+    <string name="nota_excluida">Anotação excluída</string>
+    <string name="btn_desfazer">Desfazer</string>
+    <string name="format_qtd_selecionadas">%d selecionada(s)</string>
+    <string name="content_desc_fechar_selecao">Cancelar seleção</string>
+    <string name="content_desc_tag_selecao">Adicionar tag</string>
+    <string name="content_desc_excluir_selecao">Excluir selecionadas</string>
+    <string name="hint_tag_nota">Tag (deixe em branco pra remover)</string>
+    <string name="title_definir_tag">Tag pra %d anotação(ões)</string>
+    <string name="confirmar_exclusao_multipla">Excluir %d anotação(ões)? Essa ação não pode ser desfeita.</string>
+
     <!-- Atalhos de segurar o ícone (res/xml/shortcuts.xml) -->
     <string name="shortcut_gasto_curto">Gasto</string>
     <string name="shortcut_gasto_longo">Novo gasto</string>
