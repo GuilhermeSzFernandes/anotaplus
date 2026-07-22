@@ -6,6 +6,8 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -34,6 +36,7 @@ class QuickCaptureActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityQuickCaptureBinding
     private var tipoSelecionado: EntryType = EntryType.PENSAMENTO
+    private var nomesCarteiras: List<String> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -125,12 +128,34 @@ class QuickCaptureActivity : AppCompatActivity() {
             )
         }
 
-        binding.editCarteira.setOnClickListener { binding.editCarteira.showDropDown() }
+        // Carteira ainda pode estar vazia (não vem com padrão nenhum, ao
+        // contrário de categoria) — avisa em vez de abrir um dropdown vazio.
+        binding.editCarteira.setOnClickListener {
+            if (nomesCarteiras.isEmpty()) {
+                Toast.makeText(this, R.string.aviso_sem_carteira, Toast.LENGTH_LONG).show()
+            } else {
+                binding.editCarteira.showDropDown()
+            }
+        }
         lifecycleScope.launch {
-            val nomes = AppDatabase.getInstance(applicationContext).carteiraDao().getNomesOnce()
+            nomesCarteiras = AppDatabase.getInstance(applicationContext).carteiraDao().getNomesOnce()
             binding.editCarteira.setAdapter(
-                ArrayAdapter(this@QuickCaptureActivity, android.R.layout.simple_dropdown_item_1line, nomes)
+                ArrayAdapter(this@QuickCaptureActivity, android.R.layout.simple_dropdown_item_1line, nomesCarteiras)
             )
+        }
+
+        // Enter no valor fecha o teclado em vez de pular pro próximo campo
+        // (categoria/carteira não têm teclado, então o foco "sumia" e
+        // confundia) — diferente do campo de texto (Nota), que continua
+        // com o comportamento padrão de multi-linha.
+        binding.editValor.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(binding.editValor.windowToken, 0)
+                true
+            } else {
+                false
+            }
         }
 
         binding.toggleTipo.addOnButtonCheckedListener { _, checkedId, isChecked ->
@@ -146,7 +171,7 @@ class QuickCaptureActivity : AppCompatActivity() {
 
         binding.btnSalvar.setOnClickListener { salvar() }
 
-        // "ver histórico" leva pra tela certa conforme o tipo em foco no
+        // "ir ao app" leva pra tela certa conforme o tipo em foco no
         // momento — Financeiro pra Gasto/Recebimento, Anotações pra Ideia.
         binding.btnHistorico.setOnClickListener {
             val destino = if (tipoSelecionado == EntryType.PENSAMENTO) {

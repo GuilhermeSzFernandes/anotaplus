@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Widget estreito e alto (1x2 células): dois alvos de toque empilhados,
+     Gasto em cima e Anotação embaixo — RemoteViews só infla views nativas
+     (nada de PerforationView aqui; o divisor usa @drawable/divider_dashed,
+     mesmo truque do widget_gasto.xml). -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_adicionar_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_widget_paper">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="6dp">
+
+        <FrameLayout
+            android:id="@+id/area_adicionar_gasto"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_wallet"
+                    android:contentDescription="@string/btn_gasto" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/btn_gasto"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@color/gasto_color"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.04"
+                    android:textAllCaps="true" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:text=""
+            android:background="@drawable/divider_dashed" />
+
+        <FrameLayout
+            android:id="@+id/area_adicionar_anotacao"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_note"
+                    android:contentDescription="@string/btn_toggle_pensamento" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/btn_toggle_pensamento"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@color/pensamento_color"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.04"
+                    android:textAllCaps="true" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

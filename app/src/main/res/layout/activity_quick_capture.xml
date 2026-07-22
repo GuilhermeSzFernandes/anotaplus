@@ -133,6 +133,7 @@
                     android:textColor="@color/ink"
                     android:textColorHint="@color/ink_soft"
                     android:inputType="numberDecimal"
+                    android:imeOptions="actionDone"
                     android:textAppearance="@style/TextAppearance.AnotaPlus.Amount" />
 
             </LinearLayout>

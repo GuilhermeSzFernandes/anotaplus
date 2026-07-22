@@ -11,10 +11,11 @@
     <string name="btn_pensamento">Anotações</string>
     <string name="btn_salvar">Salvar</string>
     <string name="btn_historico">Histórico</string>
-    <string name="link_historico">ver histórico →</string>
+    <string name="link_historico">ir ao app →</string>
     <string name="hint_valor">0,00</string>
     <string name="hint_categoria">categoria (opcional)</string>
     <string name="hint_carteira">carteira (opcional)</string>
+    <string name="aviso_sem_carteira">Nenhuma carteira cadastrada ainda. Cadastre uma em Financeiro → categorias e carteiras.</string>
     <string name="label_carteiras">Carteiras</string>
     <string name="hint_nova_carteira">nova carteira</string>
     <string name="empty_carteiras">Nenhuma carteira ainda. Adicione uma acima.</string>
@@ -190,6 +191,9 @@
 
     <string name="widget_captura_modal_nome">Anota+ Capturar</string>
     <string name="widget_captura_modal_descricao">Mostra o visual da captura rápida na tela inicial. Nenhum campo funciona de verdade (widgets não suportam digitar texto) — tocar abre o app pra digitar, já com o tipo certo se você tocar no Gasto ou Anotações.</string>
+
+    <string name="widget_adicionar_nome">Anota+ Adicionar</string>
+    <string name="widget_adicionar_descricao">Widget estreito e alto: toque em Gasto ou Nota pra abrir a captura rápida já com o tipo certo.</string>
 
     <string name="widget_anotacao_nome">Anota+ Uma Anotação</string>
     <string name="widget_anotacao_descricao">Mostra uma anotação específica na tela inicial — se for um checklist, dá pra marcar os itens direto pelo widget.</string>

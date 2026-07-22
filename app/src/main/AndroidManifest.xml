@@ -222,6 +222,21 @@
                 android:resource="@xml/widget_captura_modal_info" />
         </receiver>
 
+        <!-- Quinto widget: estreito e alto (1x2 células), dois alvos de
+             toque empilhados (Gasto/Anotação), cada um já abre a Captura
+             Rápida com o tipo certo. -->
+        <receiver
+            android:name=".widget.AdicionarWidgetProvider"
+            android:exported="false"
+            android:label="@string/widget_adicionar_nome">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_adicionar_info" />
+        </receiver>
+
     </application>
 
 </manifest>
