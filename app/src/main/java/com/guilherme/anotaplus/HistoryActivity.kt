@@ -1,41 +1,32 @@
 package com.guilherme.anotaplus
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdSize
-import com.google.android.gms.ads.AdView
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.guilherme.anotaplus.data.AppDatabase
+import com.guilherme.anotaplus.data.CategoriaContagem
 import com.guilherme.anotaplus.data.EntryType
-import com.guilherme.anotaplus.data.Prefs
-import com.guilherme.anotaplus.data.SubscriptionPrefs
 import com.guilherme.anotaplus.databinding.ActivityHistoryBinding
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
+private data class DashboardDados(
+    val totalGasto: Double,
+    val totalRecebimento: Double,
+    val categoriaTop: CategoriaContagem?,
+    val totalIdeias: Int,
+    val ultimaIdeia: String?
+)
+
+// Início virou dashboard (cards do mês) — o extrato de verdade agora mora
+// nas abas Financeiro (Gasto/Recebimento) e Anotações.
 class HistoryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHistoryBinding
-    private val adapter = EntryAdapter { entry ->
-        startActivity(
-            Intent(this, EditEntryActivity::class.java)
-                .putExtra(EditEntryActivity.EXTRA_ENTRY_ID, entry.id)
-        )
-    }
-    private val mesSelecionado = MutableStateFlow(Calendar.getInstance())
-    private var adViewBanner: AdView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,152 +35,62 @@ class HistoryActivity : AppCompatActivity() {
         aplicarEdgeToEdge(binding.root, binding.header, binding.bottomNav.root)
 
         configurarBottomNav(binding.bottomNav, NavTab.INICIO)
-        binding.btnAddGasto.setOnClickListener {
-            startActivity(Intent(this, ManualGastoActivity::class.java))
-        }
 
-        binding.recyclerEntries.layoutManager = LinearLayoutManager(this)
-        binding.recyclerEntries.adapter = adapter
+        val mes = Calendar.getInstance()
+        binding.textMesAtual.text = MesUtil.formatar(mes)
+        val inicio = MesUtil.inicioDoMes(mes)
+        val fim = MesUtil.fimDoMes(mes)
 
-        mostrarIntersticialOcasionalSeFree()
-
-        binding.rowMes.btnMesAnterior.setOnClickListener { mudarMes(-1) }
-        binding.rowMes.btnMesProximo.setOnClickListener { mudarMes(1) }
-
-        lifecycleScope.launch {
-            mesSelecionado.collectLatest { calendar ->
-                binding.rowMes.textMes.text = MesUtil.formatar(calendar)
-                val temProximo = !MesUtil.estaNoMesAtual(calendar)
-                binding.rowMes.btnMesProximo.isEnabled = temProximo
-                binding.rowMes.btnMesProximo.alpha = if (temProximo) 1f else 0.3f
-            }
-        }
+        binding.statSaldo.textStatLabel.text = getString(R.string.stat_saldo_estimado)
+        binding.statGastoMes.textStatLabel.text = getString(R.string.label_gasto_no_mes)
+        binding.statCategoria.textStatLabel.text = getString(R.string.stat_categoria_mais_usada)
+        binding.statAnotacoes.textStatLabel.text = getString(R.string.title_anotacoes)
 
         val dao = AppDatabase.getInstance(applicationContext).entryDao()
 
         lifecycleScope.launch {
-            mesSelecionado
-                .flatMapLatest { mes ->
-                    dao.getByTypeAndRange(EntryType.GASTO, MesUtil.inicioDoMes(mes), MesUtil.fimDoMes(mes))
-                }
-                .collectLatest { entries ->
-                    adapter.submitList(entries)
-                    binding.textEmpty.visibility =
-                        if (entries.isEmpty()) View.VISIBLE else View.GONE
-                }
+            combine(
+                dao.getTotalGasto(inicio, fim),
+                dao.getTotalRecebimento(inicio, fim),
+                dao.getCategoriaMaisUsada(inicio, fim),
+                dao.getTotalIdeias(inicio, fim),
+                dao.getByType(EntryType.PENSAMENTO)
+            ) { totalGasto, totalRecebimento, categoriaTop, totalIdeias, ideias ->
+                val ultimaIdeia = ideias.firstOrNull()?.texto?.let { RichTextEngine.textoSemMarcadores(it) }
+                DashboardDados(totalGasto, totalRecebimento, categoriaTop, totalIdeias, ultimaIdeia)
+            }.collectLatest { dados -> renderDashboard(dados) }
         }
     }
 
-    private fun mudarMes(delta: Int) {
-        val calendar = mesSelecionado.value.clone() as Calendar
-        calendar.add(Calendar.MONTH, delta)
-        mesSelecionado.value = calendar
-    }
+    private fun renderDashboard(dados: DashboardDados) {
+        val locale = MesUtil.locale
+        val saldo = dados.totalRecebimento - dados.totalGasto
+        binding.statSaldo.textStatValor.text = "R$ %.2f".format(locale, saldo)
+        binding.statSaldo.textStatValor.setTextColor(
+            ContextCompat.getColor(this, if (saldo < 0) R.color.gasto_color else R.color.color_positivo)
+        )
 
-    override fun onResume() {
-        super.onResume()
-        // Em onResume (não só onCreate): status PRO pode ter mudado em
-        // Conta (ex: switch de debug) sem essa Activity ser recriada —
-        // voltar com o botão "voltar" só chama onResume, então o banner
-        // precisa reavaliar toda vez, senão fica preso no estado de quando
-        // a tela abriu.
-        atualizarBanner()
-    }
+        binding.statGastoMes.textStatValor.text = "R$ %.2f".format(locale, dados.totalGasto)
+        binding.statGastoMes.textStatValor.setTextColor(ContextCompat.getColor(this, R.color.gasto_color))
 
-    // runCatching em volta de tudo: anúncio é sempre secundário, uma
-    // falha do AdMob não pode nunca mais derrubar a tela (já aconteceu).
-    private fun atualizarBanner() {
-        runCatching { adViewBanner?.destroy() }
-        binding.adContainer.removeAllViews()
-        adViewBanner = null
-
-        if (SubscriptionPrefs.isPro(this)) return
-
-        runCatching {
-            // AdView criado 100% por código (não declarado no layout XML):
-            // o AdMob exige que adSize/adUnitId sejam setados "do mesmo
-            // jeito" — os dois via XML ou os dois via código — e a tag
-            // <AdView> no XML sem esses atributos entrava em conflito com
-            // setar por código depois, mostrando "Required XML attribute
-            // 'adSize' was missing" em vez do anúncio de teste.
-            val adView = AdView(this).apply {
-                setAdSize(AdSize.BANNER)
-                adUnitId = BuildConfig.AD_BANNER_UNIT_ID
-                // Só em debug: sem isso, uma falha no pedido do anúncio
-                // (sem internet, sem preenchimento etc.) é 100% silenciosa
-                // — não dá pra saber se carregou, falhou, ou nem chegou a
-                // tentar.
-                if (BuildConfig.DEBUG) {
-                    adListener = object : AdListener() {
-                        override fun onAdLoaded() {
-                            Toast.makeText(this@HistoryActivity, "Anúncio (banner) carregou", Toast.LENGTH_SHORT).show()
-                        }
-
-                        override fun onAdFailedToLoad(error: LoadAdError) {
-                            Toast.makeText(
-                                this@HistoryActivity,
-                                "Anúncio (banner) falhou: ${error.message}",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    }
-                }
-            }
-            adViewBanner = adView
-            binding.adContainer.addView(adView)
-            adView.loadAd(AdRequest.Builder().build())
-        }.onFailure {
-            // Se nem o Toast de onAdLoaded/onAdFailedToLoad aparece, é
-            // sinal de que uma exceção está sendo engolida bem antes
-            // disso (ex: ao montar o AdView) — sem isso, ficaria 100%
-            // silencioso e sem pista nenhuma.
-            if (BuildConfig.DEBUG) {
-                Toast.makeText(this, "Erro ao criar anúncio: ${it.message}", Toast.LENGTH_LONG).show()
-            }
+        val categoriaTop = dados.categoriaTop
+        if (categoriaTop != null) {
+            binding.statCategoria.textStatValor.text = categoriaTop.categoria ?: getString(R.string.sem_categoria)
+            binding.statCategoria.textStatSub.visibility = View.VISIBLE
+            binding.statCategoria.textStatSub.text = getString(R.string.format_qtd_curto, categoriaTop.qtd)
+        } else {
+            binding.statCategoria.textStatValor.text = getString(R.string.stat_sem_dados)
+            binding.statCategoria.textStatSub.visibility = View.GONE
         }
-    }
+        binding.statCategoria.textStatValor.setTextColor(ContextCompat.getColor(this, R.color.brass))
 
-    // Só na abertura de verdade (onCreate), não em todo onResume — senão
-    // voltar de EditEntryActivity/outra tela contaria como "abertura" e
-    // mostraria intersticial demais.
-    private fun mostrarIntersticialOcasionalSeFree() {
-        if (SubscriptionPrefs.isPro(this)) return
-
-        val aberturas = Prefs.incrementarAberturasHistorico(this)
-        if (aberturas % ABERTURAS_POR_INTERSTICIAL == 0) {
-            runCatching {
-                InterstitialAd.load(
-                    this,
-                    BuildConfig.AD_INTERSTITIAL_UNIT_ID,
-                    AdRequest.Builder().build(),
-                    object : InterstitialAdLoadCallback() {
-                        override fun onAdLoaded(ad: InterstitialAd) {
-                            runCatching { ad.show(this@HistoryActivity) }
-                        }
-
-                        override fun onAdFailedToLoad(error: LoadAdError) {
-                            // Sem anúncio pra mostrar (sem internet, sem
-                            // inventário etc.) — não bloqueia o uso do app.
-                            if (BuildConfig.DEBUG) {
-                                Toast.makeText(
-                                    this@HistoryActivity,
-                                    "Anúncio (intersticial) falhou: ${error.message}",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-                        }
-                    }
-                )
-            }
+        binding.statAnotacoes.textStatValor.text = getString(R.string.format_qtd_curto, dados.totalIdeias)
+        binding.statAnotacoes.textStatValor.setTextColor(ContextCompat.getColor(this, R.color.pensamento_color))
+        if (dados.ultimaIdeia.isNullOrBlank()) {
+            binding.statAnotacoes.textStatSub.visibility = View.GONE
+        } else {
+            binding.statAnotacoes.textStatSub.visibility = View.VISIBLE
+            binding.statAnotacoes.textStatSub.text = dados.ultimaIdeia
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        runCatching { adViewBanner?.destroy() }
-    }
-
-    companion object {
-        private const val ABERTURAS_POR_INTERSTICIAL = 4
     }
 }

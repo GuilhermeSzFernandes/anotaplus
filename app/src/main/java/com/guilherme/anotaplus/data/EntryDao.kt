@@ -68,6 +68,11 @@ interface EntryDao {
     )
     fun getTotalIdeias(inicio: Long, fim: Long): Flow<Int>
 
+    @Query(
+        "SELECT COALESCE(SUM(valor), 0) FROM entries WHERE type = 'RECEBIMENTO' AND timestamp BETWEEN :inicio AND :fim"
+    )
+    fun getTotalRecebimento(inicio: Long, fim: Long): Flow<Double>
+
     // Total gasto por dia (fuso do aparelho, via modificador 'localtime' do
     // SQLite) — base pro gráfico de tendência. Sempre granularidade diária;
     // pra períodos maiores (90/365 dias) o reagrupamento em semanas

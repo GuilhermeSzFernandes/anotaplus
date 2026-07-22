@@ -68,6 +68,11 @@
             android:theme="@style/Theme.AnotaPlus" />
 
         <activity
+            android:name=".FinanceiroActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AnotaPlus" />
+
+        <activity
             android:name=".ReportActivity"
             android:exported="false"
             android:theme="@style/Theme.AnotaPlus" />
@@ -79,6 +84,12 @@
 
         <activity
             android:name=".ManualGastoActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AnotaPlus"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ManualRecebimentoActivity"
             android:exported="false"
             android:theme="@style/Theme.AnotaPlus"
             android:windowSoftInputMode="adjustResize" />

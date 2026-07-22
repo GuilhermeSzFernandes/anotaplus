@@ -11,20 +11,20 @@ import com.guilherme.anotaplus.data.AppDatabase
 import com.guilherme.anotaplus.data.Entry
 import com.guilherme.anotaplus.data.EntryType
 import com.guilherme.anotaplus.data.SubscriptionPrefs
-import com.guilherme.anotaplus.databinding.ActivityManualGastoBinding
+import com.guilherme.anotaplus.databinding.ActivityManualRecebimentoBinding
 import com.guilherme.anotaplus.widget.WidgetUpdater
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
-class ManualGastoActivity : AppCompatActivity() {
+class ManualRecebimentoActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityManualGastoBinding
+    private lateinit var binding: ActivityManualRecebimentoBinding
     private var dataSelecionada: Calendar = Calendar.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityManualGastoBinding.inflate(layoutInflater)
+        binding = ActivityManualRecebimentoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         binding.toolbar.setNavigationOnClickListener { finish() }
@@ -36,7 +36,7 @@ class ManualGastoActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val nomes = AppDatabase.getInstance(applicationContext).categoryDao().getNomesOnce()
             binding.editCategoria.setAdapter(
-                ArrayAdapter(this@ManualGastoActivity, android.R.layout.simple_dropdown_item_1line, nomes)
+                ArrayAdapter(this@ManualRecebimentoActivity, android.R.layout.simple_dropdown_item_1line, nomes)
             )
         }
 
@@ -44,13 +44,12 @@ class ManualGastoActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val nomes = AppDatabase.getInstance(applicationContext).carteiraDao().getNomesOnce()
             binding.editCarteira.setAdapter(
-                ArrayAdapter(this@ManualGastoActivity, android.R.layout.simple_dropdown_item_1line, nomes)
+                ArrayAdapter(this@ManualRecebimentoActivity, android.R.layout.simple_dropdown_item_1line, nomes)
             )
         }
 
         binding.btnSalvar.setOnClickListener { salvar() }
 
-        // Tela é sempre de Gasto, então o valor já entra pronto pra digitar.
         binding.editValor.requestFocus()
         binding.editValor.post {
             val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
@@ -100,7 +99,7 @@ class ManualGastoActivity : AppCompatActivity() {
         }
 
         val entry = Entry(
-            type = EntryType.GASTO,
+            type = EntryType.RECEBIMENTO,
             texto = texto,
             valor = valor,
             categoria = categoria?.ifEmpty { null },
@@ -111,7 +110,7 @@ class ManualGastoActivity : AppCompatActivity() {
         lifecycleScope.launch {
             AppDatabase.getInstance(applicationContext).entryDao().insert(entry)
             WidgetUpdater.atualizarTodos(applicationContext)
-            if (SubscriptionPrefs.podeFazerBackup(this@ManualGastoActivity)) {
+            if (SubscriptionPrefs.podeFazerBackup(this@ManualRecebimentoActivity)) {
                 SyncWorker.agendar(applicationContext)
             }
             finish()

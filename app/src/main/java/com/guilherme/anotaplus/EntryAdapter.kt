@@ -37,12 +37,16 @@ class EntryAdapter(private val onItemClick: (Entry) -> Unit) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(entry: Entry) {
-            val isGasto = entry.type == EntryType.GASTO
+            val ehFinanceiro = entry.type == EntryType.GASTO || entry.type == EntryType.RECEBIMENTO
             val typeColor = binding.root.context.getColor(
-                if (isGasto) R.color.gasto_color else R.color.pensamento_color
+                when (entry.type) {
+                    EntryType.GASTO -> R.color.gasto_color
+                    EntryType.RECEBIMENTO -> R.color.color_positivo
+                    EntryType.PENSAMENTO -> R.color.pensamento_color
+                }
             )
 
-            binding.textTipoValor.text = if (isGasto) {
+            binding.textTipoValor.text = if (ehFinanceiro) {
                 val valorTexto = entry.valor?.let { "R$ %.2f".format(locale, it) } ?: "R$ --"
                 val categoria = entry.categoria?.let { " · $it" } ?: ""
                 "$valorTexto$categoria"
@@ -60,7 +64,7 @@ class EntryAdapter(private val onItemClick: (Entry) -> Unit) :
             // formatação (#, **, ☐ etc.) — na lista mostra só o texto
             // puro, sem sintaxe crua; a formatação de verdade só aparece
             // ao abrir a nota (RichTextEngine.instalarFormatacaoLive).
-            val preview = if (isGasto) entry.texto else RichTextEngine.textoSemMarcadores(entry.texto)
+            val preview = if (ehFinanceiro) entry.texto else RichTextEngine.textoSemMarcadores(entry.texto)
             binding.textConteudo.text = preview
             binding.textConteudo.visibility =
                 if (preview.isBlank()) android.view.View.GONE else android.view.View.VISIBLE

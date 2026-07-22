@@ -14,6 +14,18 @@
     <string name="link_historico">ver histórico →</string>
     <string name="hint_valor">0,00</string>
     <string name="hint_categoria">categoria (opcional)</string>
+    <string name="hint_carteira">carteira (opcional)</string>
+    <string name="label_carteiras">Carteiras</string>
+    <string name="hint_nova_carteira">nova carteira</string>
+    <string name="empty_carteiras">Nenhuma carteira ainda. Adicione uma acima.</string>
+    <string name="content_desc_remover_carteira">Remover carteira</string>
+    <string name="title_novo_recebimento">Novo recebimento</string>
+    <string name="hint_recebimento">De onde veio esse recebimento?</string>
+    <string name="desc_adicionar_recebimento">Adicionar recebimento manualmente</string>
+    <string name="btn_recebimento">Recebimento</string>
+    <string name="btn_financeiro">Financeiro</string>
+    <string name="stat_saldo_estimado">Saldo estimado</string>
+    <string name="format_qtd_curto">%d lançamento(s)</string>
     <string name="empty_history">Nenhum lançamento ainda.\nToque duas vezes na traseira do celular pra começar.</string>
     <string name="entry_number_format">Nº %04d</string>
     <string name="prefix_valor">R$</string>
@@ -21,6 +33,7 @@
     <string name="title_relatorio">Relatório</string>
     <string name="title_inicio">Início</string>
     <string name="title_anotacoes">Anotações</string>
+    <string name="title_financeiro">Financeiro</string>
     <string name="title_conta">Conta</string>
 
     <string name="label_tipo_padrao">Tipo padrão ao abrir</string>

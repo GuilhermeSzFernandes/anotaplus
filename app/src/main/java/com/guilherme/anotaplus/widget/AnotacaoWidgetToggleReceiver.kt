@@ -71,6 +71,7 @@ class AnotacaoWidgetToggleReceiver : BroadcastReceiver() {
                         texto = entryAtualizada.texto,
                         valor = entryAtualizada.valor,
                         categoria = entryAtualizada.categoria,
+                        carteira = entryAtualizada.carteira,
                         timestamp = Instant.ofEpochMilli(entryAtualizada.timestamp).toString()
                     )
                 )

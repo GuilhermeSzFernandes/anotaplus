@@ -29,23 +29,11 @@
 
     </LinearLayout>
 
-    <com.guilherme.anotaplus.ui.PerforationView
-        android:id="@+id/toolbar_perforation"
-        android:layout_width="0dp"
-        android:layout_height="6dp"
-        app:toothWidth="8dp"
-        app:toothHeight="4dp"
-        app:toothGap="3dp"
-        app:toothColor="@color/ink_soft"
-        app:layout_constraintTop_toBottomOf="@id/header"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
     <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        app:layout_constraintTop_toBottomOf="@id/toolbar_perforation"
+        app:layout_constraintTop_toBottomOf="@id/header"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -88,14 +76,11 @@
                 android:text="@string/label_gasto_no_mes"
                 android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
 
-            <com.guilherme.anotaplus.ui.PerforationView
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="6dp"
+                android:layout_height="1dp"
                 android:layout_marginTop="20dp"
-                app:toothWidth="8dp"
-                app:toothHeight="4dp"
-                app:toothGap="3dp"
-                app:toothColor="@color/ink_soft" />
+                android:background="@color/paper_dim" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -121,14 +106,11 @@
                 android:textColor="@color/ink_soft"
                 android:visibility="gone" />
 
-            <com.guilherme.anotaplus.ui.PerforationView
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="6dp"
+                android:layout_height="1dp"
                 android:layout_marginTop="20dp"
-                app:toothWidth="8dp"
-                app:toothHeight="4dp"
-                app:toothGap="3dp"
-                app:toothColor="@color/ink_soft" />
+                android:background="@color/paper_dim" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -188,14 +170,11 @@
                 android:textColor="@color/ink_soft"
                 android:visibility="gone" />
 
-            <com.guilherme.anotaplus.ui.PerforationView
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="6dp"
+                android:layout_height="1dp"
                 android:layout_marginTop="20dp"
-                app:toothWidth="8dp"
-                app:toothHeight="4dp"
-                app:toothGap="3dp"
-                app:toothColor="@color/ink_soft" />
+                android:background="@color/paper_dim" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -235,14 +214,11 @@
 
             </LinearLayout>
 
-            <com.guilherme.anotaplus.ui.PerforationView
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="6dp"
+                android:layout_height="1dp"
                 android:layout_marginTop="20dp"
-                app:toothWidth="8dp"
-                app:toothHeight="4dp"
-                app:toothGap="3dp"
-                app:toothColor="@color/ink_soft" />
+                android:background="@color/paper_dim" />
 
             <TextView
                 android:id="@+id/text_total_ideias"

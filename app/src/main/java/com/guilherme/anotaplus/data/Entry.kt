@@ -3,7 +3,7 @@ package com.guilherme.anotaplus.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-enum class EntryType { GASTO, PENSAMENTO }
+enum class EntryType { GASTO, PENSAMENTO, RECEBIMENTO }
 
 @Entity(tableName = "entries")
 data class Entry(
@@ -15,6 +15,9 @@ data class Entry(
     val texto: String,
     val valor: Double? = null,
     val categoria: String? = null,
+    // Carteira/forma de pagamento (VR, cartão X...) — mesmo padrão de
+    // categoria: string livre casada por nome, só existe em Gasto/Recebimento.
+    val carteira: String? = null,
     val timestamp: Long = System.currentTimeMillis(),
     // Id do registro no backend depois que foi feito o backup na nuvem;
     // null enquanto não sincronizado ainda.

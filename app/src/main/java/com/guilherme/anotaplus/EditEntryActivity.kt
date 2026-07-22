@@ -36,6 +36,7 @@ class EditEntryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEditEntryBinding
     private var entryId: Long = -1
     private var remoteId: String? = null
+    private var tipoOriginal: EntryType = EntryType.GASTO
     private val dataSelecionada: Calendar = Calendar.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,6 +61,14 @@ class EditEntryActivity : AppCompatActivity() {
             )
         }
 
+        binding.editCarteira.setOnClickListener { binding.editCarteira.showDropDown() }
+        lifecycleScope.launch {
+            val nomes = AppDatabase.getInstance(applicationContext).carteiraDao().getNomesOnce()
+            binding.editCarteira.setAdapter(
+                ArrayAdapter(this@EditEntryActivity, android.R.layout.simple_dropdown_item_1line, nomes)
+            )
+        }
+
         binding.btnSalvar.setOnClickListener { lifecycleScope.launch { salvar() } }
         binding.btnExcluir.setOnClickListener { confirmarExclusao() }
 
@@ -75,10 +84,12 @@ class EditEntryActivity : AppCompatActivity() {
 
     private fun preencherCampos(entry: Entry) {
         remoteId = entry.remoteId
+        tipoOriginal = entry.type
         dataSelecionada.timeInMillis = entry.timestamp
 
         binding.editValor.setText(entry.valor?.let { String.format(MesUtil.locale, "%.2f", it) })
         binding.editCategoria.setText(entry.categoria.orEmpty(), false)
+        binding.editCarteira.setText(entry.carteira.orEmpty(), false)
         binding.editTexto.setText(entry.texto)
         atualizarTextoData()
 
@@ -118,6 +129,7 @@ class EditEntryActivity : AppCompatActivity() {
         val texto = binding.editTexto.text?.toString()?.trim().orEmpty()
         val valorTexto = binding.editValor.text?.toString()?.trim()
         val categoria = binding.editCategoria.text?.toString()?.trim()
+        val carteira = binding.editCarteira.text?.toString()?.trim()
         val valor = valorTexto?.replace(",", ".")?.toDoubleOrNull()
 
         if (valor == null) {
@@ -127,10 +139,11 @@ class EditEntryActivity : AppCompatActivity() {
 
         val entryAtualizada = Entry(
             id = entryId,
-            type = EntryType.GASTO,
+            type = tipoOriginal,
             texto = texto,
             valor = valor,
             categoria = categoria?.ifEmpty { null },
+            carteira = carteira?.ifEmpty { null },
             timestamp = dataSelecionada.timeInMillis,
             remoteId = remoteId
         )
@@ -155,6 +168,7 @@ class EditEntryActivity : AppCompatActivity() {
                     texto = entry.texto,
                     valor = entry.valor,
                     categoria = entry.categoria,
+                    carteira = entry.carteira,
                     timestamp = Instant.ofEpochMilli(entry.timestamp).toString()
                 )
             )

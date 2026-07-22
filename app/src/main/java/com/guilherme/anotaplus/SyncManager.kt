@@ -2,11 +2,13 @@ package com.guilherme.anotaplus
 
 import android.content.Context
 import com.guilherme.anotaplus.data.AppDatabase
+import com.guilherme.anotaplus.data.Carteira
 import com.guilherme.anotaplus.data.Category
 import com.guilherme.anotaplus.data.Entry
 import com.guilherme.anotaplus.data.EntryType
 import com.guilherme.anotaplus.data.SessionPrefs
 import com.guilherme.anotaplus.network.ApiClient
+import com.guilherme.anotaplus.network.dto.CarteiraSyncRequest
 import com.guilherme.anotaplus.network.dto.CategoriaLimiteRequest
 import com.guilherme.anotaplus.network.dto.CategoriaSyncRequest
 import com.guilherme.anotaplus.network.dto.EntrySyncRequest
@@ -36,6 +38,13 @@ object SyncManager {
             }.onSuccess { sincronizados++ }
         }
 
+        db.carteiraDao().getPendentesDeSync().forEach { carteira ->
+            runCatching {
+                val resposta = ApiClient.api.criarCarteira(auth, CarteiraSyncRequest(carteira.nome))
+                db.carteiraDao().marcarSincronizada(carteira.id, resposta.id)
+            }.onSuccess { sincronizados++ }
+        }
+
         db.entryDao().getPendentesDeSync().forEach { entry ->
             runCatching {
                 val resposta = ApiClient.api.criarEntry(
@@ -46,6 +55,7 @@ object SyncManager {
                         texto = entry.texto,
                         valor = entry.valor,
                         categoria = entry.categoria,
+                        carteira = entry.carteira,
                         timestamp = Instant.ofEpochMilli(entry.timestamp).toString()
                     )
                 )
@@ -89,6 +99,20 @@ object SyncManager {
             }
         }
 
+        val carteirasLocais = db.carteiraDao().getAllOnce()
+        runCatching { ApiClient.api.listarCarteiras(auth) }.getOrNull()?.forEach { remota ->
+            val existente = carteirasLocais.find { it.nome == remota.nome }
+            when {
+                existente == null -> {
+                    db.carteiraDao().insert(Carteira(nome = remota.nome, remoteId = remota.id))
+                    restaurados++
+                }
+                existente.remoteId == null -> {
+                    db.carteiraDao().marcarSincronizada(existente.id, remota.id)
+                }
+            }
+        }
+
         runCatching { ApiClient.api.listarEntries(auth) }.getOrNull()?.forEach { remota ->
             if (!db.entryDao().existsByRemoteId(remota.id)) {
                 runCatching {
@@ -99,6 +123,7 @@ object SyncManager {
                             texto = remota.texto,
                             valor = remota.valor,
                             categoria = remota.categoria,
+                            carteira = remota.carteira,
                             timestamp = Instant.parse(remota.timestamp).toEpochMilli(),
                             remoteId = remota.id
                         )

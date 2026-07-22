@@ -3,6 +3,8 @@ package com.guilherme.anotaplus.network
 import com.guilherme.anotaplus.network.dto.AuthResponse
 import com.guilherme.anotaplus.network.dto.BillingSyncRequest
 import com.guilherme.anotaplus.network.dto.BillingSyncResponse
+import com.guilherme.anotaplus.network.dto.CarteiraRemota
+import com.guilherme.anotaplus.network.dto.CarteiraSyncRequest
 import com.guilherme.anotaplus.network.dto.CategoriaLimiteRequest
 import com.guilherme.anotaplus.network.dto.CategoriaRemota
 import com.guilherme.anotaplus.network.dto.CategoriaSyncRequest
@@ -56,6 +58,15 @@ interface AnotaApi {
 
     @GET("categories")
     suspend fun listarCategorias(@Header("Authorization") auth: String): List<CategoriaRemota>
+
+    @POST("carteiras")
+    suspend fun criarCarteira(
+        @Header("Authorization") auth: String,
+        @Body body: CarteiraSyncRequest
+    ): SyncResponse
+
+    @GET("carteiras")
+    suspend fun listarCarteiras(@Header("Authorization") auth: String): List<CarteiraRemota>
 
     @GET("entries")
     suspend fun listarEntries(@Header("Authorization") auth: String): List<EntryRemota>

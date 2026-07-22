@@ -48,11 +48,24 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
     }
 }
 
-@Database(entities = [Entry::class, Category::class], version = 5, exportSchema = false)
+// v5 -> v6: adiciona o tipo RECEBIMENTO (feito só em código, enum não é
+// coluna própria) e a tabela carteiras (VR, Cartão X...), com a coluna
+// carteira em entries pra casar por nome, mesmo padrão de categoria.
+val MIGRATION_5_6 = object : Migration(5, 6) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE entries ADD COLUMN carteira TEXT")
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS carteiras (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, nome TEXT NOT NULL, remoteId TEXT)"
+        )
+    }
+}
+
+@Database(entities = [Entry::class, Category::class, Carteira::class], version = 6, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun entryDao(): EntryDao
     abstract fun categoryDao(): CategoryDao
+    abstract fun carteiraDao(): CarteiraDao
 
     companion object {
         private val CATEGORIAS_PADRAO = listOf("Mercado", "Transporte", "Lazer", "Contas", "Outros")
@@ -67,7 +80,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "anotaplus.db"
                 )
-                    .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+                    .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
                     .fallbackToDestructiveMigration()
                     .addCallback(object : RoomDatabase.Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {

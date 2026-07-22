@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.guilherme.anotaplus.billing.BillingManager
 import com.guilherme.anotaplus.data.AppDatabase
+import com.guilherme.anotaplus.data.Carteira
 import com.guilherme.anotaplus.data.Category
 import com.guilherme.anotaplus.data.CategoryDao
 import com.guilherme.anotaplus.data.EntryType
@@ -19,6 +20,7 @@ import com.guilherme.anotaplus.data.Prefs
 import com.guilherme.anotaplus.data.SessionPrefs
 import com.guilherme.anotaplus.data.SubscriptionPrefs
 import com.guilherme.anotaplus.databinding.ActivitySettingsBinding
+import com.guilherme.anotaplus.databinding.ItemCarteiraBinding
 import com.guilherme.anotaplus.databinding.ItemCategoryBinding
 import com.guilherme.anotaplus.network.ApiClient
 import com.guilherme.anotaplus.network.dto.BillingSyncRequest
@@ -76,14 +78,18 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         val tipoPadrao = Prefs.getTipoPadrao(this)
-        if (tipoPadrao == EntryType.GASTO) {
-            binding.btnPadraoGasto.isChecked = true
-        } else {
-            binding.btnPadraoPensamento.isChecked = true
+        when (tipoPadrao) {
+            EntryType.GASTO -> binding.btnPadraoGasto.isChecked = true
+            EntryType.RECEBIMENTO -> binding.btnPadraoRecebimento.isChecked = true
+            EntryType.PENSAMENTO -> binding.btnPadraoPensamento.isChecked = true
         }
         binding.toggleTipoPadrao.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
-            val tipo = if (checkedId == binding.btnPadraoGasto.id) EntryType.GASTO else EntryType.PENSAMENTO
+            val tipo = when (checkedId) {
+                binding.btnPadraoGasto.id -> EntryType.GASTO
+                binding.btnPadraoRecebimento.id -> EntryType.RECEBIMENTO
+                else -> EntryType.PENSAMENTO
+            }
             Prefs.setTipoPadrao(this, tipo)
         }
 
@@ -131,6 +137,42 @@ class SettingsActivity : AppCompatActivity() {
                         lifecycleScope.launch { categoryDao.deleteById(categoria.id) }
                     }
                     binding.containerCategorias.addView(row.root)
+                }
+            }
+        }
+
+        val carteiraDao = AppDatabase.getInstance(applicationContext).carteiraDao()
+
+        binding.btnAddCarteira.setOnClickListener {
+            val nome = binding.editNovaCarteira.text?.toString()?.trim().orEmpty()
+            if (nome.isNotEmpty()) {
+                lifecycleScope.launch {
+                    carteiraDao.insert(Carteira(nome = nome))
+                    if (SubscriptionPrefs.podeFazerBackup(this@SettingsActivity)) {
+                        SyncWorker.agendar(applicationContext)
+                    }
+                }
+                binding.editNovaCarteira.text?.clear()
+            }
+        }
+
+        lifecycleScope.launch {
+            carteiraDao.getAll().collect { carteiras ->
+                binding.containerCarteiras.removeAllViews()
+                binding.textEmptyCarteiras.visibility =
+                    if (carteiras.isEmpty()) View.VISIBLE else View.GONE
+
+                carteiras.forEach { carteira ->
+                    val row = ItemCarteiraBinding.inflate(
+                        LayoutInflater.from(this@SettingsActivity),
+                        binding.containerCarteiras,
+                        false
+                    )
+                    row.textNomeCarteira.text = carteira.nome
+                    row.btnRemoverCarteira.setOnClickListener {
+                        lifecycleScope.launch { carteiraDao.deleteById(carteira.id) }
+                    }
+                    binding.containerCarteiras.addView(row.root)
                 }
             }
         }

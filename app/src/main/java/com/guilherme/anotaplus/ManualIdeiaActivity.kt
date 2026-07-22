@@ -127,6 +127,7 @@ class ManualIdeiaActivity : AppCompatActivity() {
                     texto = entry.texto,
                     valor = entry.valor,
                     categoria = entry.categoria,
+                    carteira = entry.carteira,
                     timestamp = Instant.ofEpochMilli(entry.timestamp).toString()
                 )
             )

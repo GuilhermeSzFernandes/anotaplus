@@ -85,14 +85,11 @@
             android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
             tools:text="Café com o time pra fechar o sprint." />
 
-        <com.guilherme.anotaplus.ui.PerforationView
+        <View
             android:layout_width="match_parent"
-            android:layout_height="6dp"
+            android:layout_height="1dp"
             android:layout_marginTop="10dp"
-            app:toothWidth="8dp"
-            app:toothHeight="4dp"
-            app:toothGap="3dp"
-            app:toothColor="@color/ink_soft" />
+            android:background="@color/paper_dim" />
 
     </LinearLayout>
 

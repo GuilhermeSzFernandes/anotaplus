@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.app.PendingIntent
 import android.widget.RemoteViews
-import com.guilherme.anotaplus.HistoryActivity
+import com.guilherme.anotaplus.FinanceiroActivity
 import com.guilherme.anotaplus.MesUtil
 import com.guilherme.anotaplus.QuickCaptureActivity
 import com.guilherme.anotaplus.R
@@ -46,7 +46,7 @@ object WidgetUpdater {
             PendingIntent.getActivity(
                 context,
                 0,
-                Intent(context, HistoryActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                Intent(context, FinanceiroActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         )

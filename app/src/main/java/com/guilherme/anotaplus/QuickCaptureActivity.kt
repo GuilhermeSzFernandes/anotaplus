@@ -107,10 +107,10 @@ class QuickCaptureActivity : AppCompatActivity() {
         }
         val tipoPadrao = tipoForcado ?: Prefs.getTipoPadrao(this)
         tipoSelecionado = tipoPadrao
-        if (tipoPadrao == EntryType.GASTO) {
-            binding.btnTipoGasto.isChecked = true
-        } else {
-            binding.btnTipoPensamento.isChecked = true
+        when (tipoPadrao) {
+            EntryType.GASTO -> binding.btnTipoGasto.isChecked = true
+            EntryType.RECEBIMENTO -> binding.btnTipoRecebimento.isChecked = true
+            EntryType.PENSAMENTO -> binding.btnTipoPensamento.isChecked = true
         }
         atualizarCamposPorTipo(tipoPadrao)
 
@@ -125,17 +125,36 @@ class QuickCaptureActivity : AppCompatActivity() {
             )
         }
 
+        binding.editCarteira.setOnClickListener { binding.editCarteira.showDropDown() }
+        lifecycleScope.launch {
+            val nomes = AppDatabase.getInstance(applicationContext).carteiraDao().getNomesOnce()
+            binding.editCarteira.setAdapter(
+                ArrayAdapter(this@QuickCaptureActivity, android.R.layout.simple_dropdown_item_1line, nomes)
+            )
+        }
+
         binding.toggleTipo.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
-            tipoSelecionado = if (checkedId == binding.btnTipoGasto.id) EntryType.GASTO else EntryType.PENSAMENTO
+            tipoSelecionado = when (checkedId) {
+                binding.btnTipoGasto.id -> EntryType.GASTO
+                binding.btnTipoRecebimento.id -> EntryType.RECEBIMENTO
+                else -> EntryType.PENSAMENTO
+            }
             atualizarCamposPorTipo(tipoSelecionado)
             focarCampoPrincipal(tipoSelecionado)
         }
 
         binding.btnSalvar.setOnClickListener { salvar() }
 
+        // "ver histórico" leva pra tela certa conforme o tipo em foco no
+        // momento — Financeiro pra Gasto/Recebimento, Anotações pra Ideia.
         binding.btnHistorico.setOnClickListener {
-            startActivity(Intent(this, HistoryActivity::class.java))
+            val destino = if (tipoSelecionado == EntryType.PENSAMENTO) {
+                AnotacoesActivity::class.java
+            } else {
+                FinanceiroActivity::class.java
+            }
+            startActivity(Intent(this, destino))
             finish()
         }
 
@@ -143,19 +162,25 @@ class QuickCaptureActivity : AppCompatActivity() {
     }
 
     private fun atualizarCamposPorTipo(tipo: EntryType) {
-        val isGasto = tipo == EntryType.GASTO
-        binding.layoutValor.visibility = if (isGasto) android.view.View.VISIBLE else android.view.View.GONE
-        binding.editCategoria.visibility = if (isGasto) android.view.View.VISIBLE else android.view.View.GONE
+        val mostraCamposFinanceiros = tipo == EntryType.GASTO || tipo == EntryType.RECEBIMENTO
+        val visibilidade = if (mostraCamposFinanceiros) android.view.View.VISIBLE else android.view.View.GONE
+        binding.layoutValor.visibility = visibilidade
+        binding.editCategoria.visibility = visibilidade
+        binding.editCarteira.visibility = visibilidade
         binding.editTexto.hint = getString(
-            if (isGasto) R.string.hint_gasto else R.string.hint_pensamento
+            when (tipo) {
+                EntryType.GASTO -> R.string.hint_gasto
+                EntryType.RECEBIMENTO -> R.string.hint_recebimento
+                EntryType.PENSAMENTO -> R.string.hint_pensamento
+            }
         )
     }
 
-    // Em Gasto, o valor é o dado mais importante e o primeiro que a pessoa
-    // quer digitar (o texto é opcional); em Ideia, o texto é o próprio
-    // conteúdo, então continua sendo o campo focado.
+    // Em Gasto/Recebimento, o valor é o dado mais importante e o primeiro
+    // que a pessoa quer digitar (o texto é opcional); em Ideia, o texto é o
+    // próprio conteúdo, então continua sendo o campo focado.
     private fun focarCampoPrincipal(tipo: EntryType) {
-        val campo = if (tipo == EntryType.GASTO) binding.editValor else binding.editTexto
+        val campo = if (tipo == EntryType.PENSAMENTO) binding.editTexto else binding.editValor
         campo.requestFocus()
     }
 
@@ -163,6 +188,7 @@ class QuickCaptureActivity : AppCompatActivity() {
         val texto = binding.editTexto.text?.toString()?.trim().orEmpty()
         val valorTexto = binding.editValor.text?.toString()?.trim()
         val categoria = binding.editCategoria.text?.toString()?.trim()
+        val carteira = binding.editCarteira.text?.toString()?.trim()
 
         if (texto.isEmpty() && valorTexto.isNullOrEmpty()) {
             // nada pra salvar, só fecha
@@ -171,17 +197,19 @@ class QuickCaptureActivity : AppCompatActivity() {
         }
 
         val valor = valorTexto?.replace(",", ".")?.toDoubleOrNull()
+        val ehFinanceiro = tipoSelecionado == EntryType.GASTO || tipoSelecionado == EntryType.RECEBIMENTO
 
         val entry = Entry(
             type = tipoSelecionado,
             texto = texto,
-            valor = if (tipoSelecionado == EntryType.GASTO) valor else null,
-            categoria = if (tipoSelecionado == EntryType.GASTO) categoria?.ifEmpty { null } else null
+            valor = if (ehFinanceiro) valor else null,
+            categoria = if (ehFinanceiro) categoria?.ifEmpty { null } else null,
+            carteira = if (ehFinanceiro) carteira?.ifEmpty { null } else null
         )
 
         lifecycleScope.launch {
             AppDatabase.getInstance(applicationContext).entryDao().insert(entry)
-            if (tipoSelecionado == EntryType.GASTO) {
+            if (ehFinanceiro) {
                 WidgetUpdater.atualizarTodos(applicationContext)
             }
             if (SubscriptionPrefs.podeFazerBackup(this@QuickCaptureActivity)) {

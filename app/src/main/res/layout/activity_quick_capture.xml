@@ -26,6 +26,9 @@
             app:toothHeight="8dp"
             app:toothGap="5dp"
             app:toothColor="@color/scrim" />
+        <!-- Único "dente" de recibo que sobrevive na tela toda — é o corte
+             do topo do card, a própria identidade visual da Captura
+             Rápida. Os outros divisores viraram linhas finas comuns. -->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -58,16 +61,13 @@
 
             </LinearLayout>
 
-            <com.guilherme.anotaplus.ui.PerforationView
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="6dp"
+                android:layout_height="1dp"
                 android:layout_marginTop="10dp"
-                app:toothWidth="8dp"
-                app:toothHeight="4dp"
-                app:toothGap="3dp"
-                app:toothColor="@color/ink_soft" />
+                android:background="@color/paper_dim" />
 
-            <!-- Toggle Anotações / Gasto (Anotações à esquerda) -->
+            <!-- Toggle Anotações / Gasto / Recebimento -->
             <com.google.android.material.button.MaterialButtonToggleGroup
                 android:id="@+id/toggle_tipo"
                 android:layout_width="match_parent"
@@ -91,6 +91,14 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/btn_gasto" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_tipo_recebimento"
+                    style="@style/Widget.AnotaPlus.Button.Tab"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/btn_recebimento" />
 
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
@@ -151,6 +159,26 @@
                 android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
                 tools:visibility="visible" />
 
+            <!-- Carteira (opcional), pra Gasto/Recebimento. Mesmo padrão de categoria. -->
+            <AutoCompleteTextView
+                android:id="@+id/edit_carteira"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_underline_field"
+                android:paddingHorizontal="4dp"
+                android:paddingBottom="6dp"
+                android:visibility="gone"
+                android:hint="@string/hint_carteira"
+                android:textColor="@color/ink"
+                android:textColorHint="@color/ink_soft"
+                android:inputType="none"
+                android:cursorVisible="false"
+                android:drawableEnd="@drawable/ic_chevron_down"
+                android:drawablePadding="6dp"
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
+                tools:visibility="visible" />
+
             <!-- Campo de texto principal -->
             <EditText
                 android:id="@+id/edit_texto"
@@ -170,14 +198,11 @@
                 android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
                 android:lineSpacingExtra="4dp" />
 
-            <com.guilherme.anotaplus.ui.PerforationView
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="6dp"
+                android:layout_height="1dp"
                 android:layout_marginTop="16dp"
-                app:toothWidth="8dp"
-                app:toothHeight="4dp"
-                app:toothGap="3dp"
-                app:toothColor="@color/ink_soft" />
+                android:background="@color/paper_dim" />
 
             <LinearLayout
                 android:layout_width="match_parent"
