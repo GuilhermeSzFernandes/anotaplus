@@ -60,8 +60,11 @@ class LoginActivity : AppCompatActivity() {
         if (intent.getBooleanExtra(GestureGuideActivity.EXTRA_ONBOARDING, false)) {
             Prefs.marcarOnboardingConcluido(this)
             val abrirHistorico = intent.getBooleanExtra(GestureGuideActivity.EXTRA_ABRIR_HISTORICO, false)
-            val destino = if (abrirHistorico) ReportActivity::class.java else QuickCaptureActivity::class.java
-            startActivity(Intent(this, destino))
+            startActivity(
+                Intent(this, TutorialActivity::class.java)
+                    .putExtra(TutorialActivity.EXTRA_ONBOARDING, true)
+                    .putExtra(TutorialActivity.EXTRA_ABRIR_HISTORICO, abrirHistorico)
+            )
         }
         finish()
     }

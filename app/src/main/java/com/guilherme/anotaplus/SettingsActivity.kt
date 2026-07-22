@@ -55,6 +55,9 @@ class SettingsActivity : AppCompatActivity() {
         binding.linkGuiaGesto.setOnClickListener {
             startActivity(Intent(this, GestureGuideActivity::class.java))
         }
+        binding.linkVerTutorial.setOnClickListener {
+            startActivity(Intent(this, TutorialActivity::class.java))
+        }
         binding.btnVirarPro.setOnClickListener {
             startActivity(Intent(this, PlansActivity::class.java))
         }

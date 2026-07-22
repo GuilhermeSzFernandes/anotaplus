@@ -202,6 +202,25 @@
     <string name="link_guia_gesto">como configurar o gesto →</string>
     <string name="tile_captura_rapida">Anota+</string>
 
+    <!-- Tutorial de funções (páginas simples, avançar/voltar) -->
+    <string name="link_ver_tutorial">ver tutorial do app →</string>
+    <string name="btn_avancar">Avançar</string>
+    <string name="btn_voltar">Voltar</string>
+    <string name="btn_concluir">Concluir</string>
+    <string name="link_pular_tutorial">Pular</string>
+    <string name="tutorial_titulo_captura">Captura Rápida</string>
+    <string name="tutorial_corpo_captura">Toque duas vezes na parte de trás do celular (ou use um widget/atalho) pra abrir a Captura Rápida a qualquer momento e registrar um Gasto, uma Anotação ou um Recebimento em poucos segundos.</string>
+    <string name="tutorial_titulo_anotacoes">Anotações</string>
+    <string name="tutorial_corpo_anotacoes">Suas ideias e lembretes aparecem num grid de cards. Toque num card pra abrir, ou segure pra selecionar vários de uma vez e aplicar uma tag ou excluir em lote.</string>
+    <string name="tutorial_titulo_financeiro">Financeiro</string>
+    <string name="tutorial_corpo_financeiro">Gastos e recebimentos aparecem juntos, como um extrato bancário: saldo do mês em destaque e um gráfico mostrando como ele foi mudando ao longo dos dias.</string>
+    <string name="tutorial_titulo_categorias">Categorias e limites</string>
+    <string name="tutorial_corpo_categorias">Toque no ícone de etiqueta no topo do Financeiro pra criar categorias, definir um limite mensal de gasto pra cada uma, e cadastrar suas carteiras (dinheiro, cartão, VR...).</string>
+    <string name="tutorial_titulo_widgets">Widgets e atalhos</string>
+    <string name="tutorial_corpo_widgets">Adicione o widget \"Adicionar\" na tela inicial do celular, ou segure o ícone do app pra abrir direto um Gasto, uma Anotação ou um Recebimento. Também dá pra manter uma notificação fixa de captura rápida.</string>
+    <string name="tutorial_titulo_conta">Conta</string>
+    <string name="tutorial_corpo_conta">Na aba Conta você gerencia categorias e carteiras, liga ou desliga a notificação de captura rápida, faz login pra fazer backup na nuvem, e pode rever este tutorial sempre que quiser.</string>
+
     <string name="title_editar">Editar</string>
     <string name="btn_excluir">Excluir</string>
     <string name="btn_cancelar">Cancelar</string>

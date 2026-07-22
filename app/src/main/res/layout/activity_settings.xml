@@ -215,6 +215,13 @@
                     android:layout_height="wrap_content"
                     android:text="@string/link_guia_gesto" />
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/link_ver_tutorial"
+                    style="@style/Widget.AnotaPlus.Button.Link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/link_ver_tutorial" />
+
             </LinearLayout>
 
             <!-- TIPO PADRÃO -->
