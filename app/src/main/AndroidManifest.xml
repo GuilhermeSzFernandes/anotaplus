@@ -78,6 +78,11 @@
             android:theme="@style/Theme.AnotaPlus" />
 
         <activity
+            android:name=".CategoriasActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AnotaPlus" />
+
+        <activity
             android:name=".ManualGastoActivity"
             android:exported="false"
             android:theme="@style/Theme.AnotaPlus"

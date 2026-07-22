@@ -254,7 +254,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/btn_pensamento" />
+                        android:text="@string/btn_toggle_pensamento" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_padrao_recebimento"
@@ -262,141 +262,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/btn_recebimento" />
+                        android:text="@string/btn_toggle_recebimento" />
 
                 </com.google.android.material.button.MaterialButtonToggleGroup>
-
-            </LinearLayout>
-
-            <!-- CATEGORIAS -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="vertical"
-                android:background="@drawable/bg_card_free"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/label_categorias"
-                    android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <EditText
-                        android:id="@+id/edit_nova_categoria"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_underline_field"
-                        android:paddingHorizontal="4dp"
-                        android:paddingBottom="6dp"
-                        android:hint="@string/hint_nova_categoria"
-                        android:textColor="@color/ink"
-                        android:textColorHint="@color/ink_soft"
-                        android:inputType="text"
-                        android:imeOptions="actionDone"
-                        android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_add_categoria"
-                        style="@style/Widget.AnotaPlus.Button.Stamp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:text="+" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/container_categorias"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:orientation="vertical" />
-
-                <TextView
-                    android:id="@+id/text_empty_categorias"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/empty_categorias"
-                    android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
-                    android:textColor="@color/ink_soft"
-                    android:visibility="gone" />
-
-            </LinearLayout>
-
-            <!-- CARTEIRAS -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="vertical"
-                android:background="@drawable/bg_card_free"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/label_carteiras"
-                    android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <EditText
-                        android:id="@+id/edit_nova_carteira"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_underline_field"
-                        android:paddingHorizontal="4dp"
-                        android:paddingBottom="6dp"
-                        android:hint="@string/hint_nova_carteira"
-                        android:textColor="@color/ink"
-                        android:textColorHint="@color/ink_soft"
-                        android:inputType="text"
-                        android:imeOptions="actionDone"
-                        android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_add_carteira"
-                        style="@style/Widget.AnotaPlus.Button.Stamp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:text="+" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/container_carteiras"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:orientation="vertical" />
-
-                <TextView
-                    android:id="@+id/text_empty_carteiras"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/empty_carteiras"
-                    android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
-                    android:textColor="@color/ink_soft"
-                    android:visibility="gone" />
 
             </LinearLayout>
 

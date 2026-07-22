@@ -82,7 +82,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/btn_pensamento" />
+                    android:text="@string/btn_toggle_pensamento" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_tipo_gasto"
@@ -98,7 +98,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/btn_recebimento" />
+                    android:text="@string/btn_toggle_recebimento" />
 
             </com.google.android.material.button.MaterialButtonToggleGroup>
 

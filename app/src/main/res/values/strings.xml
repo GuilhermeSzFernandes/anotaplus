@@ -23,6 +23,14 @@
     <string name="hint_recebimento">De onde veio esse recebimento?</string>
     <string name="desc_adicionar_recebimento">Adicionar recebimento manualmente</string>
     <string name="btn_recebimento">Recebimento</string>
+    <!-- Versões curtas só pros toggles de 3 botões (Captura Rápida e Tipo
+         padrão) — "Anotações"/"Recebimento" truncavam pra "Anota…"/"Rece…"
+         em aparelhos mais estreitos, ilegível pra quem tá vendo o app pela
+         primeira vez. -->
+    <string name="btn_toggle_pensamento">Nota</string>
+    <string name="btn_toggle_recebimento">Receita</string>
+    <string name="btn_empty_adicionar">Adicionar lançamento</string>
+    <string name="btn_empty_adicionar_anotacao">Adicionar anotação</string>
     <string name="btn_financeiro">Financeiro</string>
     <string name="stat_saldo_estimado">Saldo do mês</string>
     <string name="label_saldo_periodo">Saldo ao longo do mês</string>
@@ -34,6 +42,7 @@
     <string name="title_anotacoes">Anotações</string>
     <string name="title_financeiro">Financeiro</string>
     <string name="title_conta">Conta</string>
+    <string name="title_categorias_carteiras">Categorias e carteiras</string>
 
     <string name="label_tipo_padrao">Tipo padrão ao abrir</string>
     <string name="label_categorias">Categorias</string>

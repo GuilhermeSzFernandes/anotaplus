@@ -37,6 +37,9 @@ class AnotacoesActivity : AppCompatActivity() {
         binding.btnAddIdeia.setOnClickListener {
             startActivity(Intent(this, ManualIdeiaActivity::class.java))
         }
+        binding.btnEmptyAdd.setOnClickListener {
+            startActivity(Intent(this, ManualIdeiaActivity::class.java))
+        }
 
         binding.recyclerEntries.layoutManager = LinearLayoutManager(this)
         binding.recyclerEntries.adapter = adapter
@@ -46,7 +49,7 @@ class AnotacoesActivity : AppCompatActivity() {
         lifecycleScope.launch {
             dao.getByType(EntryType.PENSAMENTO).collectLatest { entries ->
                 adapter.submitList(entries)
-                binding.textEmpty.visibility = if (entries.isEmpty()) View.VISIBLE else View.GONE
+                binding.layoutEmpty.visibility = if (entries.isEmpty()) View.VISIBLE else View.GONE
             }
         }
     }

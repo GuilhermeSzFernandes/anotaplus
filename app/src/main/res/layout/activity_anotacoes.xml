@@ -82,19 +82,36 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <TextView
-        android:id="@+id/text_empty"
+    <LinearLayout
+        android:id="@+id/layout_empty"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="32dp"
+        android:orientation="vertical"
         android:gravity="center"
-        android:text="@string/empty_history"
-        android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
-        android:textColor="@color/ink_soft"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="@id/recycler_entries"
         app:layout_constraintBottom_toBottomOf="@id/recycler_entries"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/text_empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/empty_history"
+            android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
+            android:textColor="@color/ink_soft" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_empty_add"
+            style="@style/Widget.AnotaPlus.Button.Stamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/btn_empty_adicionar_anotacao" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

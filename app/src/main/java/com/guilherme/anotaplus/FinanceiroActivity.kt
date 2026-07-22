@@ -58,6 +58,10 @@ class FinanceiroActivity : AppCompatActivity() {
         configurarBottomNav(binding.bottomNav, NavTab.FINANCEIRO)
 
         binding.btnAddLancamento.setOnClickListener { mostrarMenuAdicionar() }
+        binding.btnEmptyAdd.setOnClickListener { mostrarMenuAdicionar() }
+        binding.btnCategorias.setOnClickListener {
+            startActivity(Intent(this, CategoriasActivity::class.java))
+        }
         configurarGrafico()
 
         binding.recyclerEntries.layoutManager = LinearLayoutManager(this)
@@ -84,7 +88,7 @@ class FinanceiroActivity : AppCompatActivity() {
                 dao.getFinanceiroPorMes(MesUtil.inicioDoMes(mes), MesUtil.fimDoMes(mes))
             }.collectLatest { entries ->
                 adapter.submitList(entries)
-                binding.textEmpty.visibility = if (entries.isEmpty()) View.VISIBLE else View.GONE
+                binding.layoutEmpty.visibility = if (entries.isEmpty()) View.VISIBLE else View.GONE
             }
         }
 
