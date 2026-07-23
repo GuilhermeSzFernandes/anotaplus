@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:orientation="vertical"
+    android:background="@drawable/bg_card_flat"
+    android:padding="14dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/text_nome_meta"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAppearance="@style/TextAppearance.AnotaPlus.RowTitle"
+            tools:text="Viagem" />
+
+        <TextView
+            android:id="@+id/text_valor_meta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
+            android:textColor="@color/ink_soft"
+            tools:text="R$ 0,00 / R$ 2.000,00" />
+
+        <ImageButton
+            android:id="@+id/btn_excluir_meta"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/btn_excluir_meta"
+            android:padding="6dp"
+            android:src="@drawable/ic_delete"
+            app:tint="@color/ink_soft" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/paper_dim"
+        android:orientation="horizontal">
+
+        <View
+            android:id="@+id/bar_fill_meta"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="@color/color_receita"
+            android:layout_weight="0" />
+
+        <View
+            android:id="@+id/bar_track_meta"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="100" />
+
+    </LinearLayout>
+
+</LinearLayout>

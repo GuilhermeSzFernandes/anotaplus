@@ -24,8 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/title_anotacoes"
-            android:textAppearance="@style/TextAppearance.AnotaPlus.Wordmark"
-            android:textSize="20sp" />
+            android:textAppearance="@style/TextAppearance.AnotaPlus.Heading" />
 
         <ImageButton
             android:id="@+id/btn_add_ideia"
@@ -213,7 +212,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_empty_add"
-            style="@style/Widget.AnotaPlus.Button.Stamp"
+            style="@style/Widget.AnotaPlus.Button.Primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"

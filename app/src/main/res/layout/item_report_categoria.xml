@@ -23,9 +23,9 @@
             android:id="@+id/text_valor_categoria"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="monospace"
-            android:textColor="@color/ink"
-            android:textStyle="bold"
+            android:textAppearance="@style/TextAppearance.AnotaPlus.AmountBold"
+            android:textColor="@color/color_gasto_vivo"
+            android:textSize="15sp"
             tools:text="R$ 320,00" />
 
     </LinearLayout>
@@ -55,6 +55,7 @@
             android:layout_weight="50" />
 
         <View
+            android:id="@+id/bar_track"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="50" />

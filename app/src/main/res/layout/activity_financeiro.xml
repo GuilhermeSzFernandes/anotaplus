@@ -24,8 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/title_financeiro"
-            android:textAppearance="@style/TextAppearance.AnotaPlus.Wordmark"
-            android:textSize="20sp" />
+            android:textAppearance="@style/TextAppearance.AnotaPlus.Heading" />
 
         <ImageButton
             android:id="@+id/btn_categorias"
@@ -86,7 +85,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/bg_card_free"
+            android:background="@drawable/bg_card_flat"
             android:padding="18dp">
 
             <TextView
@@ -101,11 +100,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:fontFamily="monospace"
-                android:textStyle="bold"
+                android:textAppearance="@style/TextAppearance.AnotaPlus.AmountBold"
                 android:textSize="30sp"
                 tools:text="R$ 320,00"
-                tools:textColor="@color/color_positivo" />
+                tools:textColor="@color/color_receita" />
 
         </LinearLayout>
 
@@ -115,7 +113,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:orientation="vertical"
-            android:background="@drawable/bg_card_free"
+            android:background="@drawable/bg_card_flat"
             android:padding="18dp">
 
             <TextView
@@ -234,7 +232,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_empty_add"
-            style="@style/Widget.AnotaPlus.Button.Stamp"
+            style="@style/Widget.AnotaPlus.Button.Primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"

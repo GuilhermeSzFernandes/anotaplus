@@ -57,8 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:fontFamily="sans-serif-black"
-            android:letterSpacing="0.02"
+            android:textAppearance="@style/TextAppearance.AnotaPlus.AmountBold"
             android:textSize="15sp"
             tools:text="R$ 45,90 · mercado" />
 

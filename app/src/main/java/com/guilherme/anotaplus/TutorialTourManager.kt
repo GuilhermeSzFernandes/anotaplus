@@ -31,8 +31,8 @@ object TutorialTourManager {
         PassoTutorial(TelaTutorial.ANOTACOES, R.id.btn_add_ideia, R.string.tutorial_titulo_anotacoes, R.string.tutorial_corpo_anotacoes),
         PassoTutorial(TelaTutorial.FINANCEIRO, R.id.section_saldo, R.string.tutorial_titulo_financeiro, R.string.tutorial_corpo_financeiro),
         PassoTutorial(TelaTutorial.FINANCEIRO, R.id.btn_categorias, R.string.tutorial_titulo_categorias, R.string.tutorial_corpo_categorias),
-        PassoTutorial(TelaTutorial.CONTA, R.id.switch_notificacao_captura, R.string.tutorial_titulo_widgets, R.string.tutorial_corpo_widgets),
-        PassoTutorial(TelaTutorial.CONTA, R.id.link_ver_tutorial, R.string.tutorial_titulo_conta, R.string.tutorial_corpo_conta)
+        PassoTutorial(TelaTutorial.CONTA, R.id.row_notificacoes, R.string.tutorial_titulo_widgets, R.string.tutorial_corpo_widgets),
+        PassoTutorial(TelaTutorial.CONTA, R.id.row_tutorial, R.string.tutorial_titulo_conta, R.string.tutorial_corpo_conta)
     )
 
     private var ativo = false

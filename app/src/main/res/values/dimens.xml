@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Sistema de raio "fintech moderno" (Fase 0 do redesign) — só usado
+         fora do fluxo de Captura Rápida, que mantém os raios antigos
+         (3-16dp) definidos direto em cada drawable/estilo. -->
+    <dimen name="radius_card">20dp</dimen>
+    <dimen name="radius_chip">14dp</dimen>
+    <dimen name="radius_pill">100dp</dimen>
+    <dimen name="radius_button">16dp</dimen>
+</resources>

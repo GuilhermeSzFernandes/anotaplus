@@ -24,8 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/title_conta"
-            android:textAppearance="@style/TextAppearance.AnotaPlus.Wordmark"
-            android:textSize="20sp" />
+            android:textAppearance="@style/TextAppearance.AnotaPlus.Heading" />
 
     </LinearLayout>
 
@@ -45,12 +44,12 @@
             android:padding="20dp"
             android:paddingBottom="100dp">
 
-            <!-- CONTA -->
+            <!-- CONTA (login Google + backup na nuvem) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="@drawable/bg_card_free"
+                android:background="@drawable/bg_card_flat"
                 android:padding="16dp">
 
                 <TextView
@@ -88,7 +87,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:fontFamily="monospace"
                         android:textColor="@color/ink"
                         android:textSize="14sp"
                         android:maxLines="1"
@@ -176,7 +174,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_entrar_google"
-                    style="@style/Widget.AnotaPlus.Button.Stamp"
+                    style="@style/Widget.AnotaPlus.Button.Primary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
@@ -191,133 +189,156 @@
                     android:visibility="gone"
                     android:text="@string/btn_sair" />
 
-                <com.guilherme.anotaplus.ui.PerforationView
-                    android:layout_width="match_parent"
-                    android:layout_height="5dp"
-                    android:layout_marginTop="14dp"
-                    app:toothWidth="7dp"
-                    app:toothHeight="3dp"
-                    app:toothGap="3dp"
-                    app:toothColor="@color/paper_dim" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/link_ver_planos"
-                    style="@style/Widget.AnotaPlus.Button.Link"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="@string/link_ver_planos" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/link_escolher_atalho"
-                    style="@style/Widget.AnotaPlus.Button.Link"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/link_escolher_atalho" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/link_guia_gesto"
-                    style="@style/Widget.AnotaPlus.Button.Link"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/link_guia_gesto" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/link_ver_tutorial"
-                    style="@style/Widget.AnotaPlus.Button.Link"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/link_ver_tutorial" />
-
             </LinearLayout>
 
-            <!-- TIPO PADRÃO -->
+            <!-- PROGRESSO -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/label_progresso"
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="10dp"
                 android:orientation="vertical"
-                android:background="@drawable/bg_card_free"
-                android:padding="16dp">
+                android:background="@drawable/bg_card_flat"
+                android:paddingHorizontal="12dp">
 
-                <TextView
+                <include
+                    android:id="@+id/row_estatisticas"
+                    layout="@layout/item_settings_row" />
+
+                <View
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/label_tipo_padrao"
-                    android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
+                    android:layout_height="1dp"
+                    android:background="@color/paper_dim" />
 
-                <com.google.android.material.button.MaterialButtonToggleGroup
-                    android:id="@+id/toggle_tipo_padrao"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    app:singleSelection="true"
-                    app:selectionRequired="true">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_padrao_gasto"
-                        style="@style/Widget.AnotaPlus.Button.Tab"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/btn_gasto" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_padrao_pensamento"
-                        style="@style/Widget.AnotaPlus.Button.Tab"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/btn_toggle_pensamento" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_padrao_recebimento"
-                        style="@style/Widget.AnotaPlus.Button.Tab"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/btn_toggle_recebimento" />
-
-                </com.google.android.material.button.MaterialButtonToggleGroup>
+                <include
+                    android:id="@+id/row_historico"
+                    layout="@layout/item_settings_row" />
 
             </LinearLayout>
 
-            <!-- NOTIFICAÇÃO DE CAPTURA RÁPIDA -->
+            <!-- PERSONALIZAÇÃO -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/label_personalizacao"
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="10dp"
                 android:orientation="vertical"
-                android:background="@drawable/bg_card_free"
-                android:padding="16dp">
+                android:background="@drawable/bg_card_flat"
+                android:paddingHorizontal="12dp">
 
-                <LinearLayout
+                <include
+                    android:id="@+id/row_meu_plano"
+                    layout="@layout/item_settings_row" />
+
+                <View
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:layout_height="1dp"
+                    android:background="@color/paper_dim" />
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/label_notificacao_captura"
-                        android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
+                <include
+                    android:id="@+id/row_tipo_padrao"
+                    layout="@layout/item_settings_row" />
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/switch_notificacao_captura"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                </LinearLayout>
-
-                <TextView
+                <View
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="@string/desc_notificacao_captura"
-                    android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
-                    android:textColor="@color/ink_soft" />
+                    android:layout_height="1dp"
+                    android:background="@color/paper_dim" />
+
+                <include
+                    android:id="@+id/row_ajustar_objetivos"
+                    layout="@layout/item_settings_row" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/paper_dim" />
+
+                <include
+                    android:id="@+id/row_notificacoes"
+                    layout="@layout/item_settings_switch_row" />
+
+            </LinearLayout>
+
+            <!-- LEGAL -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/label_legal"
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_flat"
+                android:paddingHorizontal="12dp">
+
+                <include
+                    android:id="@+id/row_privacidade"
+                    layout="@layout/item_settings_row" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/paper_dim" />
+
+                <include
+                    android:id="@+id/row_termos"
+                    layout="@layout/item_settings_row" />
+
+            </LinearLayout>
+
+            <!-- SUPORTE -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/label_suporte"
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_flat"
+                android:paddingHorizontal="12dp">
+
+                <include
+                    android:id="@+id/row_tutorial"
+                    layout="@layout/item_settings_row" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/paper_dim" />
+
+                <include
+                    android:id="@+id/row_guia_gesto"
+                    layout="@layout/item_settings_row" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/paper_dim" />
+
+                <include
+                    android:id="@+id/row_escolher_atalho"
+                    layout="@layout/item_settings_row" />
 
             </LinearLayout>
 
@@ -330,9 +351,9 @@
                 android:id="@+id/card_debug"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="20dp"
                 android:orientation="vertical"
-                android:background="@drawable/bg_card_free"
+                android:background="@drawable/bg_card_flat"
                 android:padding="16dp"
                 android:visibility="gone"
                 tools:visibility="visible">

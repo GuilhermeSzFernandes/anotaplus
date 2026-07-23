@@ -69,12 +69,24 @@ val MIGRATION_6_7 = object : Migration(6, 7) {
     }
 }
 
-@Database(entities = [Entry::class, Category::class, Carteira::class], version = 7, exportSchema = false)
+// v7 -> v8: adiciona a tabela metas (lista de metas de economia nomeadas
+// no Acompanhamento) — não confundir com a "meta de economia mensal"
+// única guardada em Prefs, que é só um valor solto pro cálculo de %.
+val MIGRATION_7_8 = object : Migration(7, 8) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS metas (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, nome TEXT NOT NULL, valorAlvo REAL NOT NULL, valorAtual REAL NOT NULL, criadoEm INTEGER NOT NULL)"
+        )
+    }
+}
+
+@Database(entities = [Entry::class, Category::class, Carteira::class, Meta::class], version = 8, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun entryDao(): EntryDao
     abstract fun categoryDao(): CategoryDao
     abstract fun carteiraDao(): CarteiraDao
+    abstract fun metaDao(): MetaDao
 
     companion object {
         private val CATEGORIAS_PADRAO = listOf("Mercado", "Transporte", "Lazer", "Contas", "Outros")
@@ -89,7 +101,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "anotaplus.db"
                 )
-                    .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
+                    .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
                     .fallbackToDestructiveMigration()
                     .addCallback(object : RoomDatabase.Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {

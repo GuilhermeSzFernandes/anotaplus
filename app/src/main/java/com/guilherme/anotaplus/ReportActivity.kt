@@ -14,8 +14,14 @@ import com.guilherme.anotaplus.data.CategoriaTotal
 import com.guilherme.anotaplus.data.Category
 import com.guilherme.anotaplus.data.DiaSemanaTotal
 import com.guilherme.anotaplus.data.Entry
+import com.guilherme.anotaplus.data.Meta
+import com.guilherme.anotaplus.data.MetaDao
+import com.guilherme.anotaplus.data.Prefs
 import com.guilherme.anotaplus.databinding.ActivityReportBinding
+import com.guilherme.anotaplus.databinding.DialogNovaMetaBinding
+import com.guilherme.anotaplus.databinding.ItemMetaBinding
 import com.guilherme.anotaplus.databinding.ItemReportCategoriaBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -51,6 +57,14 @@ class ReportActivity : AppCompatActivity() {
         val db = AppDatabase.getInstance(applicationContext)
         val dao = db.entryDao()
         val categoryDao = db.categoryDao()
+        val metaDao = db.metaDao()
+
+        binding.btnAddMeta.setOnClickListener { abrirDialogNovaMeta(metaDao) }
+        binding.btnCriarPrimeiraMeta.setOnClickListener { abrirDialogNovaMeta(metaDao) }
+
+        lifecycleScope.launch {
+            metaDao.getAll().collectLatest { metas -> renderMetas(metas, metaDao) }
+        }
 
         lifecycleScope.launch {
             mesSelecionado.collectLatest { calendar ->
@@ -63,10 +77,11 @@ class ReportActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             mesSelecionado.flatMapLatest { calendar ->
-                dao.getTotalGasto(MesUtil.inicioDoMes(calendar), MesUtil.fimDoMes(calendar))
-            }.collectLatest { total ->
-                binding.textTotalGasto.text = "R$ %.2f".format(locale, total)
-            }
+                combine(
+                    dao.getTotalGasto(MesUtil.inicioDoMes(calendar), MesUtil.fimDoMes(calendar)),
+                    dao.getTotalRecebimento(MesUtil.inicioDoMes(calendar), MesUtil.fimDoMes(calendar))
+                ) { gasto, receita -> gasto to receita }
+            }.collectLatest { (gasto, receita) -> renderResumo(gasto, receita) }
         }
 
         lifecycleScope.launch {
@@ -120,6 +135,26 @@ class ReportActivity : AppCompatActivity() {
         val calendar = mesSelecionado.value.clone() as Calendar
         calendar.add(Calendar.MONTH, delta)
         mesSelecionado.value = calendar
+    }
+
+    private fun renderResumo(gasto: Double, receita: Double) {
+        binding.textTotalGasto.text = "R$ %.2f".format(locale, gasto)
+        binding.textTotalReceitas.text = "R$ %.2f".format(locale, receita)
+
+        val poupanca = receita - gasto
+        binding.textTotalPoupanca.text = "R$ %.2f".format(locale, poupanca)
+        binding.textTotalPoupanca.setTextColor(
+            ContextCompat.getColor(this, if (poupanca < 0) R.color.color_gasto_vivo else R.color.color_receita)
+        )
+
+        val metaValor = Prefs.getMetaEconomiaValor(this)
+        val percentual = if (metaValor > 0) {
+            (poupanca / metaValor * 100).roundToInt().coerceIn(0, 100)
+        } else {
+            0
+        }
+        binding.textMetaEconomiaPercentual.text = getString(R.string.format_percentual, percentual)
+        binding.progressMetaEconomia.progress = percentual
     }
 
     private fun renderComparativo(atual: Double, anterior: Double) {
@@ -185,6 +220,9 @@ class ReportActivity : AppCompatActivity() {
                 row.barFill.setBackgroundColor(corCategoria)
             }
             row.barFill.layoutParams = params
+            val trackParams = row.barTrack.layoutParams as LinearLayout.LayoutParams
+            trackParams.weight = 100f - params.weight
+            row.barTrack.layoutParams = trackParams
 
             val totalAnterior = categoriasAnterior.find { it.categoria == item.categoria }?.total ?: 0.0
             if (totalAnterior > 0) {
@@ -203,6 +241,21 @@ class ReportActivity : AppCompatActivity() {
 
             binding.containerCategorias.addView(row.root)
         }
+
+        renderInsight(categorias)
+    }
+
+    private fun renderInsight(categorias: List<CategoriaTotal>) {
+        val maior = categorias.maxByOrNull { it.total }
+        if (maior == null || maior.total <= 0.0) {
+            binding.labelInsights.visibility = View.GONE
+            binding.cardInsight.visibility = View.GONE
+            return
+        }
+        val nome = maior.categoria?.takeIf { it.isNotBlank() } ?: getString(R.string.sem_categoria)
+        binding.textInsight.text = getString(R.string.insight_maior_categoria, nome, maior.total)
+        binding.labelInsights.visibility = View.VISIBLE
+        binding.cardInsight.visibility = View.VISIBLE
     }
 
     private fun renderEstatisticas(stats: EstatisticasMes) {
@@ -224,6 +277,55 @@ class ReportActivity : AppCompatActivity() {
         binding.statDiaSemanaTop.textStatValor.text = stats.diaSemanaTop?.let {
             nomeDiaSemana(it.diaSemana)
         } ?: getString(R.string.stat_sem_dados)
+    }
+
+    private fun renderMetas(metas: List<Meta>, metaDao: MetaDao) {
+        binding.containerMetas.removeAllViews()
+        val temMetas = metas.isNotEmpty()
+        binding.containerMetas.visibility = if (temMetas) View.VISIBLE else View.GONE
+        binding.layoutEmptyMetas.visibility = if (temMetas) View.GONE else View.VISIBLE
+
+        metas.forEach { meta ->
+            val row = ItemMetaBinding.inflate(LayoutInflater.from(this), binding.containerMetas, false)
+            row.textNomeMeta.text = meta.nome
+            row.textValorMeta.text = getString(
+                R.string.format_meta_progresso,
+                "R$ %.2f".format(locale, meta.valorAtual),
+                "R$ %.2f".format(locale, meta.valorAlvo)
+            )
+            val percentual = if (meta.valorAlvo > 0) {
+                (meta.valorAtual / meta.valorAlvo * 100).roundToInt().coerceIn(0, 100)
+            } else {
+                0
+            }
+            val params = row.barFillMeta.layoutParams as LinearLayout.LayoutParams
+            params.weight = percentual.toFloat()
+            row.barFillMeta.layoutParams = params
+            val trackParams = row.barTrackMeta.layoutParams as LinearLayout.LayoutParams
+            trackParams.weight = 100f - percentual
+            row.barTrackMeta.layoutParams = trackParams
+            row.btnExcluirMeta.setOnClickListener {
+                lifecycleScope.launch { metaDao.deleteById(meta.id) }
+            }
+            binding.containerMetas.addView(row.root)
+        }
+    }
+
+    private fun abrirDialogNovaMeta(metaDao: MetaDao) {
+        val dialogBinding = DialogNovaMetaBinding.inflate(layoutInflater)
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.titulo_nova_meta)
+            .setView(dialogBinding.root)
+            .setPositiveButton(R.string.btn_salvar_meta) { _, _ ->
+                val nome = dialogBinding.editNomeMeta.text.toString().trim()
+                val valorAlvo = dialogBinding.editValorAlvoMeta.text.toString()
+                    .replace(",", ".").toDoubleOrNull()
+                if (nome.isNotEmpty() && valorAlvo != null && valorAlvo > 0) {
+                    lifecycleScope.launch { metaDao.insert(Meta(nome = nome, valorAlvo = valorAlvo)) }
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     private fun nomeDiaSemana(codigo: String): String = when (codigo) {

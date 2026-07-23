@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@drawable/bg_card_free">
+        android:background="@drawable/bg_card_flat">
 
         <View
             android:id="@+id/view_stripe_cor"

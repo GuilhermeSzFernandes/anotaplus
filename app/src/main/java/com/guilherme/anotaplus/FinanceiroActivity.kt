@@ -157,7 +157,7 @@ class FinanceiroActivity : AppCompatActivity() {
     private fun renderSaldo(saldo: Double) {
         binding.textSaldoValor.text = "R$ %.2f".format(MesUtil.locale, saldo)
         binding.textSaldoValor.setTextColor(
-            ContextCompat.getColor(this, if (saldo < 0) R.color.gasto_color else R.color.color_positivo)
+            ContextCompat.getColor(this, if (saldo < 0) R.color.color_gasto_vivo else R.color.color_receita)
         )
     }
 

@@ -24,8 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/title_inicio"
-            android:textAppearance="@style/TextAppearance.AnotaPlus.Wordmark"
-            android:textSize="20sp" />
+            android:textAppearance="@style/TextAppearance.AnotaPlus.Heading" />
 
     </LinearLayout>
 
@@ -51,36 +50,159 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <TextView
-                android:id="@+id/text_total_gasto"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textAppearance="@style/TextAppearance.AnotaPlus.Amount"
-                android:textSize="34sp"
-                tools:text="R$ 1.234,56" />
+                android:layout_marginTop="12dp"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_flat"
+                android:padding="18dp">
 
-            <TextView
-                android:id="@+id/text_comparativo_mes"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
-                android:visibility="gone"
-                tools:text="▲ 12% vs mês anterior"
-                tools:visibility="visible" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/label_gasto_no_mes"
-                android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="20dp"
-                android:background="@color/paper_dim" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_receitas"
+                            android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
+
+                        <TextView
+                            android:id="@+id/text_total_receitas"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:textAppearance="@style/TextAppearance.AnotaPlus.AmountBold"
+                            android:textColor="@color/color_receita"
+                            android:textSize="16sp"
+                            tools:text="R$ 0,00" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/paper_dim" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_gastos"
+                            android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
+
+                        <TextView
+                            android:id="@+id/text_total_gasto"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:textAppearance="@style/TextAppearance.AnotaPlus.AmountBold"
+                            android:textColor="@color/color_gasto_vivo"
+                            android:textSize="16sp"
+                            tools:text="R$ 0,00" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/paper_dim" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_poupanca"
+                            android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
+
+                        <TextView
+                            android:id="@+id/text_total_poupanca"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:textAppearance="@style/TextAppearance.AnotaPlus.AmountBold"
+                            android:textSize="16sp"
+                            tools:text="R$ 0,00"
+                            tools:textColor="@color/color_receita" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/text_comparativo_mes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
+                    android:visibility="gone"
+                    tools:text="▲ 12% vs mês anterior"
+                    tools:visibility="visible" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@color/paper_dim" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/label_meta_economia_alcancada"
+                        android:textAppearance="@style/TextAppearance.AnotaPlus.RowTitle"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/text_meta_economia_percentual"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.AnotaPlus.RowTitle"
+                        android:textColor="@color/color_receita"
+                        android:textSize="13sp"
+                        tools:text="0%" />
+
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/progress_meta_economia"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"
+                    android:layout_marginTop="8dp"
+                    android:max="100"
+                    android:progress="0"
+                    android:progressTint="@color/color_receita"
+                    android:progressBackgroundTint="@color/paper_dim" />
+
+            </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"
@@ -105,6 +227,100 @@
                 android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
                 android:textColor="@color/ink_soft"
                 android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/label_insights"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/label_insights"
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Label"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/card_insight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_insight_card"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/text_insight"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
+                    tools:text="Outros é sua maior despesa este mês (R$ 2,00)." />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/label_metas"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
+
+                <ImageButton
+                    android:id="@+id/btn_add_meta"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/bg_icon_chip"
+                    android:contentDescription="@string/desc_adicionar_meta"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_add"
+                    app:tint="@color/paper" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/container_metas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/layout_empty_metas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/bg_card_flat"
+                android:padding="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/empty_metas"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
+                    android:textColor="@color/ink_soft" />
+
+                <TextView
+                    android:id="@+id/btn_criar_primeira_meta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="4dp"
+                    android:text="@string/btn_criar_primeira_meta"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.RowTitle" />
+
+            </LinearLayout>
 
             <View
                 android:layout_width="match_parent"

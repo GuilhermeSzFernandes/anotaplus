@@ -27,4 +27,12 @@
          não usada em mais nada do app. -->
     <color name="chart_teal">#4A7C74</color>
     <color name="chart_dusty_rose">#B5766B</color>
+
+    <!-- Redesign "fintech moderno" (Fase 0): tokens novos, aditivos.
+         Os tokens acima continuam intocados e seguem servindo a Captura
+         Rápida (QuickCaptureActivity/ManualGastoActivity/ManualIdeiaActivity/
+         ManualRecebimentoActivity), que preserva o visual antigo. -->
+    <color name="color_receita">#1E8E3E</color>
+    <color name="color_gasto_vivo">#E5484D</color>
+    <color name="chart_teal_tint">#1F4A7C74</color>
 </resources>

@@ -66,10 +66,10 @@
     <string name="entry_number_format">Nº %04d</string>
     <string name="prefix_valor">R$</string>
 
-    <string name="title_inicio">Início</string>
+    <string name="title_inicio">Acompanhamento</string>
     <string name="title_anotacoes">Anotações</string>
     <string name="title_financeiro">Financeiro</string>
-    <string name="title_conta">Conta</string>
+    <string name="title_conta">Perfil</string>
     <string name="title_categorias_carteiras">Categorias e carteiras</string>
 
     <string name="label_tipo_padrao">Tipo padrão ao abrir</string>
@@ -113,6 +113,50 @@
     <string name="format_ideias_mes">%d anotação(ões) registrada(s) este mês</string>
     <string name="empty_report">Nenhum gasto registrado este mês ainda.</string>
     <string name="sem_categoria">Sem categoria</string>
+
+    <string name="label_receitas">Receitas</string>
+    <string name="label_gastos">Gastos</string>
+    <string name="label_poupanca">Poupança</string>
+    <string name="label_meta_economia_alcancada">Meta de economia alcançada</string>
+    <string name="format_percentual">%d%%</string>
+
+    <string name="label_insights">Insights</string>
+    <string name="insight_maior_categoria">%1$s é sua maior despesa este mês (R$ %2$.2f).</string>
+
+    <string name="label_metas">Metas</string>
+    <string name="desc_adicionar_meta">Adicionar meta</string>
+    <string name="empty_metas">Nenhuma meta ainda</string>
+    <string name="btn_criar_primeira_meta">+ Criar primeira meta</string>
+    <string name="titulo_nova_meta">Nova meta</string>
+    <string name="hint_nome_meta">Nome da meta</string>
+    <string name="hint_valor_alvo_meta">Valor alvo</string>
+    <string name="btn_salvar_meta">Salvar</string>
+    <string name="btn_excluir_meta">Excluir</string>
+    <string name="format_meta_progresso">%1$s / %2$s</string>
+
+    <string name="titulo_ajustar_objetivos">Ajustar objetivos</string>
+    <string name="hint_meta_economia_mensal">Meta de economia mensal (R$)</string>
+    <string name="desc_ajustar_objetivos">Define quanto você quer economizar por mês. Esse valor é usado pra calcular o % de "meta de economia alcançada" no Acompanhamento.</string>
+
+    <string name="label_progresso">Progresso</string>
+    <string name="label_personalizacao">Personalização</string>
+    <string name="label_legal">Legal</string>
+    <string name="label_suporte">Suporte</string>
+
+    <string name="row_titulo_historico">Histórico</string>
+    <string name="row_titulo_meu_plano">Meu Plano</string>
+    <string name="row_titulo_tipo_padrao">Tipo padrão ao abrir</string>
+    <string name="row_titulo_privacidade">Política de Privacidade</string>
+    <string name="row_titulo_termos">Termos de Uso</string>
+    <string name="row_titulo_tutorial">Ver tutorial do app</string>
+    <string name="row_titulo_guia_gesto">Guia do gesto</string>
+    <string name="row_titulo_escolher_atalho">Escolher atalho rápido</string>
+
+    <string name="titulo_privacidade_stub">Política de Privacidade</string>
+    <string name="conteudo_privacidade_stub">Ainda não publicamos o link da política de privacidade. Assim que estiver disponível, ele aparece aqui.</string>
+    <string name="titulo_termos_stub">Termos de Uso</string>
+    <string name="conteudo_termos_stub">Ainda não publicamos o link dos termos de uso. Assim que estiver disponível, ele aparece aqui.</string>
+    <string name="btn_fechar_dialog">Fechar</string>
 
     <string name="desc_mes_anterior">Mês anterior</string>
     <string name="desc_mes_proximo">Próximo mês</string>

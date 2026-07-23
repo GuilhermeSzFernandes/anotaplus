@@ -17,8 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/title_atalho_rapido"
-            android:textAppearance="@style/TextAppearance.AnotaPlus.Wordmark"
-            android:textSize="20sp" />
+            android:textAppearance="@style/TextAppearance.AnotaPlus.Heading" />
 
         <TextView
             android:layout_width="match_parent"
@@ -34,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:orientation="vertical"
-            android:background="@drawable/bg_card_free"
+            android:background="@drawable/bg_card_flat"
             android:padding="16dp">
 
             <LinearLayout
@@ -75,7 +74,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:orientation="vertical"
-            android:background="@drawable/bg_card_free"
+            android:background="@drawable/bg_card_flat"
             android:padding="16dp">
 
             <LinearLayout
@@ -114,7 +113,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:orientation="vertical"
-            android:background="@drawable/bg_card_free"
+            android:background="@drawable/bg_card_flat"
             android:padding="16dp">
 
             <LinearLayout
@@ -147,18 +146,15 @@
 
         </LinearLayout>
 
-        <com.guilherme.anotaplus.ui.PerforationView
+        <View
             android:layout_width="match_parent"
-            android:layout_height="6dp"
+            android:layout_height="1dp"
             android:layout_marginTop="24dp"
-            app:toothWidth="8dp"
-            app:toothHeight="4dp"
-            app:toothGap="3dp"
-            app:toothColor="@color/ink_soft" />
+            android:background="@color/paper_dim" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_continuar"
-            style="@style/Widget.AnotaPlus.Button.Stamp"
+            style="@style/Widget.AnotaPlus.Button.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"

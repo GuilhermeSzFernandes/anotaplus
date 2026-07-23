@@ -40,8 +40,8 @@ class EntryAdapter(private val onItemClick: (Entry) -> Unit) :
             val ehFinanceiro = entry.type == EntryType.GASTO || entry.type == EntryType.RECEBIMENTO
             val typeColor = binding.root.context.getColor(
                 when (entry.type) {
-                    EntryType.GASTO -> R.color.gasto_color
-                    EntryType.RECEBIMENTO -> R.color.color_positivo
+                    EntryType.GASTO -> R.color.color_gasto_vivo
+                    EntryType.RECEBIMENTO -> R.color.color_receita
                     EntryType.PENSAMENTO -> R.color.pensamento_color
                 }
             )

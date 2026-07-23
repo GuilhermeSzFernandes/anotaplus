@@ -9,6 +9,7 @@ object Prefs {
     private const val KEY_ONBOARDING_CONCLUIDO = "onboarding_concluido"
     private const val KEY_ABERTURAS_HISTORICO = "aberturas_historico"
     private const val KEY_NOTIFICACAO_CAPTURA_ATIVA = "notificacao_captura_ativa"
+    private const val KEY_META_ECONOMIA_VALOR = "meta_economia_valor"
 
     fun getTipoPadrao(context: Context): EntryType {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -54,6 +55,19 @@ object Prefs {
     fun setNotificacaoCapturaAtiva(context: Context, ativa: Boolean) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit {
             putBoolean(KEY_NOTIFICACAO_CAPTURA_ATIVA, ativa)
+        }
+    }
+
+    // Valor-alvo de economia mensal, definido em "Ajustar objetivos" (Conta).
+    // Usado só pra calcular o % de "meta de economia alcançada" no
+    // Acompanhamento — não tem relação com a lista de Metas nomeadas.
+    fun getMetaEconomiaValor(context: Context): Float =
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getFloat(KEY_META_ECONOMIA_VALOR, 0f)
+
+    fun setMetaEconomiaValor(context: Context, valor: Float) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit {
+            putFloat(KEY_META_ECONOMIA_VALOR, valor)
         }
     }
 }
