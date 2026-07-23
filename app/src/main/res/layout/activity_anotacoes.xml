@@ -97,6 +97,18 @@
 
     </LinearLayout>
 
+    <!-- Header e layout_selecao nunca ficam visíveis juntos (ver
+         AnotacoesActivity.atualizarBarraSelecao), mas cada um é ancorado
+         independentemente ao topo — a barrier garante que o conteúdo
+         abaixo siga o que estiver realmente visível, em vez de sempre
+         colar embaixo do header quando ele vira GONE. -->
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="header,layout_selecao" />
+
     <com.guilherme.anotaplus.ui.PerforationView
         android:id="@+id/header_perforation"
         android:layout_width="0dp"
@@ -105,7 +117,7 @@
         app:toothHeight="3dp"
         app:toothGap="3dp"
         app:toothColor="@color/paper_dim"
-        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintTop_toBottomOf="@id/barrier_header"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
