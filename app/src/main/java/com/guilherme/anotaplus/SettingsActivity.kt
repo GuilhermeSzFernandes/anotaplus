@@ -16,6 +16,7 @@ import com.guilherme.anotaplus.data.SessionPrefs
 import com.guilherme.anotaplus.data.SubscriptionPrefs
 import com.guilherme.anotaplus.databinding.ActivitySettingsBinding
 import com.guilherme.anotaplus.databinding.DialogAjustarObjetivosBinding
+import com.guilherme.anotaplus.databinding.DialogDadosSalariaisBinding
 import com.guilherme.anotaplus.databinding.DialogTipoPadraoBinding
 import com.guilherme.anotaplus.network.ApiClient
 import com.guilherme.anotaplus.network.dto.BillingSyncRequest
@@ -48,6 +49,7 @@ class SettingsActivity : AppCompatActivity() {
         aplicarEdgeToEdge(binding.root, binding.header, binding.bottomNav.root)
 
         configurarBottomNav(binding.bottomNav, NavTab.CONTA)
+        configurarBotaoCalculadora(binding.btnCalculadoraNav)
 
         atualizarUiConta()
         binding.btnEntrarGoogle.setOnClickListener { lifecycleScope.launch { entrarComGoogle() } }
@@ -132,6 +134,10 @@ class SettingsActivity : AppCompatActivity() {
         binding.rowAjustarObjetivos.textRowTitle.text = getString(R.string.titulo_ajustar_objetivos)
         binding.rowAjustarObjetivos.root.setOnClickListener { abrirDialogAjustarObjetivos() }
 
+        binding.rowDadosSalariais.iconRow.setImageResource(R.drawable.ic_calculator)
+        binding.rowDadosSalariais.textRowTitle.text = getString(R.string.titulo_dados_salariais)
+        binding.rowDadosSalariais.root.setOnClickListener { abrirDialogDadosSalariais() }
+
         binding.rowNotificacoes.iconRow.setImageResource(R.drawable.ic_bell)
         binding.rowNotificacoes.textRowTitle.text = getString(R.string.label_notificacao_captura)
 
@@ -211,6 +217,31 @@ class SettingsActivity : AppCompatActivity() {
                 val valor = dialogBinding.editMetaEconomiaValor.text.toString()
                     .replace(",", ".").toFloatOrNull() ?: 0f
                 Prefs.setMetaEconomiaValor(this, valor)
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun abrirDialogDadosSalariais() {
+        val dialogBinding = DialogDadosSalariaisBinding.inflate(layoutInflater)
+        val salario = Prefs.getSalarioMensal(this)
+        val horasPorDia = Prefs.getHorasPorDia(this)
+        val diasPorSemana = Prefs.getDiasPorSemana(this)
+        if (salario > 0) dialogBinding.editSalarioMensal.setText("%.2f".format(salario))
+        if (horasPorDia > 0) dialogBinding.editHorasPorDia.setText("%.1f".format(horasPorDia))
+        if (diasPorSemana > 0) dialogBinding.editDiasPorSemana.setText("%.0f".format(diasPorSemana))
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.titulo_dados_salariais)
+            .setView(dialogBinding.root)
+            .setPositiveButton(R.string.btn_salvar_meta) { _, _ ->
+                val novoSalario = dialogBinding.editSalarioMensal.text.toString()
+                    .replace(",", ".").toFloatOrNull() ?: 0f
+                val novasHoras = dialogBinding.editHorasPorDia.text.toString()
+                    .replace(",", ".").toFloatOrNull() ?: 0f
+                val novosDias = dialogBinding.editDiasPorSemana.text.toString()
+                    .replace(",", ".").toFloatOrNull() ?: 0f
+                Prefs.setDadosSalariais(this, novoSalario, novasHoras, novosDias)
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()

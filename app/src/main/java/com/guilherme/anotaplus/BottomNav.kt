@@ -2,6 +2,7 @@ package com.guilherme.anotaplus
 
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
@@ -38,4 +39,15 @@ private fun AppCompatActivity.trocarTab(atual: NavTab, alvo: NavTab, destino: Cl
     @Suppress("DEPRECATION")
     overridePendingTransition(0, 0)
     finish()
+}
+
+// Botão da calculadora "vale a pena comprar?": um 5º elemento, elevado
+// sobre a bottom nav, mas fora do <include> dela (o MaterialCardView do
+// pill clipa qualquer filho que ultrapasse suas bordas arredondadas — por
+// isso o botão é irmão do include em cada tela-raiz, não filho). Fica
+// visível em qualquer uma das 4 abas, não é um NavTab.
+fun AppCompatActivity.configurarBotaoCalculadora(botao: View) {
+    botao.setOnClickListener {
+        startActivity(Intent(this, CalculadoraCompraActivity::class.java))
+    }
 }

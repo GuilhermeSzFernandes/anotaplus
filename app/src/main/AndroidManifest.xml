@@ -123,13 +123,16 @@
         <!--
             Sequência de onboarding (só aparece na primeiríssima abertura do
             app, controlado por Prefs.isOnboardingConcluido):
-            QuickCaptureActivity -> LoginActivity -> QuickAccessChooserActivity ->
+            QuickCaptureActivity -> LoginActivity -> SalarioOnboardingActivity
+            (dados salariais, só na criação da conta) -> QuickAccessChooserActivity ->
             tutorial de cada método escolhido (GestureGuideActivity e/ou
             WidgetSuggestionActivity, encadeados por QuickAccessFlow.kt) ->
             AnotacoesActivity (com o tour de tutorial "spotlight" ativo, ver
             TutorialTourManager.kt).
             Cada uma também pode ser aberta isoladamente depois (fora do
-            onboarding) a partir de Configurações.
+            onboarding) a partir de Configurações — SalarioOnboardingActivity
+            é exceção: a edição posterior usa um dialog em SettingsActivity,
+            não reabre esta Activity.
         -->
         <activity
             android:name=".GestureGuideActivity"
@@ -142,9 +145,20 @@
             android:theme="@style/Theme.AnotaPlus" />
 
         <activity
+            android:name=".SalarioOnboardingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AnotaPlus" />
+
+        <activity
             android:name=".QuickAccessChooserActivity"
             android:exported="false"
             android:theme="@style/Theme.AnotaPlus" />
+
+        <activity
+            android:name=".CalculadoraCompraActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AnotaPlus"
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".WidgetSuggestionActivity"

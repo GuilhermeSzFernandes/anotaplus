@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="24dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/desc_dados_salariais"
+        android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
+        android:textColor="@color/ink_soft" />
+
+    <EditText
+        android:id="@+id/edit_salario_mensal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_underline_field"
+        android:hint="@string/hint_salario_mensal"
+        android:inputType="numberDecimal"
+        android:textColor="@color/ink"
+        android:textColorHint="@color/ink_soft"
+        android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
+
+    <EditText
+        android:id="@+id/edit_horas_por_dia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/bg_underline_field"
+        android:hint="@string/hint_horas_por_dia"
+        android:inputType="numberDecimal"
+        android:textColor="@color/ink"
+        android:textColorHint="@color/ink_soft"
+        android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
+
+    <EditText
+        android:id="@+id/edit_dias_por_semana"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/bg_underline_field"
+        android:hint="@string/hint_dias_por_semana"
+        android:inputType="numberDecimal"
+        android:textColor="@color/ink"
+        android:textColorHint="@color/ink_soft"
+        android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
+
+</LinearLayout>

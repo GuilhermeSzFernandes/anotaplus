@@ -138,6 +138,37 @@
     <string name="hint_meta_economia_mensal">Meta de economia mensal (R$)</string>
     <string name="desc_ajustar_objetivos">Define quanto você quer economizar por mês. Esse valor é usado pra calcular o % de "meta de economia alcançada" no Acompanhamento.</string>
 
+    <!-- Financeiro: Ações Rápidas + Transações (redesign 2026-07-23) -->
+    <string name="label_acoes_rapidas">Ações rápidas</string>
+    <string name="btn_acao_gasto">+ Gasto</string>
+    <string name="btn_acao_ganho">+ Ganho</string>
+    <string name="label_transacoes">Transações</string>
+
+    <!-- Dados salariais + calculadora "Vale a pena comprar?" -->
+    <string name="titulo_dados_salariais">Dados salariais</string>
+    <string name="desc_dados_salariais">Usado só pra calcular o valor da sua hora de trabalho na calculadora "Vale a pena comprar?".</string>
+    <string name="hint_salario_mensal">Salário mensal (R$)</string>
+    <string name="hint_horas_por_dia">Horas trabalhadas por dia</string>
+    <string name="hint_dias_por_semana">Dias trabalhados por semana</string>
+
+    <string name="titulo_onboarding_salario_1">Quanto você ganha por mês?</string>
+    <string name="desc_onboarding_salario">Isso fica só no seu aparelho e serve pra calcular quanto vale sua hora de trabalho.</string>
+    <string name="titulo_onboarding_salario_2">Quantas horas você trabalha por dia?</string>
+    <string name="titulo_onboarding_salario_3">Quantos dias por semana você trabalha?</string>
+    <string name="btn_proximo_onboarding">Próximo</string>
+    <string name="btn_concluir_onboarding">Concluir</string>
+    <string name="btn_pular_onboarding_salario">Pular por enquanto</string>
+
+    <string name="titulo_calculadora_compra">Quanto custa?</string>
+    <string name="btn_calcular">Calcular</string>
+    <string name="titulo_vale_a_pena">Vale a pena?</string>
+    <string name="label_tempo_trabalho">Tempo de trabalho</string>
+    <string name="format_tempo_trabalho">%1$d dia(s) e %2$dh</string>
+    <string name="btn_nao_comprar">Não comprar</string>
+    <string name="btn_comprar">Comprar</string>
+    <string name="btn_nao_tenho_certeza">Não tenho certeza</string>
+    <string name="texto_calculo_rapido">Cálculo rápido</string>
+
     <string name="label_progresso">Progresso</string>
     <string name="label_personalizacao">Personalização</string>
     <string name="label_legal">Legal</string>

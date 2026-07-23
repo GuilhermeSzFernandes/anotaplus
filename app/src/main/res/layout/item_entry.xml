@@ -11,11 +11,20 @@
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground">
 
-    <View
-        android:id="@+id/view_type_bar"
-        android:layout_width="3dp"
-        android:layout_height="match_parent"
-        android:background="@color/ink" />
+    <FrameLayout
+        android:id="@+id/avatar_tipo"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="10dp">
+
+        <ImageView
+            android:id="@+id/icon_tipo"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="center"
+            tools:src="@drawable/ic_arrow_expense" />
+
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="0dp"

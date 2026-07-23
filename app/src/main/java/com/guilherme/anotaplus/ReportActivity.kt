@@ -50,6 +50,7 @@ class ReportActivity : AppCompatActivity() {
         aplicarEdgeToEdge(binding.root, binding.header, binding.bottomNav.root)
 
         configurarBottomNav(binding.bottomNav, NavTab.INICIO)
+        configurarBotaoCalculadora(binding.btnCalculadoraNav)
 
         binding.rowMes.btnMesAnterior.setOnClickListener { mudarMes(-1) }
         binding.rowMes.btnMesProximo.setOnClickListener { mudarMes(1) }

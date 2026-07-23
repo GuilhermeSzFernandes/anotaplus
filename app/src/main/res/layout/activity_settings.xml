@@ -266,6 +266,15 @@
                     android:background="@color/paper_dim" />
 
                 <include
+                    android:id="@+id/row_dados_salariais"
+                    layout="@layout/item_settings_row" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/paper_dim" />
+
+                <include
                     android:id="@+id/row_notificacoes"
                     layout="@layout/item_settings_switch_row" />
 
@@ -401,5 +410,29 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/btn_calculadora_nav"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginBottom="-22dp"
+        android:background="@drawable/bg_fab_calculadora"
+        android:elevation="6dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        app:layout_constraintStart_toStartOf="@id/bottom_nav"
+        app:layout_constraintEnd_toEndOf="@id/bottom_nav"
+        app:layout_constraintBottom_toTopOf="@id/bottom_nav">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_calculator"
+            app:tint="@color/paper"
+            android:contentDescription="@string/titulo_calculadora_compra" />
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

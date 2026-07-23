@@ -1,0 +1,97 @@
+package com.guilherme.anotaplus
+
+import android.content.Intent
+import android.os.Bundle
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import com.guilherme.anotaplus.data.Prefs
+import com.guilherme.anotaplus.databinding.ActivitySalarioOnboardingBinding
+
+// Onboarding gamificado (3 passos) rodado uma única vez, logo após a
+// criação da conta (ver LoginActivity.concluir()) — pergunta salário
+// mensal, horas por dia e dias por semana trabalhados, pra calcular o
+// valor-hora usado na calculadora "Vale a pena comprar?". Repassa
+// EXTRA_ONBOARDING/EXTRA_ABRIR_HISTORICO adiante pra QuickAccessChooserActivity,
+// seguindo o mesmo padrão de QuickAccessFlow. Também reaberta (fora do
+// onboarding) via "Dados salariais" em Perfil, mas nesse caso via dialog
+// simples (SettingsActivity.abrirDialogDadosSalariais), não esta tela.
+class SalarioOnboardingActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivitySalarioOnboardingBinding
+    private var passo = 0
+
+    private val onboarding: Boolean
+        get() = intent.getBooleanExtra(QuickAccessFlow.EXTRA_ONBOARDING, false)
+    private val abrirHistorico: Boolean
+        get() = intent.getBooleanExtra(QuickAccessFlow.EXTRA_ABRIR_HISTORICO, false)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivitySalarioOnboardingBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        binding.btnProximoOnboarding.setOnClickListener { avancar() }
+        binding.btnPularOnboardingSalario.setOnClickListener { concluir() }
+
+        atualizarPasso()
+    }
+
+    private fun avancar() {
+        when (passo) {
+            0 -> {
+                val valor = valorDe(binding.editSalarioMensal.text.toString())
+                if (valor == null) {
+                    binding.editSalarioMensal.error = getString(R.string.error_valor_obrigatorio)
+                    return
+                }
+                passo = 1
+                atualizarPasso()
+            }
+            1 -> {
+                val valor = valorDe(binding.editHorasPorDia.text.toString())
+                if (valor == null) {
+                    binding.editHorasPorDia.error = getString(R.string.error_valor_obrigatorio)
+                    return
+                }
+                passo = 2
+                atualizarPasso()
+            }
+            else -> {
+                val diasPorSemana = valorDe(binding.editDiasPorSemana.text.toString())
+                if (diasPorSemana == null) {
+                    binding.editDiasPorSemana.error = getString(R.string.error_valor_obrigatorio)
+                    return
+                }
+                val salario = valorDe(binding.editSalarioMensal.text.toString()) ?: 0f
+                val horasPorDia = valorDe(binding.editHorasPorDia.text.toString()) ?: 0f
+                Prefs.setDadosSalariais(this, salario, horasPorDia, diasPorSemana)
+                concluir()
+            }
+        }
+    }
+
+    private fun valorDe(texto: String): Float? =
+        texto.replace(",", ".").toFloatOrNull()?.takeIf { it > 0f }
+
+    private fun atualizarPasso() {
+        binding.paginaSalario.visibility = if (passo == 0) View.VISIBLE else View.GONE
+        binding.paginaHoras.visibility = if (passo == 1) View.VISIBLE else View.GONE
+        binding.paginaDias.visibility = if (passo == 2) View.VISIBLE else View.GONE
+
+        binding.dot1.setImageResource(R.drawable.dot_tutorial_ativo)
+        binding.dot2.setImageResource(if (passo >= 1) R.drawable.dot_tutorial_ativo else R.drawable.dot_tutorial_inativo)
+        binding.dot3.setImageResource(if (passo >= 2) R.drawable.dot_tutorial_ativo else R.drawable.dot_tutorial_inativo)
+
+        binding.btnProximoOnboarding.text =
+            if (passo == 2) getString(R.string.btn_concluir_onboarding) else getString(R.string.btn_proximo_onboarding)
+    }
+
+    private fun concluir() {
+        startActivity(
+            Intent(this, QuickAccessChooserActivity::class.java)
+                .putExtra(QuickAccessFlow.EXTRA_ONBOARDING, onboarding)
+                .putExtra(QuickAccessFlow.EXTRA_ABRIR_HISTORICO, abrirHistorico)
+        )
+        finish()
+    }
+}

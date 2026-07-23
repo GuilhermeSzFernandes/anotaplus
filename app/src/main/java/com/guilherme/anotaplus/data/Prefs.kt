@@ -10,6 +10,9 @@ object Prefs {
     private const val KEY_ABERTURAS_HISTORICO = "aberturas_historico"
     private const val KEY_NOTIFICACAO_CAPTURA_ATIVA = "notificacao_captura_ativa"
     private const val KEY_META_ECONOMIA_VALOR = "meta_economia_valor"
+    private const val KEY_SALARIO_MENSAL = "salario_mensal"
+    private const val KEY_HORAS_POR_DIA = "horas_por_dia"
+    private const val KEY_DIAS_POR_SEMANA = "dias_por_semana"
 
     fun getTipoPadrao(context: Context): EntryType {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -69,5 +72,41 @@ object Prefs {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit {
             putFloat(KEY_META_ECONOMIA_VALOR, valor)
         }
+    }
+
+    // Dados salariais: preenchidos no onboarding gamificado (só na criação
+    // da conta) e editáveis depois em Perfil > Dados salariais. Usados só
+    // pra calcular o valor-hora na calculadora "Vale a pena comprar?" —
+    // não têm relação com nenhum outro dado financeiro do app.
+    fun getSalarioMensal(context: Context): Float =
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getFloat(KEY_SALARIO_MENSAL, 0f)
+
+    fun getHorasPorDia(context: Context): Float =
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getFloat(KEY_HORAS_POR_DIA, 0f)
+
+    fun getDiasPorSemana(context: Context): Float =
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getFloat(KEY_DIAS_POR_SEMANA, 0f)
+
+    fun setDadosSalariais(context: Context, salarioMensal: Float, horasPorDia: Float, diasPorSemana: Float) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit {
+            putFloat(KEY_SALARIO_MENSAL, salarioMensal)
+            putFloat(KEY_HORAS_POR_DIA, horasPorDia)
+            putFloat(KEY_DIAS_POR_SEMANA, diasPorSemana)
+        }
+    }
+
+    fun temDadosSalariais(context: Context): Boolean =
+        getSalarioMensal(context) > 0f && getHorasPorDia(context) > 0f && getDiasPorSemana(context) > 0f
+
+    // Semanas por mês: aproximação padrão (52 semanas / 12 meses).
+    fun getValorHora(context: Context): Float {
+        val salario = getSalarioMensal(context)
+        val horasPorDia = getHorasPorDia(context)
+        val diasPorSemana = getDiasPorSemana(context)
+        val horasPorMes = diasPorSemana * 4.345f * horasPorDia
+        return if (horasPorMes > 0f) salario / horasPorMes else 0f
     }
 }

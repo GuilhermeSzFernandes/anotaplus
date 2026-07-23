@@ -44,6 +44,7 @@ class AnotacoesActivity : AppCompatActivity() {
         aplicarEdgeToEdge(binding.root, binding.header, binding.bottomNav.root)
 
         configurarBottomNav(binding.bottomNav, NavTab.ANOTACOES)
+        configurarBotaoCalculadora(binding.btnCalculadoraNav)
         binding.btnAddIdeia.setOnClickListener {
             startActivity(Intent(this, ManualIdeiaActivity::class.java))
         }

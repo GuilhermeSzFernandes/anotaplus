@@ -61,11 +61,18 @@ class FinanceiroActivity : AppCompatActivity() {
         aplicarEdgeToEdge(binding.root, binding.header, binding.bottomNav.root)
 
         configurarBottomNav(binding.bottomNav, NavTab.FINANCEIRO)
+        configurarBotaoCalculadora(binding.btnCalculadoraNav)
 
         binding.btnAddLancamento.setOnClickListener { mostrarMenuAdicionar() }
         binding.btnEmptyAdd.setOnClickListener { mostrarMenuAdicionar() }
         binding.btnCategorias.setOnClickListener {
             startActivity(Intent(this, CategoriasActivity::class.java))
+        }
+        binding.btnAcaoGasto.setOnClickListener {
+            startActivity(Intent(this, ManualGastoActivity::class.java))
+        }
+        binding.btnAcaoGanho.setOnClickListener {
+            startActivity(Intent(this, ManualRecebimentoActivity::class.java))
         }
         configurarGrafico()
 
@@ -113,8 +120,8 @@ class FinanceiroActivity : AppCompatActivity() {
                 combine(
                     dao.getTotalGasto(inicio, fim),
                     dao.getTotalRecebimento(inicio, fim)
-                ) { gasto, recebimento -> recebimento - gasto }
-            }.collectLatest { saldo -> renderSaldo(saldo) }
+                ) { gasto, recebimento -> gasto to recebimento }
+            }.collectLatest { (gasto, recebimento) -> renderResumo(gasto, recebimento) }
         }
 
         lifecycleScope.launch {
@@ -154,7 +161,11 @@ class FinanceiroActivity : AppCompatActivity() {
         binding.btnEmptyAdd.visibility = if (query.isNotEmpty() && lancamentosDoMes.isNotEmpty()) View.GONE else View.VISIBLE
     }
 
-    private fun renderSaldo(saldo: Double) {
+    private fun renderResumo(gasto: Double, recebimento: Double) {
+        binding.textTotalReceitas.text = "R$ %.2f".format(MesUtil.locale, recebimento)
+        binding.textTotalGastos.text = "R$ %.2f".format(MesUtil.locale, gasto)
+
+        val saldo = recebimento - gasto
         binding.textSaldoValor.text = "R$ %.2f".format(MesUtil.locale, saldo)
         binding.textSaldoValor.setTextColor(
             ContextCompat.getColor(this, if (saldo < 0) R.color.color_gasto_vivo else R.color.color_receita)
@@ -209,7 +220,7 @@ class FinanceiroActivity : AppCompatActivity() {
 
     private fun renderGrafico(pontos: List<Double>) {
         val chartEntries = pontos.mapIndexed { index, valor -> ChartEntry((index + 1).toFloat(), valor.toFloat()) }
-        val cor = ContextCompat.getColor(this, R.color.brass)
+        val cor = ContextCompat.getColor(this, R.color.ink)
         val dataSet = LineDataSet(chartEntries, "saldo").apply {
             color = cor
             lineWidth = 2f

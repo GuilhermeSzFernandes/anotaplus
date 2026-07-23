@@ -1,7 +1,9 @@
 package com.guilherme.anotaplus
 
+import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.RecyclerView
 import com.guilherme.anotaplus.data.Entry
 import com.guilherme.anotaplus.data.EntryType
@@ -56,7 +58,18 @@ class EntryAdapter(private val onItemClick: (Entry) -> Unit) :
                 binding.root.context.getString(R.string.btn_pensamento)
             }
             binding.textTipoValor.setTextColor(typeColor)
-            binding.viewTypeBar.setBackgroundColor(typeColor)
+
+            val iconeTipo = when (entry.type) {
+                EntryType.GASTO -> R.drawable.ic_arrow_expense
+                EntryType.RECEBIMENTO -> R.drawable.ic_arrow_income
+                EntryType.PENSAMENTO -> R.drawable.ic_note
+            }
+            binding.iconTipo.setImageResource(iconeTipo)
+            binding.iconTipo.setColorFilter(typeColor)
+            binding.avatarTipo.background = GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(ColorUtils.setAlphaComponent(typeColor, 38))
+            }
 
             binding.textTitulo.text = entry.titulo.orEmpty()
             binding.textTitulo.visibility =

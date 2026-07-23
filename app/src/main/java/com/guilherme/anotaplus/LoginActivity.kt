@@ -60,8 +60,11 @@ class LoginActivity : AppCompatActivity() {
         if (intent.getBooleanExtra(QuickAccessFlow.EXTRA_ONBOARDING, false)) {
             Prefs.marcarOnboardingConcluido(this)
             val abrirHistorico = intent.getBooleanExtra(QuickAccessFlow.EXTRA_ABRIR_HISTORICO, false)
+            // Conta acabou de ser criada: pergunta os dados salariais antes
+            // de seguir pra escolha de atalho — SalarioOnboardingActivity é
+            // quem abre QuickAccessChooserActivity na sequência.
             startActivity(
-                Intent(this, QuickAccessChooserActivity::class.java)
+                Intent(this, SalarioOnboardingActivity::class.java)
                     .putExtra(QuickAccessFlow.EXTRA_ONBOARDING, true)
                     .putExtra(QuickAccessFlow.EXTRA_ABRIR_HISTORICO, abrirHistorico)
             )

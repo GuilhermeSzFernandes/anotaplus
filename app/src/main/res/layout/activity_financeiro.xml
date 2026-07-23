@@ -80,7 +80,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Ticket "Saldo do mês" -->
+        <!-- Card-resumo: Receitas/Gastos lado a lado + Saldo embaixo -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -88,22 +88,171 @@
             android:background="@drawable/bg_card_flat"
             android:padding="18dp">
 
-            <TextView
-                android:id="@+id/text_saldo_label"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/stat_saldo_estimado"
-                android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow" />
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/text_saldo_valor"
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_receitas"
+                        android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
+
+                    <TextView
+                        android:id="@+id/text_total_receitas"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:textAppearance="@style/TextAppearance.AnotaPlus.AmountBold"
+                        android:textColor="@color/color_receita"
+                        android:textSize="18sp"
+                        tools:text="R$ 0,00" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/paper_dim" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="14dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_gastos"
+                        android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
+
+                    <TextView
+                        android:id="@+id/text_total_gastos"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:textAppearance="@style/TextAppearance.AnotaPlus.AmountBold"
+                        android:textColor="@color/color_gasto_vivo"
+                        android:textSize="18sp"
+                        tools:text="R$ 0,00" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="14dp"
+                android:background="@color/paper_dim" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:textAppearance="@style/TextAppearance.AnotaPlus.AmountBold"
-                android:textSize="30sp"
-                tools:text="R$ 320,00"
-                tools:textColor="@color/color_receita" />
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/text_saldo_label"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/stat_saldo_estimado"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.RowTitle" />
+
+                <TextView
+                    android:id="@+id/text_saldo_valor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.AmountBold"
+                    android:textSize="18sp"
+                    tools:text="R$ 320,00"
+                    tools:textColor="@color/color_receita" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Ações rápidas -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="@string/label_acoes_rapidas"
+            android:textAppearance="@style/TextAppearance.AnotaPlus.Label" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/btn_acao_gasto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingVertical="16dp"
+                android:background="@drawable/bg_card_flat"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_arrow_expense"
+                    app:tint="@color/color_gasto_vivo" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/btn_acao_gasto"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.RowTitle" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btn_acao_ganho"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingVertical="16dp"
+                android:background="@drawable/bg_card_flat"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_arrow_income"
+                    app:tint="@color/color_receita" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/btn_acao_ganho"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.RowTitle" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -168,6 +317,17 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/label_transacoes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="20dp"
+        android:text="@string/label_transacoes"
+        android:textAppearance="@style/TextAppearance.AnotaPlus.Label"
+        app:layout_constraintTop_toBottomOf="@id/layout_busca"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_entries"
         android:layout_width="0dp"
@@ -175,7 +335,7 @@
         android:paddingHorizontal="12dp"
         android:paddingTop="4dp"
         android:clipToPadding="false"
-        app:layout_constraintTop_toBottomOf="@id/layout_busca"
+        app:layout_constraintTop_toBottomOf="@id/label_transacoes"
         app:layout_constraintBottom_toTopOf="@id/ad_container"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -207,6 +367,30 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/btn_calculadora_nav"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginBottom="-22dp"
+        android:background="@drawable/bg_fab_calculadora"
+        android:elevation="6dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        app:layout_constraintStart_toStartOf="@id/bottom_nav"
+        app:layout_constraintEnd_toEndOf="@id/bottom_nav"
+        app:layout_constraintBottom_toTopOf="@id/bottom_nav">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_calculator"
+            app:tint="@color/paper"
+            android:contentDescription="@string/titulo_calculadora_compra" />
+
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/layout_empty"
