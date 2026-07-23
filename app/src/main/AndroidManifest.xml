@@ -23,12 +23,14 @@
             android:value="${adMobAppId}" />
 
         <!--
-            Activity principal (única LAUNCHER do app): tanto o ícone quanto o
-            gesto "Toque duas vezes na traseira" do Moto Actions chegam aqui,
-            já que os dois disparam o mesmo intent MAIN/LAUNCHER. No onCreate,
+            Activity principal (única LAUNCHER do app): tanto o ícone quanto
+            qualquer atalho que não venha de um toque na tela (ladrilho de
+            Configurações Rápidas, widgets, atalhos de ícone) chegam aqui,
+            já que todos disparam o mesmo intent MAIN/LAUNCHER. No onCreate,
             ela decide pra onde ir: se o intent tem sourceBounds (toque no
-            ícone da tela inicial) abre o Histórico; senão (gesto do Moto,
-            que não vem de um toque na tela) mostra o modal de captura.
+            ícone da tela inicial) abre o Início (ReportActivity); senão
+            (tile/widget/atalho, que não vêm de um toque na tela) mostra o
+            modal de captura.
             Tema translúcido para se comportar como um modal por cima da tela atual.
             noHistory + excludeFromRecents evitam que ela fique "presa" nos recentes
             e fazem a transição de volta ser instantânea ao fechar.
@@ -40,12 +42,12 @@
             ("standard") é o certo aqui.
             taskAffinity="" (isolada, não compartilha task com as outras
             activities do app): sem isso, se o usuário já tivesse navegado
-            pra Histórico/Configurações/etc. e apenas pressionado Home (sem
-            fechar), o gesto reaproveitava aquela task em segundo plano e o
+            pra Financeiro/Configurações/etc. e apenas pressionado Home (sem
+            fechar), o atalho reaproveitava aquela task em segundo plano e o
             Android simplesmente trazia ela de volta (mostrando a última
             tela usada) — sem nem chegar a criar uma instância nova do
             QuickCaptureActivity, então o modal nunca aparecia. Com task
-            própria, o gesto sempre cria uma instância nova e fresca,
+            própria, o atalho sempre cria uma instância nova e fresca,
             independente do que estiver rolando nas outras telas do app.
         -->
         <activity

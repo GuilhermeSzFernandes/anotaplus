@@ -37,7 +37,7 @@ object Prefs {
     }
 
     // Controla o intersticial "ocasional" do plano Free: incrementa a cada
-    // abertura do Histórico, HistoryActivity decide o que fazer com o
+    // abertura do Financeiro, FinanceiroActivity decide o que fazer com o
     // número (mostrar só a cada N aberturas).
     fun incrementarAberturasHistorico(context: Context): Int {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)

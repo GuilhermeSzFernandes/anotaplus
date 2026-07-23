@@ -5,8 +5,8 @@ import java.util.Calendar
 import java.util.Locale
 
 /**
- * Intervalo de um mês em epoch millis (usado nas queries de histórico e
- * relatório) e navegação mês a mês, compartilhados entre HistoryActivity
+ * Intervalo de um mês em epoch millis (usado nas queries de extrato e
+ * relatório) e navegação mês a mês, compartilhados entre FinanceiroActivity
  * e ReportActivity.
  */
 object MesUtil {

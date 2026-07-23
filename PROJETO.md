@@ -1,609 +1,529 @@
 # Anota+ — contexto do projeto
 
+> Última revisão completa: 2026-07-23. Este documento é reescrito por inteiro
+> de tempo em tempo (não só apendado) pra não acumular seções obsoletas —
+> se algo aqui contradiz o código, o código manda; abra uma issue mental e
+> corrija este arquivo na próxima sessão que mexer na área afetada.
+
 ## O que é
 
-App Android nativo (Kotlin) para registrar **gastos** e **pensamentos rápidos**,
-pensado para abrir instantaneamente via o gesto "toque duas vezes na traseira"
-(Moto Actions) do celular Moto G75 do usuário.
+App Android nativo (Kotlin) para registrar **gastos**, **recebimentos** e
+**pensamentos rápidos**, com a fricção mínima possível entre "lembrei disso"
+e "tá salvo". A peça central continua sendo a **Captura Rápida**: um
+modal/card translúcido que aparece por cima da tela atual — como um diálogo
+rápido — sem abrir o app inteiro.
 
-A ideia central: em vez de abrir o app inteiro, o gesto abre um **modal/card
-translúcido por cima da tela atual** — como um diálogo rápido — onde a pessoa
-digita e salva sem sair do que estava fazendo.
+O que mudou desde a concepção original: não existe mais **um único** jeito
+de abrir esse modal (o gesto exclusivo do Moto Actions). Hoje há vários
+caminhos equivalentes — toque no ícone, ladrilho de Configurações Rápidas,
+6 widgets de tela inicial, atalhos de ícone (long-press) — e o app cresceu
+de "só captura + histórico" pra 4 áreas completas (Anotações, Financeiro,
+Acompanhamento, Perfil), com login/backup na nuvem e um plano PRO pago.
 
 ## Stack
 
 - Kotlin nativo, Android SDK (minSdk 26, compileSdk/targetSdk 34)
-- View Binding (sem Compose por enquanto)
-- Room (SQLite local) para persistência — dado local continua sendo a fonte
-  de verdade; a nuvem (ver seção "Backend / backup na nuvem") é só login +
-  CRUD por enquanto, ainda **sem sync de verdade**
-- Sem Gradle Wrapper commitado: o build roda com Gradle instalado direto
-  (ver seção de build)
+- View Binding (sem Compose)
+- Room (SQLite local, versão **8**) — dado local é a fonte de verdade; a
+  nuvem é login + backup/restore (push e pull), **não** sincronização
+  simultânea entre aparelhos
+- Retrofit + OkHttp + Gson pra falar com o backend próprio
+- Google Play Billing (assinatura PRO) e Google Mobile Ads (anúncios,
+  plano Free)
+- **Sem Gradle Wrapper commitado** (nem o jar) — ver seção "Build sem
+  Android Studio", é a peça mais importante do fluxo de trabalho deste
+  repositório
 
-## Como o "modal" funciona (parte mais importante da arquitetura)
+## Arquitetura de navegação (4 abas)
 
-- `QuickCaptureActivity` é a **única Activity `MAIN/LAUNCHER`** do app — tanto
-  o ícone quanto o gesto Moto disparam o mesmo intent MAIN/LAUNCHER, então os
-  dois caem nela.
-- Pra separar as duas origens, ela olha `intent.sourceBounds` no `onCreate`:
-  toque no ícone da tela inicial sempre chega com `sourceBounds` preenchido
-  (posição do ícone, usada na animação do launcher); o gesto do Moto Actions
-  não vem de um toque na tela, então nunca tem `sourceBounds`. Com
-  `sourceBounds != null` ela redireciona pra `HistoryActivity`; senão, segue
-  mostrando o modal de captura. É uma heurística (não existe um jeito
-  oficial de diferenciar as duas origens), funciona bem com launchers
-  AOSP-like (caso do Moto), mas vale confirmar no aparelho depois de
-  instalar.
-- Usa um tema translúcido customizado (`Theme.AnotaPlus.Modal`, em
-  `res/values/themes.xml`): `windowIsTranslucent`, sem título, fundo
-  transparente, sem animação de tela cheia.
-- No manifest, essa activity tem `android:noHistory="true"` e
-  `android:excludeFromRecents="true"` — assim ela não fica "presa" nos apps
-  recentes e a transição de fechar é instantânea (volta pra tela de trás sem
-  parecer que "saiu de um app").
-- Chama `setShowWhenLocked(true)` + `setTurnScreenOn(true)` (com fallback via
-  `WindowManager.LayoutParams` pra API < 27) no início do `onCreate` do modal
-  de captura, pra abrir por cima da tela de bloqueio sem exigir desbloqueio —
-  igual o atalho da câmera. Só a `QuickCaptureActivity` tem isso; o
-  `HistoryActivity` continua exigindo desbloqueio normal, porque mostra dados
-  sensíveis.
-- Tocar fora do card (no scrim escurecido) ou salvar fecha a activity
+`BottomNav.kt` define `enum class NavTab { ANOTACOES, FINANCEIRO, INICIO, CONTA }`,
+mapeado assim:
+
+| Aba | Activity | Título exibido |
+|---|---|---|
+| Anotações | `AnotacoesActivity` | "Anotações" |
+| Financeiro | `FinanceiroActivity` | "Financeiro" |
+| Início | `ReportActivity` | "Acompanhamento" |
+| Conta | `SettingsActivity` | "Perfil" |
+
+`NavTab.INICIO` aponta pra `ReportActivity` porque o antigo "Relatório"
+separado virou a própria aba Início — não existe mais uma tela de
+dashboard distinta. Trocar de aba nunca empilha: sempre `finish()` na
+activity atual antes de abrir a nova (sem essa disciplina, apertar voltar
+depois de circular pelas abas empilharia instâncias repetidas em vez de
+sair do app).
+
+Nenhuma das 4 activities-raiz é `exported` — só `QuickCaptureActivity`
+(única `MAIN`/`LAUNCHER`) e `AnotacaoWidgetConfigActivity` (respondendo a
+`APPWIDGET_CONFIGURE`) são.
+
+## Como o "modal" da Captura Rápida funciona (parte mais importante da arquitetura)
+
+- `QuickCaptureActivity` é a **única Activity `MAIN`/`LAUNCHER`** do app —
+  ícone, ladrilho de Configurações Rápidas, os 6 widgets e os atalhos de
+  ícone disparam todos o mesmo intent MAIN/LAUNCHER, então todos caem aqui.
+- Pra diferenciar "abri pelo ícone" de "abri por qualquer outro caminho",
+  o `onCreate` olha `intent.sourceBounds`: toque no ícone da tela inicial
+  sempre chega com `sourceBounds` preenchido (posição do ícone, usada na
+  animação do launcher); nenhum dos outros caminhos (tile, widgets,
+  atalhos) passa por um toque na tela, então nunca têm `sourceBounds` —
+  todos constroem o `Intent` deliberadamente sem esse campo pra caírem no
+  mesmo caminho. É uma heurística (não existe um jeito oficial de
+  diferenciar origens de um mesmo `MAIN`/`LAUNCHER`), mas é estável.
+- Ordem real no `onCreate`:
+  1. `CrashHandler.pegarUltimoCrash()` — se o app crashou na última
+     execução, mostra um diálogo com a stacktrace copiável antes de
+     seguir (facilita reportar bug sem `adb logcat`).
+  2. Se `!Prefs.isOnboardingConcluido()` → abre `LoginActivity` com os
+     extras de onboarding (ver seção própria) e `finish()`. Esse é o
+     único ponto de entrada do fluxo de primeira abertura.
+  3. Senão, se veio de toque no ícone (`sourceBounds != null`) → abre
+     `ReportActivity` (aba Início) direto e `finish()`.
+  4. Senão → mostra o modal de captura de verdade: `setShowWhenLocked` +
+     `setTurnScreenOn` (aparece por cima da tela de bloqueio sem exigir
+     desbloqueio, igual o atalho da câmera), toggle Gasto/Recebimento/
+     Pensamento (abre no tipo padrão de `Prefs.getTipoPadrao()`, a menos
+     que o extra `EXTRA_TIPO_FORCADO` tenha vindo de um widget), campo de
+     valor + categoria/carteira (combobox real via `AutoCompleteTextView`
+     com `inputType="none"`, só escolhe o que já existe cadastrado), botão
+     salvar, e um botão "ir ao app" que abre `AnotacoesActivity` ou
+     `FinanceiroActivity` dependendo do tipo salvo.
+- `Theme.AnotaPlus.Modal` (`res/values/themes.xml`): `windowIsTranslucent`,
+  sem título, fundo transparente, sem animação de tela cheia.
+- No manifest: `android:noHistory="true"` + `android:excludeFromRecents="true"`
+  (não fica "presa" nos recentes, fecha instantâneo) + `android:taskAffinity=""`
+  (isolada numa task própria) + `launchMode` padrão (**nunca** `singleTask`
+  — já tentamos, quebrava a ilusão de modal trazendo a task antiga de volta
+  em vez de empilhar uma instância nova translúcida por cima do app atual).
+  Sem `taskAffinity=""`, se o usuário já tivesse navegado pra
+  Financeiro/Perfil/etc. e só apertado Home, o próximo toque no ícone
+  reaproveitava aquela task em segundo plano em vez de criar uma instância
+  nova — o modal simplesmente não aparecia.
+- `AnotaPlusApplication.kt` usa `ProcessLifecycleOwner` (diferencia "uma
+  activity específica parou" de "o app inteiro saiu de primeiro plano") pra
+  chamar `finishAndRemoveTask()` na activity em primeiro plano assim que o
+  app inteiro vai pro background — garante que nunca sobra task viva
+  quando o app não está em uso, reforçando a garantia acima independente
+  do mecanismo exato que cada atalho usa pra "resgatar" o app.
+  **Contrapartida assumida**: qualquer tela do app perde estado de
+  navegação (posição de rolagem etc.) se a tela apagar sozinha ou o
+  usuário for pra outro app — recarrega do zero na próxima abertura. Como
+  todas as telas recarregam do Room local instantaneamente (sem chamada de
+  rede), o custo é baixo perto da garantia de que o modal sempre funciona.
+- Tocar fora do card (scrim escurecido) ou salvar fecha a activity
   (`finish()`).
 
-## Estrutura de telas
+## Onboarding (primeira abertura) e tour de tutorial
 
-- **QuickCaptureActivity** (`res/layout/activity_quick_capture.xml`): toggle
-  Gasto/Pensamento (abre no tipo padrão definido em Configurações), campo de
-  valor + categoria (só aparece se "Gasto"), campo de texto livre, botão
-  salvar, botão "Histórico". O campo categoria é uma combobox de verdade:
-  `AutoCompleteTextView` com `inputType="none"` (sem teclado) e clique
-  forçando `showDropDown()`, então só dá pra escolher uma categoria já
-  cadastrada, sem digitar texto livre.
-- **HistoryActivity** (`res/layout/activity_history.xml`): duas abas
-  (`TabLayout`) — Gasto e Ideia — cada uma filtrando a mesma lista
-  (RecyclerView + `EntryAdapter`) por `EntryType`. A aba Gasto também tem um
-  seletor de mês (`row_month_selector.xml`, incluído via `<include>`) que
-  filtra o período — default é o mês atual, com setas pra navegar pra
-  meses anteriores (não deixa avançar além do mês atual). A aba Ideia não
-  tem esse filtro, mostra tudo. O toolbar tem um menu com três ícones
-  visíveis por vez: o "+" alterna entre `action_add_gasto` e
-  `action_add_ideia` conforme a aba selecionada (visibilidade trocada no
-  listener do `TabLayout`), mais Relatório e Configurações, sempre fixos.
-  Tocar num item da lista abre `EditEntryActivity` (Gasto) ou
-  `ManualIdeiaActivity` (Ideia), dependendo de `entry.type` — cada tipo
-  tem sua própria tela de edição, não é mais um editor genérico só.
-- **EditEntryActivity** (`res/layout/activity_edit_entry.xml`): edição e
-  exclusão de um **Gasto** existente (só Gasto — ver abaixo o porquê de
-  não ter mais o toggle de tipo) — mesmo formulário do
-  `ManualGastoActivity` (valor, categoria, texto, data/hora), carregando
-  os valores já salvos (`EntryDao.getById`). Botão "Excluir" pede
-  confirmação (`MaterialAlertDialogBuilder` — não o `AlertDialog` puro do
-  framework, que não pega o tema Material3 do app). Se o lançamento já
-  tinha `remoteId` (já sincronizado antes), edição e exclusão também
-  propagam pro backend (`PATCH`/`DELETE /entries/:id`).
-- **ManualGastoActivity** (`res/layout/activity_manual_gasto.xml`):
-  formulário pra lançar um gasto retroativo — mesmos campos do
-  QuickCapture (valor, categoria em combobox, texto) mais um seletor de
-  **data e hora** (`DatePickerDialog` + `TimePickerDialog` nativos, sem
-  dependência nova), já que aqui não faz sentido usar o timestamp de
-  "agora" como na captura rápida. Sempre grava como `EntryType.GASTO`.
-  Acessada pelo ícone "+" no toolbar do Histórico (aba Gasto).
-- **ManualIdeiaActivity** (`res/layout/activity_manual_ideia.xml`): "bloco
-  de notas" — cria **e edita** uma Ideia (aceita `EXTRA_ENTRY_ID`
-  opcional; se vier, é modo edição: título vira "Editar ideia", mostra
-  botão "Excluir", `salvar()` faz `update` + propaga pro backend em vez
-  de `insert`). Sem toggle de tipo — uma Ideia nunca vira Gasto por essa
-  tela nem por `EditEntryActivity`, que é só Gasto agora — e por isso a
-  área de texto (`edit_nota`) consegue ocupar a tela toda de verdade
-  (`layout_weight="1"` dentro de um `NestedScrollView` com
-  `fillViewport`), sem o formulário genérico competindo por espaço com
-  campos de Gasto escondidos. `titulo` é exclusivo dessa tela: Gasto e
-  Ideia via Captura Rápida/gesto continuam sempre com `titulo = null`.
-  Depois de criar/editar/excluir, chama
-  `AnotacaoWidgetUpdater.atualizarTodos()` — sem isso, o widget "Uma
-  Ideia" (ver seção própria) ficava com o conteúdo antigo até a próxima
-  atualização periódica (`updatePeriodMillis`), o que parecia "não
-  atualiza nunca" pra quem editava a nota pelo app.
-- **ReportActivity** (`res/layout/activity_report.xml`): mesmo seletor de mês
-  reutilizado (`row_month_selector.xml`), com total gasto, gasto por
-  categoria (com barra proporcional) e contagem de ideias — tudo recalculado
-  reativamente (`flatMapLatest`) quando o mês selecionado muda. Linhas de
-  categoria são infladas programaticamente (sem RecyclerView, lista sempre
-  pequena).
-- **SettingsActivity** (`res/layout/activity_settings.xml`): escolha do tipo
-  padrão ao abrir (salvo em `SharedPreferences` via `Prefs.kt`) e gestão de
-  categorias (adicionar/remover, também sem RecyclerView). Cada seção
-  (Conta, Tipo padrão, Categorias) é um card próprio com `bg_card_free.xml`
-  (mesma borda fina usada no plano Free da `PlansActivity`) em vez de um
-  bloco único separado só por divisores — dá hierarquia mais clara entre
-  as seções. O e-mail da conta logada fica em linha própria, fonte mono,
-  `maxLines="1"` + `ellipsize="middle"` — antes quebrava linha de um jeito
-  feio quando o e-mail era longo.
-- `MesUtil.kt`: helper compartilhado entre `HistoryActivity` e
-  `ReportActivity` — converte um `Calendar` no intervalo de início/fim do
-  mês em epoch millis (usado nas queries) e formata o label do mês.
+Controlado inteiramente por `Prefs.isOnboardingConcluido()` — acontece uma
+única vez na vida do app instalado.
 
-## Dados (`app/src/main/java/.../data/`)
+**Sequência real**: `QuickCaptureActivity` (ícone ou qualquer atalho, o que
+abrir primeiro) → `LoginActivity` (login Google obrigatório, sem opção de
+pular) → **`Prefs.marcarOnboardingConcluido()` é chamado aqui, logo após o
+login bem-sucedido** (não no fim de toda a sequência) → `QuickAccessChooserActivity`
+(escolher atalhos, ver seção seguinte) → zero, uma ou duas telas em
+sequência (`GestureGuideActivity`/`WidgetSuggestionActivity`, conforme
+escolhido) → `AnotacoesActivity`, que dispara o **tour de tutorial
+"spotlight"** → ao concluir o tour, abre `ReportActivity` (se a abertura
+original veio do ícone) ou `QuickCaptureActivity` (se veio de outro
+atalho) como destino final.
 
-- `Entry.kt`: entidade Room — `id`, `type` (enum `GASTO`/`PENSAMENTO`),
-  `titulo: String?` (só preenchido pela `ManualIdeiaActivity`, "bloco de
-  notas"), `texto`, `valor: Double?`, `categoria: String?`, `timestamp`.
-- `Category.kt` / `CategoryDao.kt`: categorias de gasto definidas pelo
-  usuário (`id`, `nome`). Populadas com um seed padrão (Mercado, Transporte,
-  Lazer, Contas, Outros) na primeira criação do banco, via
-  `RoomDatabase.Callback.onCreate` no `AppDatabase`.
-- `EntryDao.kt`: insert, `getAll()`/`getByType()`/`getByTypeAndRange()` como
-  `Flow`, delete por id, e queries de relatório (`getGastoPorCategoria`,
-  `getTotalGasto`, `getTotalIdeias`) filtradas por intervalo de tempo.
-- `AppDatabase.kt`: singleton do Room + `Converters` para o enum. **Versão
-  4**: `MIGRATION_2_3` (adiciona `remoteId` em `entries`/`categories`, pro
-  backup) e `MIGRATION_3_4` (adiciona `titulo` em `entries`) são migrações
-  reais, não destrutivas — `fallbackToDestructiveMigration()` continua lá
-  só como rede de segurança pra um bump futuro sem migração escrita.
-- `Prefs.kt`: wrapper simples sobre `SharedPreferences` pra guardar o tipo
-  padrão (`Gasto`/`Ideia`) que o `QuickCaptureActivity` usa ao abrir.
+Fora do onboarding, cada uma dessas telas (`GestureGuideActivity`,
+`QuickAccessChooserActivity`, o tour) também pode ser reaberta isolada a
+partir do Perfil — nesse caso só fecha ao concluir, sem redirecionar.
 
-## Backend / backup na nuvem (novo, em andamento)
+### Tour "spotlight" (`TutorialTourManager.kt` + `ui/CoachMarkOverlay.kt`)
 
-Início de uma futura oferta de planos pagos com backup na nuvem. Decisões já
-tomadas: NestJS + Prisma, Neon (Postgres), Render (deploy), Google Sign-In
-(auth), Google Play Billing (quando chegar a hora de cobrar — ainda não
-implementado).
+Substituiu um tutorial antigo de páginas ilustradas separadas. Em vez
+disso, escurece a tela **real** do app e recorta um buraco (via
+`PorterDuff.CLEAR` + `LAYER_TYPE_SOFTWARE`) ao redor do botão de verdade
+sendo explicado, com um anel cor de latão (`brass`) contornando o recorte
+e um tooltip (título/corpo/indicadores/voltar-avançar-pular) posicionado
+acima ou abaixo conforme a metade da tela.
 
-- Repo separado: `https://github.com/GuilhermeSzFernandes/anotaplus-backend`,
-  clonado localmente em `anotaplusdadsa/anotaplus-backend` (pasta irmã deste
-  repo). Já no ar em `https://anotaplus-backend.onrender.com`.
-- Schema Prisma (`User`, `Category`, `Entry`) espelha as entidades do Room,
-  com `userId` porque agora é multi-usuário.
-- `POST /auth/google` recebe o ID token do Google, valida contra
-  `GOOGLE_WEB_CLIENT_ID` via `google-auth-library` e devolve um JWT próprio.
-  `GET/POST/DELETE` de `/entries` e `/categories` protegidos por esse JWT.
-- **No app Android**: login com Google via Credential Manager (API atual do
-  Google, não usa `google-services.json` nem a `GoogleSignInClient` antiga).
-  `AuthHelper.kt` concentra o fluxo (pegar credencial do Google → trocar por
-  sessão no backend → salvar em `SessionPrefs.kt`), usado tanto pela tela de
-  login quanto por Configurações — os dois só cuidam da própria UI
-  (loading/erro). Token fica em `SessionPrefs.kt` (SharedPreferences simples,
-  sem criptografia — aceitável por enquanto, é só sessão de app, não senha
-  do Google).
-  - `network/ApiClient.kt` + `network/AnotaApi.kt` (Retrofit + OkHttp +
-    Gson) — primeira vez que o app faz qualquer chamada de rede; precisou
-    adicionar `INTERNET` permission no manifest. Timeout de 45s no OkHttp
-    porque o Render (plano free) dorme e demora a acordar na primeira
-    chamada depois de inatividade.
-  - `BuildConfig.API_BASE_URL` e `BuildConfig.GOOGLE_WEB_CLIENT_ID` vêm de
-    `buildConfigField` no `build.gradle.kts` (valores fixos por enquanto,
-    não variam por build type ainda).
-- Ver `README.md` do repo do backend pra detalhes de setup/deploy — aqui só
-  o resumo do lado Android.
+- 6 passos fixos, cobrindo `TelaTutorial { ANOTACOES, FINANCEIRO, CONTA }`
+  (Início não entra no tour).
+- Navega entre telas fazendo `startActivity` + `finish()` normalmente; cada
+  `onCreate` (`AnotacoesActivity`/`FinanceiroActivity`/`SettingsActivity`)
+  chama `TutorialTourManager.processar(this, tela)`, que só age se houver
+  um tour ativo esperando por aquela tela.
+- **Estado 100% em memória** (não sobrevive a processo morto) — deliberado:
+  "é um passeio guiado efêmero, não precisa disso pra ser simples". Se o
+  processo for morto no meio, o tour só some silenciosamente.
 
-### Backup na nuvem (sync) — implementado
+## Mecanismos de acesso rápido (sem gesto de acelerômetro — removido)
 
-Push (local → nuvem) **e** restore (nuvem → local, útil pra reinstalar o
-app ou trocar de aparelho) — mas ainda não é "sincronizar entre aparelhos
-ao mesmo tempo" de verdade (sem resolução de conflito se o mesmo usuário
-editar em dois lugares); isso continua feature futura, já separada como
-bullet própria do Premium na `PlansActivity`.
+Uma feature de gesto por acelerômetro (agitar o celular) chegou a ser
+implementada, com tela de calibração de sensibilidade inclusive, e foi
+**totalmente revertida** — não sobra nenhum código de `SensorManager`/
+`Accelerometer` no projeto hoje. O que existe agora, todo universal
+(nenhum depende de fabricante específico, exceto o primeiro):
 
-- `Entry`/`Category` ganharam campo `remoteId: String?` (null = ainda não
-  sincronizado). **Migração real** (`MIGRATION_2_3` em `AppDatabase.kt`,
-  versão 2 → 3, `ALTER TABLE ... ADD COLUMN`), não a
-  `fallbackToDestructiveMigration()` usada nas versões anteriores — dessa
-  vez tem gente com dado de verdade no app, seria irônico apagar tudo bem
-  na hora de adicionar backup. `fallbackToDestructiveMigration()` continua
-  como rede de segurança pra qualquer bump futuro sem migração explícita.
-- `SyncManager.sincronizarTudo(context)`: busca tudo com `remoteId IS NULL`
-  local, empurra pro backend (`POST /categories` / `POST /entries`, com
-  `Authorization: Bearer <token>`), grava o `remoteId` retornado. Cada item
-  falha isolado (`runCatching`) — um erro de rede num item não trava o
-  lote inteiro.
-- `SyncWorker` (`CoroutineWorker` do WorkManager) envolve o `SyncManager` —
-  **não dá pra rodar isso numa coroutine presa ao `lifecycleScope` da
-  activity**, porque `QuickCaptureActivity`/`ManualGastoActivity` chamam
-  `finish()` logo depois de salvar, o que cancelaria a sincronização antes
-  de completar. WorkManager sobrevive a isso, só roda com rede disponível
-  (`Constraints.NetworkType.CONNECTED`) e tenta de novo sozinho se falhar.
-- Disparado (`SyncWorker.agendar(context)`) em: salvar um gasto/ideia
-  (`QuickCaptureActivity`, `ManualGastoActivity`), adicionar categoria
-  (`SettingsActivity`), e logo após um login bem-sucedido (pra já mandar
-  o que tiver acumulado antes de logar). Só dispara se
-  `SessionPrefs.estaLogado()`.
-- Botão manual "Fazer backup agora" em Configurações (dentro do card
-  Conta, só visível logado) — chama `SyncManager.sincronizarTudo()` direto
-  (sem passar pelo WorkManager, já que aqui a activity fica viva esperando
-  o resultado) e mostra quantos itens foram sincronizados.
-- Backend: `CategoriesService.create` virou `upsert` (por `userId_nome`,
-  a constraint única do Prisma) em vez de `create` — sem isso, sincronizar
-  duas vezes (ou entrar com categorias padrão que já existem) quebraria
-  com erro de constraint única.
-- `SyncManager.restaurarTudo(context)`: busca `GET /categories` e
-  `GET /entries` do backend, insere no Room local o que ainda não existe.
-  Categorias são casadas **por nome** (evita duplicar as categorias padrão
-  que toda instalação nova já semeia sozinha); entries são casadas **pelo
-  `remoteId`** (só insere se não existir localmente nenhuma com aquele
-  `remoteId`) — rodar várias vezes é seguro, idempotente, não duplica nada.
-  Disparado automaticamente logo após qualquer login bem-sucedido (antes do
-  push, pra não reenviar à toa o que acabou de restaurar) e também via
-  botão manual "Restaurar backup" em Configurações, ao lado do "Fazer
-  backup agora".
+1. **Toque no ícone** — abre direto o Início (`ReportActivity`).
+2. **Gesto do fabricante** (`GestureGuideActivity`) — hoje é **só uma tela
+   instrutiva**, não uma implementação: explica passo a passo como
+   configurar o gesto do próprio sistema/fabricante. No Moto, tenta abrir
+   `com.motorola.actions` direto; em qualquer outro aparelho, cai pro
+   `Settings.ACTION_SETTINGS` genérico e sugere o ladrilho de
+   Configurações Rápidas como alternativa garantida (testamos a hipótese
+   de Xiaomi/HyperOS ter algo parecido — não há confirmação de que libere
+   escolher um app de terceiros, então não vale a pena instruir por lá).
+3. **Ladrilho de Configurações Rápidas** (`CapturaRapidaTileService`) —
+   funciona em qualquer Android, puxando a barra de notificação e editando
+   os ladrilhos. Suporta tela bloqueada. A partir do Android 14,
+   `startActivityAndCollapse(Intent)` foi removido; o código detecta a
+   versão e usa a variante com `PendingIntent`.
+4. **Atalhos de ícone (long-press)** — `@xml/shortcuts`, meta-data direto
+   em `QuickCaptureActivity`.
+5. **6 widgets de tela inicial** (ver seção própria abaixo).
 
-## Onboarding (primeira abertura) e tela de Planos
+Cogitamos `AccessibilityService` como atalho (funcionaria até com tela
+bloqueada) e descartamos de propósito: usar a API de Acessibilidade só
+como atalho de abrir app, sem função de acessibilidade real, é contra a
+política da Play Store.
 
-- **Fluxo**: `QuickCaptureActivity` (ícone ou gesto, o que abrir primeiro)
-  → `GestureGuideActivity` → `LoginActivity` → destino normal (Histórico ou
-  captura, dependendo de qual dos dois foi usado pra abrir o app). Controlado
-  por `Prefs.isOnboardingConcluido()` — só acontece uma vez, na vida do
-  app instalado; depois disso o app abre direto no fluxo normal.
-  - Os extras `GestureGuideActivity.EXTRA_ONBOARDING` /
-    `EXTRA_ABRIR_HISTORICO` viajam entre as três activities pra saber (a)
-    se está dentro da sequência de onboarding (decide se avança pra próxima
-    tela ou só fecha) e (b) qual era o destino original antes do desvio.
-  - Cada tela também pode ser aberta isoladamente depois (fora do
-    onboarding) a partir de Configurações — "ver planos" e "como configurar
-    o gesto" — nesse caso os extras não são passados e a tela só fecha ao
-    concluir, sem redirecionar pra mais nada.
-- **GestureGuideActivity**: explica o jeito de abrir na hora com passo a
-  passo numerado. Detecta o fabricante via `Build.MANUFACTURER`: no Moto,
-  texto e botão são específicos ("toque duas vezes na traseira", tenta
-  abrir `com.motorola.actions` direto via
-  `packageManager.getLaunchIntentForPackage`) e caem pra
-  `Settings.ACTION_SETTINGS` se não encontrar.
-  - **Confirmado (não é suposição)**: gesto de fabricante configurável por
-    apps de terceiros é exclusividade do Moto — testamos a hipótese de a
-    Xiaomi/HyperOS ter algo parecido (toque na traseira, atalho de app via
-    duplo toque na digital) e não tem confirmação de que libera escolher
-    um app de terceiros; provavelmente é restrito a apps do próprio
-    fabricante (câmera, carteira/pagamento). Por isso, em qualquer
-    aparelho que não seja Moto, o guia agora ensina a adicionar o
-    **ladrilho de Configurações Rápidas** (`CapturaRapidaTileService`,
-    ver seção própria abaixo) em vez de mandar caçar um gesto que
-    provavelmente não existe pro Anota+ — é o único caminho *garantido*
-    de funcionar em qualquer Android. Não tem botão de atalho pra essa
-    tela (diferente do Moto): editar ladrilhos só se faz puxando a barra
-    de notificação manualmente, não existe Intent público pra isso.
+### Onboarding de escolha de atalho (`QuickAccessChooserActivity` + `QuickAccessFlow.kt`)
 
-## Ladrilho de Configurações Rápidas e widget de atalho (novo)
+Tela com três toggles independentes:
 
-- **`CapturaRapidaTileService`** (`android.service.quicksettings.TileService`):
-  ladrilho que aparece no painel de Configurações Rápidas (puxar a barra de
-  notificação + editar) — tocar nele abre a Captura Rápida em qualquer
-  Android, sem depender de gesto de fabricante nenhum. Suporta tela
-  bloqueada via `isLocked`/`unlockAndRun`. A partir do Android 14,
-  `startActivityAndCollapse(Intent)` foi removido — o código detecta a
-  versão e usa a variante com `PendingIntent` quando necessário.
-  - Cogitamos usar `AccessibilityService` como atalho (funcionaria até com
-    tela bloqueada, mais parecido com um gesto de verdade), mas descartado
-    de propósito: usar a API de Acessibilidade só como atalho de abrir
-    app (sem função de acessibilidade real) é contra a política da Play
-    Store e é motivo comum de rejeição/remoção.
-- **Segundo widget** (`widget/CapturaRapidaWidgetProvider.kt` +
-  `widget_captura_rapida.xml`/`widget_captura_rapida_info.xml`): widget
-  pequeno (1x1), só um atalho visual pra Captura Rápida — pra quem não
-  quer o widget de totais (`GastoWidgetProvider`) na tela inicial. Sem
-  consulta ao Room nenhuma, então `onUpdate` não precisa de
-  `goAsync`/coroutine, só monta o `PendingIntent` (sem `sourceBounds`,
-  igual todos os outros atalhos, pra cair no modal de captura e não no
-  Histórico).
-- **Quarto widget** (`widget/CapturaModalWidgetProvider.kt` +
-  `widget_captura_modal.xml`/`widget_captura_modal_info.xml`): "espelho"
-  visual do modal de Captura Rápida (toggle Anotações/Gasto, campo de
-  valor, campo de texto, botão Salvar) — pedido explicitamente como
-  "mesmo layout e função do modal". **Limitação de plataforma, não
-  nossa**: RemoteViews não suporta `EditText` — nenhum widget de nenhum
-  app consegue ter campo de texto editável de verdade, então "mesma
-  função" não é literalmente possível. O que existe: tocar em qualquer
-  parte abre `QuickCaptureActivity` pra digitar de verdade; tocar
-  especificamente no toggle Gasto/Anotações do widget já abre lá com
-  esse tipo pré-selecionado, via `QuickCaptureActivity.EXTRA_TIPO_FORCADO`
-  (novo extra — se ausente, cai no tipo padrão de Configurações como
-  sempre; usado só por este widget).
-- **LoginActivity**: tela cheia (não é o modal translúcido) — desenhada
-  como um "ticket sendo emitido": fundo escuro (`@color/scrim`, igual o
-  scrim do modal de captura) com um card de papel centralizado que tem a
-  borda serrilhada no topo (mesmo padrão do `card_slip` do QuickCapture),
-  criando uma ponte visual deliberada com a experiência principal do app.
-  Login é **obrigatório** — não existe opção de pular. Usa `AuthHelper` pro
-  login, mais link pra `PlansActivity`.
-- **PlansActivity**: comparação Free vs PRO, cards com `bg_card_free.xml` /
-  `bg_card_premium.xml` (borda em latão no PRO; nome do recurso continua
-  "premium" internamente, só o texto exibido virou "PRO"). Assinatura de
-  verdade via Google Play Billing, R$ 10,00/mês — ver seção "Assinatura
-  PRO e anúncios" abaixo.
+- **Gestos** — não tem estado próprio pra restaurar (sempre volta
+  desmarcado ao reabrir); só enfileira `GestureGuideActivity` como próximo
+  passo se marcado.
+- **Notificação** — aplicado imediatamente ao confirmar: pede permissão
+  `POST_NOTIFICATIONS` (Android 13+) se precisar, liga/desliga
+  `Prefs.isNotificacaoCapturaAtiva` (padrão `true`) e a notificação
+  persistente (`NotificationQuickAdd`).
+- **Widget** — enfileira `WidgetSuggestionActivity`, que chama
+  `AppWidgetManager.requestPinAppWidget` (Android 8+, depende do launcher
+  suportar) pra fixar o widget "Captura Rápida", com instrução manual de
+  fallback se não suportar.
 
-## Formatação rica na Ideia e widget de checklist (novo)
+`QuickAccessFlow` encadeia as telas escolhidas (`Gestos`/`Widget`, nessa
+ordem, viajando como `String[]` no Intent pra sobreviver entre as
+activities intermediárias) e no fim aciona o tour de tutorial + abre
+`AnotacoesActivity` (se dentro do onboarding) ou só fecha (se reaberto
+isolado do Perfil).
 
-- **`RichTextEngine.kt`**: formatação "viva" (WYSIWYG) sem editor de texto
-  rico de verdade nem mudança de schema — o texto guardado (`Entry.texto`)
-  continua sendo puro texto simples com marcadores tipo Markdown
-  (`# título`, `- item`, `☐`/`☑` de checklist, `**negrito**`, `_itálico_`),
-  e um `TextWatcher` recalcula os spans visuais a cada tecla digitada.
-  Escolhido assim (em vez de blocos estruturados ou HTML) porque é bem
-  mais simples de manter e faz o checklist do widget funcionar de forma
-  trivial (é só procurar a linha certa e trocar o caractere ☐/☑, sem
-  precisar parsear/gerar HTML nem JSON).
-  - **Marcadores ficam ocultos** (`#`, `**`, `_`, `-`) — não é só
-    aplicar o estilo em cima do texto cru: um `ReplacementSpan` de
-    largura zero (`MarcadorOcultoSpan`) some com o caractere
-    visualmente, mas ele continua existindo no `Editable` (cursor,
-    backspace, o texto salvo — tudo normal, só não desenha). Único
-    marcador que fica visível de propósito é o `☐`/`☑` do checklist,
-    porque ele *é* o checkbox.
-  - **Enter continua a lista**: apertar Enter no fim de um item de
-    lista/checklist insere o mesmo marcador na linha seguinte (novo item
-    de checklist sempre nasce desmarcado, mesmo continuando um item
-    marcado); apertar Enter num item vazio sai da lista (quebra de linha
-    normal, sem marcador). Detectado em `onTextChanged` (conta que foi
-    inserido exatamente um `\n`) e ajustado em `afterTextChanged`, com uma
-    flag de reentrância (`ajustando`) pra não entrar em loop, já que o
-    ajuste em si dispara o `TextWatcher` de novo.
-  - Barra de formatação em `ManualIdeiaActivity` (dentro de um
-    `HorizontalScrollView`, são 8 botões — não cabe numa linha só em todo
-    aparelho): T1/T2 (título 1/2), B/I/S (negrito/itálico/sublinhado),
-    •/☑ (lista/checklist), ✕ (limpar formatação da linha atual). Cada
-    botão liga em `RichTextEngine.alternarX()`/`limparFormatacao()`.
-    Título 2 usa `RelativeSizeSpan` menor que o Título 1.
-  - Tocar no "☐"/"☑" no começo da linha (dentro do próprio editor) marca/
-    desmarca via `instalarToqueChecklist` (usa `getOffsetForPosition` pra
-    saber se o toque caiu bem no caractere da marca, sem interferir no
-    posicionamento normal do cursor no resto da linha).
-  - `EntryAdapter`/`item_entry.xml`: o preview no Histórico usa
-    `RichTextEngine.textoSemMarcadores()` — mostra o texto puro, sem a
-    sintaxe crua (`#`, `**`, `☐` etc.) poluindo a lista.
-- **Terceiro widget** (`widget/AnotacaoWidgetProvider.kt` +
-  `widget_anotacao.xml`/`widget_anotacao_info.xml`): mostra uma Ideia
-  específica na tela inicial, com os itens de checklist tocáveis direto
-  do widget (sem abrir o app). Diferente dos outros dois widgets, esse
-  precisa saber QUAL Ideia mostrar — por isso tem
-  `android:configure` apontando pra `AnotacaoWidgetConfigActivity`
-  (aberta automaticamente pelo sistema toda vez que uma instância é
-  adicionada; reaproveita o próprio `EntryAdapter` pra listar as Ideias
-  existentes). O mapeamento `appWidgetId -> entryId` fica em
-  `AnotacaoWidgetPrefs` (SharedPreferences).
-  - **Limitação conhecida, deliberada**: o widget mostra até **6 linhas**
-    fixas (`widget_anotacao.xml` tem 6 blocos de linha pré-declarados,
-    visibilidade `GONE` pras que sobrarem) — não é um
-    `RemoteViewsService`/coleção (`ListView` com `RemoteViewsFactory`), que
-    seria a forma "de verdade" de suportar qualquer quantidade de linhas.
-    Optamos pela versão mais simples/robusta dado que notas/checklists de
-    uso real tendem a ser curtas; documentado aqui em vez de escondido.
-  - Tocar no "☐"/"☑" de uma linha dispara um `PendingIntent.getBroadcast`
-    pro `AnotacaoWidgetToggleReceiver`, que carrega a `Entry`, troca o
-    caractere da linha certa, salva no Room, propaga pro backend (se
-    PRO — mesmo `EntrySyncRequest`/`PATCH /entries/:id` de sempre) e manda
-    redesenhar só aquele widget (`notifyAppWidgetViewDataChanged` não se
-    aplica aqui já que não é coleção — só chama
-    `AnotacaoWidgetUpdater.atualizar` de novo).
-  - Tocar no restante do widget (título, linhas de texto simples) abre
-    `EditEntryActivity` pra editar a nota inteira; se ainda não tiver
-    nenhuma Ideia configurada, abre a tela de configuração direto.
+## Widgets de tela inicial (6 no total)
 
-## Assinatura PRO e anúncios (novo)
+Nenhum widget observa o Room reativamente — todos são "puxe sob demanda":
+uma função central redesenha depois de qualquer mudança relevante, porque
+`AppWidgetProvider` só existe pra reagir a broadcasts do sistema, não pra
+ficar vivo escutando `Flow`. `RemoteViews` (mecanismo por trás de
+widgets) só infla um conjunto fechado de views nativas — nada de
+`PerforationView` (Canvas customizado) nem de estilos que resolvam atributos
+de tema `Material3` (o launcher/widget host infla com o próprio tema dele,
+não o do app — resolver um `@style` que dependa de `Theme.Material3` falha
+silenciosamente como "não foi possível carregar o widget"). Por isso todo
+texto/cor nos layouts de widget é literal, e divisores usam
+`@drawable/divider_dashed` em vez da `PerforationView` real.
 
-- **Preço/produto**: R$ 10,00/mês, id do produto de assinatura
-  `anotaplus_pro_mensal` (`BuildConfig.SUBSCRIPTION_PRODUCT_ID`). Esse id
-  **ainda não existe no Play Console** — precisa ser criado lá com esse
-  exato id antes de qualquer compra funcionar.
-- **Bloqueio crítico ainda não resolvido**: Google Play Billing só
-  funciona de verdade com o app instalado **a partir da Play Store**
-  (nem que seja em teste interno/fechado) — instalado via APK avulso, como
-  o `app-debug.apk` do GitHub Actions que o usuário sempre sideloadou até
-  aqui, o `BillingClient` conecta mas nunca encontra o produto. Antes de
-  testar qualquer compra de verdade, precisa: (1) criar conta de
-  desenvolvedor no Google Play Console (usuário confirmou que ainda não
-  tem, `$25` pagamento único), (2) subir o app pra pelo menos um canal de
-  teste, (3) cadastrar lá a assinatura `anotaplus_pro_mensal` a R$
-  10,00/mês, (4) adicionar a própria conta Google como testador de
-  licença.
-- **`BillingManager`** (`app/.../billing/BillingManager.kt`): fina camada
-  em cima da Play Billing Library. `consultarProductDetails()` busca
-  preço/offer da Play Store; `iniciarCompra()` abre o fluxo de compra;
-  `atualizarStatusAssinatura()` reconsulta `queryPurchasesAsync` (fonte da
-  verdade) e sincroniza o resultado tanto no cache local
-  (`SubscriptionPrefs`) quanto no backend (`POST /billing/sync`) — chamado
-  no login, ao abrir Configurações, e no `onResume()` de `PlansActivity`
-  (cobre a volta do fluxo de compra).
-- **Gate do backup**: `SubscriptionPrefs.podeFazerBackup()` (logado E PRO)
-  substitui os antigos checks de "só logado" em
-  `QuickCaptureActivity`/`ManualGastoActivity`/`EditEntryActivity`/
-  `SettingsActivity` antes de chamar `SyncWorker.agendar()`. No backend,
-  `ProActiveGuard` (além do `JwtAuthGuard` de sempre) recusa com 403 quem
-  não tem `proAtivo` — aplicado em todo `EntriesController` e
-  `CategoriesController`, defesa em profundidade (não só esconder o botão
-  na UI).
-- **Gap conhecido, documentado (não é bug)**: o backend **não verifica o
-  `purchaseToken`** contra a API do Google Play Developer — confia no que
-  o app relata em `POST /billing/sync`. Verificação de verdade precisa de
-  uma service account do Google Cloud com acesso à Android Publisher API,
-  vinculada no Play Console — só faz sentido configurar depois que a conta
-  de desenvolvedor existir.
-- **Anúncios (AdMob)**: usuário também não tem conta AdMob ainda — o app
-  usa os **IDs de teste oficiais do Google**
-  (`app/build.gradle.kts`, `buildConfigField AD_BANNER_UNIT_ID` /
-  `AD_INTERSTITIAL_UNIT_ID`, e `manifestPlaceholders["adMobAppId"]`),
-  seguros de publicar mas que só mostram anúncio de teste, sem receita
-  nenhuma. Banner fixo no rodapé do Histórico (`ad_view_banner` em
-  `activity_history.xml`, escondido se `SubscriptionPrefs.isPro()`) +
-  intersticial ocasional (a cada 4 aberturas do Histórico,
-  `Prefs.incrementarAberturasHistorico`) — os dois só pro plano Free.
-  Trocar pelos IDs reais assim que a conta AdMob existir.
+1. **`GastoWidgetProvider`** — total gasto hoje e no mês. Corpo → abre
+   Financeiro; "+" → Captura Rápida sem tipo forçado.
+2. **`CapturaRapidaWidgetProvider`** — 1x1, só um "+", sem dado nenhum.
+   Atalho puro pra quem não quer o widget de totais na tela.
+3. **`CapturaModalWidgetProvider`** — "espelho" visual estático do modal
+   (toggle Gasto/Anotação, campo de valor, campo de texto, botão Salvar) —
+   **limitação de plataforma, não nossa**: `RemoteViews` não suporta
+   `EditText` de verdade, então nenhum campo funciona; qualquer toque abre
+   a Captura Rápida de verdade pra digitar. Tocar especificamente num dos
+   toggles já abre com aquele tipo pré-selecionado
+   (`EXTRA_TIPO_FORCADO`).
+4. **`AnotacaoWidgetProvider`** — mostra uma Ideia/checklist específica,
+   até 6 linhas fixas (não é `RemoteViewsService`/coleção — trade-off
+   deliberado de simplicidade/robustez, dado que notas de uso real tendem
+   a ser curtas). Único widget com tela de configuração
+   (`AnotacaoWidgetConfigActivity`, aberta automaticamente pelo sistema ao
+   adicionar uma instância, lista as Ideias existentes reativamente).
+   Tocar num "☐"/"☑" alterna o item via `AnotacaoWidgetToggleReceiver`
+   (broadcast dedicado) sem abrir o app; tocar no resto abre
+   `ManualIdeiaActivity`.
+5. **`CategoriasWidgetProvider`** — gasto do mês por categoria, maior pra
+   menor, até 6 linhas fixas (mesmo trade-off do widget de Ideia). Sem
+   tela de configuração (mesma lista pra qualquer instância). Corpo →
+   Financeiro; "+" → Captura Rápida com tipo Gasto forçado.
+6. **`AdicionarWidgetProvider`** — widget estreito e alto (1x2 células)
+   com dois alvos de toque empilhados: metade de cima abre Captura Rápida
+   com tipo Gasto forçado, metade de baixo com tipo Pensamento forçado —
+   um atalho duplo sem a "casca" de modal falso do widget 3.
 
-## Busca, categorias com cor/ícone, alerta de orçamento e widget de categorias (novo)
+Dois coordenadores centrais: `WidgetUpdater.atualizarTodos` (cobre o
+widget de totais **e**, como efeito colateral deliberado, o de categorias
+— todo chamador já representa "algo sobre gasto mudou", então cobre os
+dois sem precisar editar cada call site) e `AnotacaoWidgetUpdater`
+(separado, só pro widget de Ideia/checklist).
 
-- **Busca/filtro**: campo de busca em Anotações (título + corpo do texto) e
-  em Financeiro (texto livre + categoria), abaixo do cabeçalho/gráfico.
-  Client-side sobre a lista já carregada (não é query nova no banco) —
-  simples porque as listas de um mês/tipo já são pequenas o bastante pra
-  filtrar em memória sem serrote.
-- **Categoria com cor e ícone**: `Category` ganhou `cor` (hex) e `icone`
-  (emoji) — `CategoriaEstilo.kt` concentra a paleta fixa (6 cores, 12
-  emojis) usada tanto no picker de `CategoriasActivity` quanto no widget
-  novo. Guardado como hex cru (não `@color` resource id) de propósito:
-  funciona igual dentro do app e dentro de `RemoteViews`, que não sabe
-  resolver cor por nome de recurso. **Só local, não sincroniza com o
-  backend** (schema Prisma não tem essas colunas).
-- **Editar categoria** (renomear + cor + ícone + limite, tudo num dialog
-  só — `dialog_editar_categoria.xml`): tocar numa categoria em
-  `CategoriasActivity` agora abre esse editor completo em vez de só o
-  campo de limite de antes. Renomear é local (mesmo motivo do cor/ícone),
-  mas propaga pros lançamentos já salvos com aquele nome
-  (`EntryDao.renomearCategoriaEmTodosLancamentos`), já que `categoria` é
-  string livre em `Entry`, não uma FK — sem isso, gastos antigos ficariam
-  "órfãos" do nome antigo depois de renomear.
-- **Alerta de orçamento** (`BudgetAlertNotifier.kt`): até agora o limite
-  de categoria só tinha efeito visual (barra vermelha/verde no Início).
-  Agora, depois de salvar/editar um Gasto com categoria
-  (`ManualGastoActivity`, `QuickCaptureActivity`, `EditEntryActivity`),
-  confere se o total do mês nessa categoria passou do limite e dispara
-  uma notificação (canal `alertas_orcamento`, importância padrão — não é
-  "ongoing" como a de captura rápida). Notificação usa um id fixo por
-  categoria (`categoria.hashCode()`): estourar de novo no mesmo mês
-  atualiza a notificação existente em vez de empilhar, sem precisar
-  guardar "já notificou" em lugar nenhum. Tocar nela abre `CategoriasActivity`.
-- **Sexto widget** (`CategoriasWidgetProvider` + `CategoriasWidgetUpdater`):
-  gasto do mês em cada categoria, maior pra menor, até 6 linhas fixas
-  (mesmo padrão de linhas fixas do widget "Uma Anotação", pelo mesmo
-  motivo de simplicidade/robustez). Sem tela de configuração — mesma
-  lista pra qualquer instância, igual o widget de totais. Atualizado a
-  partir de dentro de `WidgetUpdater.atualizarTodos` (não precisou tocar
-  em nenhum call site existente: todo lugar que já chamava esse updater
-  passou a cobrir os dois widgets de graça).
-- **Migração de banco**: `MIGRATION_6_7` (versão 6 → 7) adiciona `cor` e
-  `icone` em `categories`.
+## Estrutura de telas (visão geral atualizada)
 
-## Bug corrigido (em três partes): gesto parava de ficar translúcido depois da 1ª abertura
+- **QuickCaptureActivity** — o modal (ver seção própria).
+- **AnotacoesActivity** ("Anotações") — grid de cards (`item_nota_card.xml`,
+  via `NotaAdapter`), busca por título/corpo, seleção múltipla com exclusão/
+  tag em lote, "+" abre `ManualIdeiaActivity`. Banner de anúncio (Free).
+- **FinanceiroActivity** ("Financeiro") — extrato combinando Gasto e
+  Recebimento (`EntryAdapter`), card de saldo do mês + gráfico de linha
+  (MPAndroidChart) do saldo ao longo do período, busca por texto/categoria,
+  acesso a `CategoriasActivity`. Banner de anúncio + intersticial ocasional
+  (a cada 4 aberturas, só Free).
+- **ReportActivity** ("Acompanhamento"/aba Início) — seletor de mês, card-
+  resumo Receitas/Gastos/Poupança, barra "Meta de economia alcançada" (%
+  calculado a partir de `Prefs.getMetaEconomiaValor()`), Por Categoria com
+  barra proporcional, card de Insights (texto automático, ex. maior
+  categoria de gasto do mês), seção Metas (lista de metas de economia com
+  progresso — ver seção própria), grid de Estatísticas (maior gasto, média,
+  categoria mais usada, dia da semana com mais gasto).
+- **SettingsActivity** ("Perfil"/aba Conta) — reestruturado (sessão de
+  redesign de 2026-07-23) em blocos com ícone+chevron: card Conta (login
+  Google, backup na nuvem — inalterado na função, só reestilizado);
+  **Progresso** (Estatísticas → Início, Histórico → Financeiro);
+  **Personalização** (Meu Plano → `PlansActivity`, Tipo padrão ao abrir →
+  dialog, Ajustar Objetivos → dialog que define a meta de economia mensal,
+  Notificações → switch da notificação persistente); **Legal** (Política
+  de Privacidade / Termos de Uso — **hoje são só diálogos stub**, sem link
+  de verdade ainda publicado); **Suporte** (ver tutorial, guia de gesto,
+  escolher atalho). Card de debug (só `BuildConfig.DEBUG`) força "sou PRO"
+  localmente pra testar sem conta no Play Console.
+- **CategoriasActivity** — gestão de categorias (nome, cor, ícone, limite
+  mensal) e carteiras (nome), sem `RecyclerView` (listas sempre pequenas).
+- **EditEntryActivity** — edição/exclusão de um Gasto ou Recebimento já
+  existente; se já tinha `remoteId`, propaga `PATCH`/`DELETE` pro backend.
+- **ManualGastoActivity** / **ManualRecebimentoActivity** — lançamento
+  retroativo (valor, categoria/carteira, texto, data/hora via
+  `DatePickerDialog`/`TimePickerDialog` nativos).
+- **ManualIdeiaActivity** — "bloco de notas": cria e edita uma Ideia, com
+  barra de formatação rica (ver `RichTextEngine` abaixo).
+- **LoginActivity** — tela cheia estilizada como "ticket sendo emitido"
+  (fundo escuro + card de papel com borda serrilhada no topo). Login
+  **obrigatório**, sem pular.
+- **PlansActivity** — comparação Free vs PRO, compra real via Play
+  Billing.
+- **QuickAccessChooserActivity** / **GestureGuideActivity** /
+  **WidgetSuggestionActivity** — onboarding de atalhos (ver seção própria).
+- **AnotacaoWidgetConfigActivity** — escolhe qual Ideia um widget mostra.
 
-`QuickCaptureActivity` tinha `android:launchMode="singleTask"` no manifest,
-o que quebrava a ilusão de modal depois da primeira abertura (o Android
-trazia a task antiga pra frente em vez de empilhar uma instância nova por
-cima do app atual). Removido — mas isso **não resolveu completamente**: o
-mesmo sintoma continuava acontecendo mesmo com `launchMode` padrão, sempre
-que o usuário já tinha navegado pra Histórico/Configurações/etc. e só
-apertado Home (sem fechar o app). A causa raiz de verdade: todas as
-activities do app compartilham a mesma task (mesmo `taskAffinity` padrão,
-baseado no pacote), então uma task em segundo plano contendo, por exemplo,
-`HistoryActivity` no topo já existia — e o gesto (que dispara o mesmo
-intent MAIN/LAUNCHER de sempre) fazia o Android simplesmente **reaproveitar
-e trazer essa task de volta pra frente** (mostrando a última tela usada),
-sem sequer chegar a criar uma instância nova do `QuickCaptureActivity`. A
-correção final foi dar `android:taskAffinity=""` só pro `QuickCaptureActivity`
-— isso isola ele numa task própria, que nunca persiste em segundo plano
-(porque ele sempre se fecha sozinho via `noHistory` + `finish()`), então
-toda vez que o gesto dispara, o Android é obrigado a criar uma instância
-nova e fresca, independente do que estiver rolando nas outras telas do app.
-Deixei os dois aprendizados comentados no manifest.
+## Dados (`app/src/main/java/.../data/`) — Room versão 8
 
-**Ainda não resolveu de verdade** — o usuário reportou o mesmo sintoma de
-novo depois dessa correção. Hipótese (não 100% confirmável sem debugar o
-próprio Moto Actions, que é fechado): o gesto provavelmente não faz um
-`startActivity()` "normal" que passaria pela resolução de task por
-`taskAffinity` — ele deve simplesmente checar se o app já tem alguma task
-viva (usando `ActivityManager`/lista de tasks recentes) e, se tiver, trazer
-ela pra frente diretamente (tipo abrir pelos Recentes), sem nunca chegar a
-entregar um intent novo pro `QuickCaptureActivity`. Nesse cenário, não
-importa qual activity é o alvo do intent — o que importa é se **existe
-qualquer task do app viva em segundo plano**, e `HistoryActivity`/
-`SettingsActivity`/etc. (que não têm `taskAffinity=""`) continuavam vivas.
+- **`Entry.kt`**: `id`, `type` (`enum EntryType { GASTO, PENSAMENTO, RECEBIMENTO }`,
+  definido no mesmo arquivo), `titulo: String?` (só `ManualIdeiaActivity`
+  preenche), `texto`, `valor: Double?`, `categoria: String?`,
+  `carteira: String?`, `timestamp`, `remoteId: String?`.
+- **`Category.kt`**: `id`, `nome`, `remoteId`, `limite: Double?` (orçamento
+  mensal), `cor: String?` (hex cru, não resource id — funciona igual
+  dentro do app e dentro de `RemoteViews`), `icone: String?` (emoji).
+  `cor`/`icone` são **só locais**, não sincronizam (schema Prisma do
+  backend não tem essas colunas).
+- **`Carteira.kt`**: `id`, `nome`, `remoteId`. Sincroniza (só o nome).
+- **`Meta.kt`** (novo, sessão de redesign 2026-07-23): `id`, `nome`,
+  `valorAlvo: Double`, `valorAtual: Double`, `criadoEm: Long`. **Não tem
+  `remoteId` e não sincroniza** — é local-only por enquanto, distinto da
+  "meta de economia mensal" (um valor único, guardado em `Prefs`, usado só
+  pro cálculo de % no card-resumo do Acompanhamento).
+- **`EntryDao.kt`**: CRUD completo + fartas queries de relatório — totais
+  por tipo/período (gasto, recebimento, contagem de ideias), quebra por
+  categoria (soma e frequência), série diária (pro gráfico do Financeiro),
+  maior gasto, média, dia da semana com mais gasto, reassociação em massa
+  de categoria (ao renomear).
+- **`CategoryDao.kt`** / **`CarteiraDao.kt`**: CRUD + trio de sync
+  (`getPendentesDeSync`, `getAllOnce`, `marcarSincronizada`).
+- **`MetaDao.kt`**: insert, `getAll()` (Flow), `atualizarValorAtual`,
+  `deleteById` — sem nada de sync.
+- **`AppDatabase.kt`**: `@Database(entities = [Entry, Category, Carteira, Meta], version = 8)`.
+  Migrações reais (não destrutivas), uma por versão:
+  - `2→3`: `remoteId` em entries/categories (backup na nuvem).
+  - `3→4`: `titulo` em entries (bloco de notas).
+  - `4→5`: `limite` em categories (orçamento mensal).
+  - `5→6`: `carteira` em entries + tabela `carteiras` (o tipo `RECEBIMENTO`
+    em si é só enum em código, não mexe em schema).
+  - `6→7`: `cor` e `icone` em categories.
+  - `7→8`: tabela `metas` (feature de metas de economia nomeadas).
+  - `fallbackToDestructiveMigration()` continua como rede de segurança só
+    pra um bump futuro sem migração escrita — nenhuma versão publicada até
+    hoje depende dela de verdade.
+- **`Prefs.kt`** (`SharedPreferences` simples): `tipo_padrao`,
+  `onboarding_concluido`, `aberturas_historico` (nome da chave ficou do
+  jeito antigo, hoje conta aberturas do Financeiro), `notificacao_captura_ativa`,
+  `meta_economia_valor` (novo — meta de economia mensal única, distinta da
+  lista de Metas).
+- **`SessionPrefs.kt`**: `access_token`, `email`, `name` da sessão logada.
+- **`SubscriptionPrefs.kt`**: `is_pro` (cache do status real, que vive no
+  Play Billing), `forcar_pro_debug` (só `BuildConfig.DEBUG`).
 
-Solução (terceira tentativa): `AnotaPlusApplication.kt`, usando
-`ProcessLifecycleOwner` (diferencia "uma activity específica parou" de "o
-app inteiro saiu de primeiro plano" — só o segundo caso interessa aqui) pra
-detectar quando o app inteiro vai pro background e chamar
-`finishAndRemoveTask()` na activity que estava em primeiro plano. Isso
-garante que nunca sobra task nenhuma do app rodando quando ele não está em
-uso — não importa o mecanismo exato que o gesto usa pra "resgatar" o app,
-não vai ter nada pra resgatar.
+## Backend / backup na nuvem
 
-**Contrapartida assumida**: qualquer tela do app (Histórico, Configurações,
-Relatório) perde o estado (posição de rolagem, etc.) se a tela do celular
-apagar sozinha no meio do uso ou se o usuário for pra outro app — na
-próxima vez ela recarrega do zero em vez de continuar de onde parou. Dado
-que essas telas recarregam do Room local instantaneamente (sem chamada de
-rede), o custo é baixo perto do gesto ter que funcionar sempre.
+Repo separado: `GuilhermeSzFernandes/anotaplus-backend`, clonado em
+`anotaplusdadsa/anotaplus-backend` (pasta irmã deste). NestJS + Prisma +
+Neon (Postgres) + Render (deploy), no ar em
+`https://anotaplus-backend.onrender.com/`. Auth via Google Sign-In
+(Credential Manager, não a `GoogleSignInClient` antiga) → `POST /auth/google`
+→ JWT próprio, guardado em `SessionPrefs`, mandado como
+`Authorization: Bearer <token>` em toda chamada autenticada. Timeout de
+45s no OkHttp — o Render free "dorme" e demora a acordar na primeira
+chamada depois de inatividade.
 
-## Widget de tela inicial
+**Push** (`SyncManager.sincronizarTudo`, via `SyncWorker`/WorkManager —
+não pode rodar preso ao `lifecycleScope` da activity porque
+`QuickCaptureActivity`/`ManualGastoActivity`/`ManualRecebimentoActivity`
+chamam `finish()` logo após salvar, o que cancelaria a sincronização antes
+de completar):
+- Categorias pendentes (`remoteId == null`) → `POST /categories`, só
+  `{nome, limite}` — **`cor`/`icone` não vão pro backend**.
+- Carteiras pendentes → `POST /carteiras`, só `{nome}`.
+- Entries pendentes → `POST /entries`, com todos os campos.
+- Edição de limite numa categoria já sincronizada → `PATCH /categories/:id`.
+- **Meta não sincroniza** — não existe rota `/metas` no `AnotaApi.kt`.
 
-`GastoWidgetProvider` (`app/src/main/java/.../widget/`) mostra o total
-gasto **hoje** e **no mês** sem precisar abrir o app. Layout em
-`widget_gasto.xml`, metadados em `xml/widget_gasto_info.xml`.
+**Restore** (`SyncManager.restaurarTudo`): `GET /categories`/`/carteiras`
+(casadas por **nome**, evita duplicar os padrões que toda instalação já
+semeia) e `GET /entries` (casadas por **`remoteId`** — idempotente, seguro
+rodar várias vezes). Disparado automaticamente logo após login bem-sucedido
+(antes do push) e por botão manual "Restaurar backup" no Perfil.
 
-Ponto importante: `RemoteViews` (o mecanismo por trás de widgets) só infla
-views nativas do Android — nada de `PerforationView` (o Canvas customizado
-usado no resto do app). O divisor "picotado" do widget é um
-`@drawable/divider_dashed` (shape de linha tracejada) em vez da view real.
+Disparo de `SyncWorker.agendar()`: ao salvar gasto/ideia/recebimento, ao
+adicionar categoria/carteira, e logo após login — só se
+`SubscriptionPrefs.podeFazerBackup()` (logado **e** PRO).
 
-O widget **não fica observando o Room** (nada de `Flow`/`LiveData` reativo
-por trás de um `AppWidgetProvider` — ele só existe pra reagir a broadcasts
-do sistema). Em vez disso, `WidgetUpdater.atualizarTodos(context)` é uma
-função "puxe sob demanda": lê os totais uma vez (`EntryDao.getTotalGastoOnce`)
-e redesenha todos os widgets existentes. Ela é chamada manualmente depois de
-toda mudança que pode afetar o total de gasto: `QuickCaptureActivity.salvar()`,
-`ManualGastoActivity.salvar()`, `EditEntryActivity.salvar()`/`excluir()` e
-`SyncManager.restaurarTudo()`. Fora isso, o próprio Android chama
-`onUpdate()` periodicamente (`updatePeriodMillis`) e quando o widget é
-adicionado à tela — nesse caminho, como `onUpdate()` roda dentro de um
-`BroadcastReceiver` (que o sistema pode matar assim que a função retorna),
-`GastoWidgetProvider` usa `goAsync()` pra manter o processo vivo até a
-consulta suspend no Room terminar.
+## Assinatura PRO e anúncios
 
-Toques no widget: tocar no corpo abre `HistoryActivity` direto; tocar no
-"+" abre `QuickCaptureActivity` via `PendingIntent` — como esse `Intent`
-não vem de um toque na tela (sem `sourceBounds`), ele naturalmente cai no
-mesmo caminho do gesto de abrir e mostra o modal de captura, sem precisar
-de nenhuma lógica extra pra diferenciar a origem.
+- Produto `anotaplus_pro_mensal` (assinatura, `Play Billing`,
+  `BuildConfig.SUBSCRIPTION_PRODUCT_ID`). **Preço não é fixo no app** — vem
+  ao vivo da Play Store via `ProductDetails`; o texto "R$ 10,00/mês" que
+  aparecia em versões antigas deste doc era só o valor configurado no Play
+  Console na época, não uma constante no código.
+- **Bloqueio ainda de pé**: Play Billing só funciona de verdade com o app
+  instalado a partir da Play Store (nem que seja teste interno) — via
+  APK avulso (o `app-debug.apk` do GitHub Actions, sempre sideloadado até
+  aqui), o `BillingClient` conecta mas nunca encontra o produto. Falta:
+  conta de desenvolvedor no Play Console (usuário ainda não tem, $25
+  único), subir a pelo menos um canal de teste, cadastrar
+  `anotaplus_pro_mensal`, adicionar a própria conta como testador.
+- **O que o PRO libera**: backup/restore na nuvem, remoção de anúncios
+  (banner some, intersticial nem roda), sincronização do `limite` de
+  categoria com a nuvem.
+- **`BillingManager`**: `consultarProductDetails()`, `iniciarCompra()`,
+  `atualizarStatusAssinatura()` (reconsulta `queryPurchasesAsync`, fonte
+  da verdade, e sincroniza local + backend via `POST /billing/sync`) —
+  chamado no login, ao abrir Perfil, e no `onResume()` de `PlansActivity`.
+- **Gap conhecido, não é bug**: o backend não verifica o `purchaseToken`
+  contra a API do Google Play Developer — confia no que o app relata.
+  Só faz sentido resolver depois que existir conta de desenvolvedor.
+- **Anúncios (AdMob)**: ainda sem conta AdMob própria — usa os **IDs de
+  teste oficiais do Google** (`app/build.gradle.kts`). `MobileAds.initialize`
+  roda uma vez em `AnotaPlusApplication.onCreate`. Banner em
+  **Financeiro e Anotações** (não só numa tela, como versões antigas deste
+  doc diziam); intersticial ocasional (a cada 4 aberturas) só em
+  Financeiro. Ambos escondidos/pulados pra quem é PRO.
 
-## Build sem Android Studio
+## Formatação rica na Ideia (`RichTextEngine.kt`)
 
-O usuário **não tem Android Studio instalado** e não quer instalar. A solução
-adotada foi **GitHub Actions**: existe um workflow em
-`.github/workflows/build.yml` que compila o APK debug na nuvem a cada push
-na branch `main`, e disponibiliza `app-debug.apk` como artefato pra download
-e instalação manual (sideload) no celular.
+Formatação "viva" (WYSIWYG) sem editor rico de verdade nem mudança de
+schema — o texto guardado continua puro, com marcadores tipo Markdown, e
+um `TextWatcher` recalcula os spans visuais a cada tecla. Marcadores
+reconhecidos: `# ` (título 1), `## ` (título 2 — precisa checar antes de
+`# `, já que os dois começam com `#`), `- ` (lista), `☐ `/`☑ ` (checklist,
+único marcador que fica **visível** de propósito, porque *é* o checkbox),
+`**negrito**`, `_itálico_`, `~sublinhado~`. Marcadores ficam ocultos via
+`MarcadorOcultoSpan` (um `ReplacementSpan` de largura zero) — o caractere
+continua existindo no `Editable` (cursor/backspace/texto salvo normais),
+só não é desenhado. Enter no fim de um item de lista continua a lista
+(novo item de checklist sempre nasce desmarcado); Enter num item vazio
+sai da lista. Tocar no "☐"/"☑" no editor marca/desmarca sem abrir teclado.
+`textoSemMarcadores()` gera o preview sem sintaxe crua, usado no
+`EntryAdapter` e nos widgets.
 
-Esse workflow usa `android-actions/setup-android` + `gradle/actions/setup-gradle`
-para instalar SDK e Gradle no runner (não depende de wrapper local).
+## Alerta de orçamento (`BudgetAlertNotifier.kt`)
 
-## Status atual / histórico recente
+Depois de salvar/editar um Gasto com categoria (`ManualGastoActivity`,
+`QuickCaptureActivity`, `EditEntryActivity`), confere se o total do mês
+naquela categoria passou do `limite` e dispara notificação (canal
+`alertas_orcamento`). Id fixo por categoria (`categoria.hashCode()`) —
+estourar de novo no mesmo mês atualiza a notificação existente em vez de
+empilhar. Tocar abre `CategoriasActivity`.
 
-- Projeto já está versionado num repositório GitHub pessoal do usuário
-  (`GuilhermeSzFernandes/anotaplus`), com push funcionando.
-- Teve alguns bugs de setup: erro de identidade do Git (resolvido com
-  `git config user.name/email`), erro 403 de permissão no push (resolvido
-  ajustando credenciais/token), e um erro de build (`colors.xml` sem a tag
-  de fechamento `</resources>`, causando falha no `mergeDebugResources`).
-- Objetivo imediato: garantir que o workflow do GitHub Actions completa o
-  build com sucesso e gera um APK instalável.
+## Design system — redesign "fintech moderno" (sessão de 2026-07-23)
 
-## Próximos passos (ainda não implementados)
-- `AnotacaoWidgetProvider` mostra no máximo 6 linhas por widget (ver seção
-  própria) — virar um `RemoteViewsService`/coleção de verdade é o próximo
-  passo se isso incomodar no uso real.
-- Sincronizar de verdade entre múltiplos aparelhos ao mesmo tempo
-  (resolução de conflito quando o mesmo usuário edita em dois lugares) —
-  bullet própria do PRO na `PlansActivity`, distinta do backup simples.
-- **Criar a conta de desenvolvedor no Google Play Console** ($25, pagamento
-  único), subir o Anota+ pra pelo menos teste interno, e cadastrar lá a
-  assinatura `anotaplus_pro_mensal` a R$ 10,00/mês — sem isso, o botão
-  "Assinar" da `PlansActivity` conecta no Play Billing mas nunca acha
-  produto nenhum (ver seção "Assinatura PRO e anúncios").
-- **Criar conta AdMob** e cadastrar o Anota+ lá pra conseguir App ID e Ad
-  Unit IDs reais — hoje o app usa os IDs de teste oficiais do Google
-  (banner + intersticial), que não geram receita nenhuma.
-- Verificar o `purchaseToken` do `POST /billing/sync` contra a API do
-  Google Play Developer, em vez de confiar no que o app relata — precisa
-  de uma service account do Google Cloud com Android Publisher API,
-  vinculada no Play Console (só faz sentido depois que a conta existir).
+O app tinha (e a Captura Rápida **continua tendo**) uma identidade visual
+deliberada de "papel e tinta" — ledger/caderno vintage: paleta dessaturada
+(`ink`/`paper`/`brass`), cantos quase retos, botões com stroke, valores em
+monospace, wordmarks caixa-alta. O restante do app foi modernizado pra um
+visual "fintech": cantos bem arredondados, chips de ícone preto com ícone
+branco, tipografia bold sans-serif, cards flat sem stroke, valores em
+verde/vermelho semântico vívido (`color_receita`/`color_gasto_vivo`).
+
+**Estratégia: aditiva, não destrutiva.** Nenhum token antigo (`ink`,
+`paper`, `brass`, `TextAppearance.AnotaPlus.Amount`,
+`Widget.AnotaPlus.Button.Stamp`/`.Tab`, `bg_card_free`) foi alterado ou
+removido — todos continuam definidos exatamente como antes, então
+`QuickCaptureActivity`, `ManualGastoActivity`, `ManualIdeiaActivity` e
+`ManualRecebimentoActivity` (as únicas telas que mantêm o visual de
+recibo) continuam resolvendo os mesmos nomes e renderizando idêntico.
+Um conjunto **novo** de tokens (`dimens.xml`, novas cores, novos
+drawables/estilos com nomes próprios) foi adicionado lado a lado, e só as
+telas fora da Captura Rápida foram repontadas pra eles.
+
+O que esse redesign também trouxe de **novo** (não só visual):
+- Card-resumo Receitas/Gastos/Poupança + barra de meta de economia no
+  Acompanhamento (usa `EntryDao.getTotalRecebimento`, que já existia mas
+  não era usado em lugar nenhum antes).
+- Insights automáticos (texto gerado a partir dos dados já calculados de
+  categoria).
+- Feature de Metas de economia nomeadas (Room: `Meta`/`MetaDao`, migração
+  `7→8`).
+- Perfil reestruturado em blocos ícone+chevron (Progresso/Personalização/
+  Legal/Suporte), reaproveitando toda a funcionalidade que já existia
+  (backup, login, tipo padrão, notificação) — só as seções Legal
+  (Privacidade/Termos) são novas de fato, e hoje são só diálogos stub
+  (sem link publicado ainda).
+
+## Build sem Android Studio (peça central do fluxo de trabalho)
+
+**O usuário não tem Android Studio instalado nem SDK Android configurado
+localmente — e este ambiente de sandbox onde o Claude Code roda também
+não tem (sem gradle wrapper commitado, sem `local.properties`, sem
+`gradle-wrapper.jar`).** Isso significa que **nenhum dos dois lados
+consegue compilar o projeto localmente** — o único lugar onde o app
+realmente compila é o **GitHub Actions**.
+
+- Workflow: `.github/workflows/build.yml`, dispara a cada push na `main`,
+  usa `android-actions/setup-android` + `gradle/actions/setup-gradle` pra
+  instalar SDK e Gradle no runner (não depende de wrapper local).
+- Gera `app-debug.apk` como artefato pra download e sideload manual no
+  celular.
+- **Consequência prática pro fluxo de trabalho**: commitar e empurrar pra
+  `main` é a única forma de "testar se compila" — não faz sentido segurar
+  um push esperando rodar `./gradlew assembleDebug` antes, porque essa
+  opção não existe aqui. Ver a memória de sessão sobre "sempre
+  commitar/empurrar sem perguntar" — a razão de ser dessa regra é
+  justamente esta.
+
+## Próximos passos conhecidos (ainda não implementados)
+
+- `AnotacaoWidgetProvider`/`CategoriasWidgetProvider` limitados a 6 linhas
+  fixas — virar `RemoteViewsService`/coleção de verdade é o próximo passo
+  se isso incomodar no uso real.
+- Sincronização simultânea entre múltiplos aparelhos (resolução de
+  conflito) — feature própria do PRO, distinta do backup simples atual.
+- Criar conta de desenvolvedor no Play Console + cadastrar
+  `anotaplus_pro_mensal` — bloqueia testar compra real.
+- Criar conta AdMob + trocar IDs de teste pelos reais.
+- Verificar `purchaseToken` contra a API do Google Play Developer (precisa
+  da conta de desenvolvedor existir primeiro).
+- Excluir categoria em Perfil/Categorias não propaga exclusão pro backend
+  (diferente de `Entry`, que já propaga) — "Restaurar backup" depois
+  ressuscitaria uma categoria apagada só localmente.
+- Meta (lista de metas de economia) não sincroniza com a nuvem — decidir
+  se vale a pena estender o backend pra isso ou manter local-only de
+  propósito.
+- Publicar de verdade a Política de Privacidade e os Termos de Uso — as
+  linhas em Perfil > Legal são só diálogos stub hoje.
 - Exportar histórico em CSV.
-- Excluir categoria em Configurações **não propaga pro backend** (diferente
-  de excluir/editar um `Entry`, que já propaga — ver `EditEntryActivity`) —
-  um "Restaurar backup" depois ressuscitaria uma categoria apagada
-  localmente. Mesmo problema que já foi resolvido pra `Entry`, só falta
-  replicar pra `Category` (`DELETE /categories/:id` já existe no backend,
-  só falta o app chamar).
 
 ## Preferências do usuário (relevantes pro trabalho neste projeto)
 
 - Desenvolvedor com ~2 anos de experiência, trabalha principalmente com
-  C# ASP.NET/.NET Framework, NestJS, Next.js, SQL Server/PostgreSQL — Kotlin/
-  Android não é sua stack do dia a dia, então prefere explicações diretas e
+  C# ASP.NET/.NET Framework, NestJS, Next.js, SQL Server/PostgreSQL —
+  Kotlin/Android não é a stack do dia a dia, prefere explicações diretas e
   passo a passo quando o problema for específico de ferramentas Android.
-  Comunicação em português brasileiro, estilo casual e direto.
+- Comunicação em português brasileiro, estilo casual e direto.
+- Sempre commitar e empurrar pra `main` sem pedir confirmação antes —
+  não há build local possível (ver seção "Build sem Android Studio"), o
+  GitHub Actions é o único lugar onde o app é verificado de verdade.
