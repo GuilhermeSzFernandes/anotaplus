@@ -353,6 +353,14 @@
                     android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
                     android:textColor="@color/ink_soft" />
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/link_calibrar_gesto"
+                    style="@style/Widget.AnotaPlus.Button.Link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/link_calibrar_gesto" />
+
             </LinearLayout>
 
             <!-- Só existe em build debug (visibility trocada no código,

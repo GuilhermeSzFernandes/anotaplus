@@ -12,6 +12,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import com.guilherme.anotaplus.data.Prefs
 import kotlin.math.abs
 import kotlin.math.sqrt
 
@@ -28,8 +29,9 @@ import kotlin.math.sqrt
  * carcaça sendo batida), diferente de um movimento sustentado (andar,
  * sacudir no bolso). Dois picos assim dentro de uma janela curta = toque
  * duplo. Não é sensor de hardware dedicado (só o Pixel tem isso via
- * "Quick Tap"), então falso positivo/negativo acontece — os limiares abaixo
- * dão pra ajustar se aparecer queixa de sensibilidade.
+ * "Quick Tap"), então falso positivo/negativo acontece — o limiar de pico
+ * é calibrável em CalibrarGestoActivity (Prefs.getLimiarGestoAcelerometro),
+ * já que o valor ideal varia demais entre aparelho/capinha/jeito de bater.
  */
 class TapBackGestureService : Service(), SensorEventListener {
 
@@ -37,12 +39,12 @@ class TapBackGestureService : Service(), SensorEventListener {
         private const val CHANNEL_ID = "gesto_toque_duplo"
         private const val NOTIFICATION_ID = 1002
 
-        // m/s² de desvio da gravidade pra contar como uma batida (não um
-        // gesto suave) — valor empírico, ajustar se dispararem queixas.
-        private const val LIMIAR_PICO = 24f
-        private const val JANELA_MIN_MS = 60L
-        private const val JANELA_MAX_MS = 450L
-        private const val DEBOUNCE_MS = 1200L
+        // internal (não private) porque CalibrarGestoActivity reaproveita os
+        // mesmos valores no modo de teste ao vivo, pra calibrar contra a
+        // mesma lógica de detecção usada aqui de verdade.
+        internal const val JANELA_MIN_MS = 60L
+        internal const val JANELA_MAX_MS = 450L
+        internal const val DEBOUNCE_MS = 1200L
 
         fun iniciar(context: Context) {
             context.startForegroundService(Intent(context, TapBackGestureService::class.java))
@@ -57,8 +59,14 @@ class TapBackGestureService : Service(), SensorEventListener {
     private var ultimoPicoEm = 0L
     private var ultimoDisparoEm = 0L
 
+    // Lido uma vez na criação — se o usuário recalibrar em
+    // CalibrarGestoActivity com o serviço já rodando, ela reinicia o
+    // serviço pra esse valor novo entrar em vigor (ver Prefs.kt).
+    private var limiarPico = Prefs.LIMIAR_GESTO_ACELEROMETRO_PADRAO
+
     override fun onCreate() {
         super.onCreate()
+        limiarPico = Prefs.getLimiarGestoAcelerometro(this)
         criarCanalSeNecessario()
         startForeground(NOTIFICATION_ID, construirNotificacao())
 
@@ -88,7 +96,7 @@ class TapBackGestureService : Service(), SensorEventListener {
         val y = event.values[1]
         val z = event.values[2]
         val desvioDaGravidade = sqrt(x * x + y * y + z * z) - SensorManager.GRAVITY_EARTH
-        if (abs(desvioDaGravidade) < LIMIAR_PICO) return
+        if (abs(desvioDaGravidade) < limiarPico) return
 
         val agora = System.currentTimeMillis()
         if (agora - ultimoDisparoEm < DEBOUNCE_MS) return

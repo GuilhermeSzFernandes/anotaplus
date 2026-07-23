@@ -57,6 +57,9 @@ class SettingsActivity : AppCompatActivity() {
         binding.linkGuiaGesto.setOnClickListener {
             startActivity(Intent(this, GestureGuideActivity::class.java))
         }
+        binding.linkCalibrarGesto.setOnClickListener {
+            startActivity(Intent(this, CalibrarGestoActivity::class.java))
+        }
         binding.linkVerTutorial.setOnClickListener {
             TutorialTourManager.iniciar(onboarding = false)
             startActivity(Intent(this, AnotacoesActivity::class.java))

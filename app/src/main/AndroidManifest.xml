@@ -17,6 +17,9 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 
+    <!-- Feedback tátil ao detectar o gesto em CalibrarGestoActivity -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:name=".AnotaPlusApplication"
         android:allowBackup="true"
@@ -136,6 +139,14 @@
         -->
         <activity
             android:name=".GestureGuideActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AnotaPlus" />
+
+        <!-- Calibração do limiar do gesto por acelerômetro (ver
+             TapBackGestureService e CalibrarGestoActivity.kt) — aberta a
+             partir do card do gesto em Configurações. -->
+        <activity
+            android:name=".CalibrarGestoActivity"
             android:exported="false"
             android:theme="@style/Theme.AnotaPlus" />
 

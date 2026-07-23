@@ -64,6 +64,21 @@
     <string name="notificacao_gesto_toque_duplo_texto">Toque duas vezes na traseira do aparelho pra abrir a Captura Rápida</string>
     <string name="label_gesto_acelerometro">Toque duplo na traseira (via sensor)</string>
     <string name="desc_gesto_acelerometro">Sugerido pra quem não tem esse gesto pelo sistema (Xiaomi e outros). Usa o acelerômetro em segundo plano — consome mais bateria, por isso vem desligado; ligue só se quiser essa alternativa.</string>
+    <string name="link_calibrar_gesto">calibrar sensibilidade →</string>
+
+    <!-- Calibração do gesto (CalibrarGestoActivity.kt) -->
+    <string name="title_calibrar_gesto">Calibrar sensibilidade</string>
+    <string name="calibrar_gesto_intro">Se o toque duplo não estiver disparando (ou disparando sozinho andando/no bolso), ajuste o limiar abaixo. A leitura mostra o que o sensor está captando agora — bata na traseira do aparelho pra ver o pico subir, e teste o toque duplo com o limiar atual antes de salvar.</string>
+    <string name="label_calibrar_leitura">Leitura ao vivo</string>
+    <string name="format_calibrar_leitura">%.1f m/s²</string>
+    <string name="label_calibrar_sensibilidade">Sensibilidade (limiar)</string>
+    <string name="calibrar_dica_sensibilidade">Quanto menor, mais fácil de disparar — mas mais chance de confundir com andar ou o aparelho balançando no bolso. Quanto maior, mais difícil de acionar sem querer, mas pode exigir bater mais forte.</string>
+    <string name="label_calibrar_teste">Teste ao vivo (com o limiar acima, ainda não salvo)</string>
+    <string name="calibrar_teste_instrucao">Bata duas vezes, rapidinho, na parte de trás do aparelho</string>
+    <string name="calibrar_teste_detectado">✓ Toque duplo detectado!</string>
+    <string name="btn_calibrar_salvar">Salvar sensibilidade</string>
+    <string name="btn_calibrar_restaurar">Restaurar padrão</string>
+    <string name="calibrar_salvo_toast">Sensibilidade salva</string>
     <string name="btn_empty_adicionar">Adicionar lançamento</string>
     <string name="btn_empty_adicionar_anotacao">Adicionar anotação</string>
     <string name="btn_financeiro">Financeiro</string>
