@@ -4,13 +4,13 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.guilherme.anotaplus.data.AppDatabase
 import com.guilherme.anotaplus.data.Entry
 import com.guilherme.anotaplus.data.EntryType
 import com.guilherme.anotaplus.data.SessionPrefs
 import com.guilherme.anotaplus.data.SubscriptionPrefs
 import com.guilherme.anotaplus.databinding.ActivityManualIdeiaBinding
+import com.guilherme.anotaplus.databinding.DialogConfirmacaoPaperBinding
 import com.guilherme.anotaplus.network.ApiClient
 import com.guilherme.anotaplus.network.dto.EntrySyncRequest
 import com.guilherme.anotaplus.widget.AnotacaoWidgetUpdater
@@ -135,11 +135,16 @@ class ManualIdeiaActivity : AppCompatActivity() {
     }
 
     private fun confirmarExclusao() {
-        MaterialAlertDialogBuilder(this)
-            .setMessage(R.string.confirmar_exclusao)
-            .setPositiveButton(R.string.btn_excluir) { _, _ -> lifecycleScope.launch { excluir() } }
-            .setNegativeButton(R.string.btn_cancelar, null)
-            .show()
+        val dialogBinding = DialogConfirmacaoPaperBinding.inflate(layoutInflater)
+        dialogBinding.textTituloConfirmacao.text = getString(R.string.title_confirmar_exclusao)
+        dialogBinding.textMensagemConfirmacao.text = getString(R.string.confirmar_exclusao)
+        val dialog = criarDialogoPaper(dialogBinding.root)
+        dialogBinding.btnCancelarConfirmacao.setOnClickListener { dialog.dismiss() }
+        dialogBinding.btnConfirmarConfirmacao.setOnClickListener {
+            lifecycleScope.launch { excluir() }
+            dialog.dismiss()
+        }
+        dialog.show()
     }
 
     private suspend fun excluir() {

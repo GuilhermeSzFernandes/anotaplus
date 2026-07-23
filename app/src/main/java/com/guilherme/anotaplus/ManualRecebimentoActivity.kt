@@ -36,7 +36,7 @@ class ManualRecebimentoActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val nomes = AppDatabase.getInstance(applicationContext).categoryDao().getNomesOnce()
             binding.editCategoria.setAdapter(
-                ArrayAdapter(this@ManualRecebimentoActivity, android.R.layout.simple_dropdown_item_1line, nomes)
+                ArrayAdapter(this@ManualRecebimentoActivity, R.layout.item_dropdown_paper, R.id.text_item, nomes)
             )
         }
 
@@ -44,7 +44,7 @@ class ManualRecebimentoActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val nomes = AppDatabase.getInstance(applicationContext).carteiraDao().getNomesOnce()
             binding.editCarteira.setAdapter(
-                ArrayAdapter(this@ManualRecebimentoActivity, android.R.layout.simple_dropdown_item_1line, nomes)
+                ArrayAdapter(this@ManualRecebimentoActivity, R.layout.item_dropdown_paper, R.id.text_item, nomes)
             )
         }
 

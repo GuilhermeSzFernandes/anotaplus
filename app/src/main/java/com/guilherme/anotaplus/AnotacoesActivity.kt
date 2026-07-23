@@ -5,19 +5,19 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.guilherme.anotaplus.data.AppDatabase
 import com.guilherme.anotaplus.data.Entry
 import com.guilherme.anotaplus.data.EntryType
 import com.guilherme.anotaplus.data.SubscriptionPrefs
 import com.guilherme.anotaplus.databinding.ActivityAnotacoesBinding
+import com.guilherme.anotaplus.databinding.DialogConfirmacaoFlatBinding
+import com.guilherme.anotaplus.databinding.DialogDefinirTagBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -115,39 +115,38 @@ class AnotacoesActivity : AppCompatActivity() {
     private fun confirmarExclusaoMultipla() {
         val ids = adapter.idsSelecionados()
         if (ids.isEmpty()) return
-        MaterialAlertDialogBuilder(this)
-            .setMessage(getString(R.string.confirmar_exclusao_multipla, ids.size))
-            .setPositiveButton(R.string.btn_excluir) { _, _ ->
-                lifecycleScope.launch {
-                    AppDatabase.getInstance(applicationContext).entryDao().deleteByIds(ids)
-                }
-                adapter.limparSelecao()
+        val dialogBinding = DialogConfirmacaoFlatBinding.inflate(layoutInflater)
+        dialogBinding.textTituloConfirmacao.text = getString(R.string.title_confirmar_exclusao)
+        dialogBinding.textMensagemConfirmacao.text = getString(R.string.confirmar_exclusao_multipla, ids.size)
+        val dialog = criarDialogoFlat(dialogBinding.root)
+        dialogBinding.btnCancelarConfirmacao.setOnClickListener { dialog.dismiss() }
+        dialogBinding.btnConfirmarConfirmacao.setOnClickListener {
+            lifecycleScope.launch {
+                AppDatabase.getInstance(applicationContext).entryDao().deleteByIds(ids)
             }
-            .setNegativeButton(R.string.btn_cancelar, null)
-            .show()
+            adapter.limparSelecao()
+            dialog.dismiss()
+        }
+        dialog.show()
     }
 
     private fun mostrarDialogoTag() {
         val ids = adapter.idsSelecionados()
         if (ids.isEmpty()) return
 
-        val editTag = EditText(this).apply {
-            hint = getString(R.string.hint_tag_nota)
-            setPadding(48, 24, 48, 24)
-        }
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle(getString(R.string.title_definir_tag, ids.size))
-            .setView(editTag)
-            .setPositiveButton(R.string.btn_salvar) { _, _ ->
-                val tag = editTag.text?.toString()?.trim()?.ifEmpty { null }
-                lifecycleScope.launch {
-                    AppDatabase.getInstance(applicationContext).entryDao().atualizarCategoriaEmMassa(ids, tag)
-                }
-                adapter.limparSelecao()
+        val dialogBinding = DialogDefinirTagBinding.inflate(layoutInflater)
+        dialogBinding.textTituloTag.text = getString(R.string.title_definir_tag, ids.size)
+        val dialog = criarDialogoFlat(dialogBinding.root)
+        dialogBinding.btnCancelarTag.setOnClickListener { dialog.dismiss() }
+        dialogBinding.btnSalvarTag.setOnClickListener {
+            val tag = dialogBinding.editTag.text?.toString()?.trim()?.ifEmpty { null }
+            lifecycleScope.launch {
+                AppDatabase.getInstance(applicationContext).entryDao().atualizarCategoriaEmMassa(ids, tag)
             }
-            .setNegativeButton(R.string.btn_cancelar, null)
-            .show()
+            adapter.limparSelecao()
+            dialog.dismiss()
+        }
+        dialog.show()
     }
 
     override fun onResume() {

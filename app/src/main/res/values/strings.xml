@@ -347,6 +347,11 @@
     <string name="btn_excluir">Excluir</string>
     <string name="btn_cancelar">Cancelar</string>
     <string name="confirmar_exclusao">Excluir esse lançamento? Essa ação não pode ser desfeita.</string>
+    <string name="title_confirmar_exclusao">Excluir?</string>
+
+    <string name="titulo_crash">O app crashou da última vez</string>
+    <string name="btn_copiar">Copiar</string>
+    <string name="texto_copiado">Copiado</string>
 
     <string name="widget_hoje">Hoje</string>
     <string name="widget_este_mes">Este mês</string>

@@ -36,7 +36,7 @@ class ManualGastoActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val nomes = AppDatabase.getInstance(applicationContext).categoryDao().getNomesOnce()
             binding.editCategoria.setAdapter(
-                ArrayAdapter(this@ManualGastoActivity, android.R.layout.simple_dropdown_item_1line, nomes)
+                ArrayAdapter(this@ManualGastoActivity, R.layout.item_dropdown_paper, R.id.text_item, nomes)
             )
         }
 
@@ -44,7 +44,7 @@ class ManualGastoActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val nomes = AppDatabase.getInstance(applicationContext).carteiraDao().getNomesOnce()
             binding.editCarteira.setAdapter(
-                ArrayAdapter(this@ManualGastoActivity, android.R.layout.simple_dropdown_item_1line, nomes)
+                ArrayAdapter(this@ManualGastoActivity, R.layout.item_dropdown_paper, R.id.text_item, nomes)
             )
         }
 

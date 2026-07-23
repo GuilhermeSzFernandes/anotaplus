@@ -13,7 +13,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.guilherme.anotaplus.data.AppDatabase
 import com.guilherme.anotaplus.data.Carteira
 import com.guilherme.anotaplus.data.Category
@@ -149,37 +148,36 @@ class CategoriasActivity : AppCompatActivity() {
         popularCores(dialogBinding.containerCores, corSelecionada) { corSelecionada = it }
         popularIcones(dialogBinding.containerIcones, iconeSelecionado) { iconeSelecionado = it }
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle(getString(R.string.title_editar_categoria))
-            .setView(dialogBinding.root)
-            .setPositiveButton(R.string.btn_salvar) { _, _ ->
-                val novoNome = dialogBinding.editNomeCategoria.text?.toString()?.trim().orEmpty()
-                if (novoNome.isEmpty()) {
-                    Toast.makeText(this, R.string.error_nome_categoria_obrigatorio, Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
-                }
-                val novoLimite = dialogBinding.editLimiteCategoria.text?.toString()?.trim()
-                    ?.replace(",", ".")?.toDoubleOrNull()
+        val dialog = criarDialogoFlat(dialogBinding.root)
+        dialogBinding.btnCancelarCategoria.setOnClickListener { dialog.dismiss() }
+        dialogBinding.btnSalvarCategoria.setOnClickListener {
+            val novoNome = dialogBinding.editNomeCategoria.text?.toString()?.trim().orEmpty()
+            if (novoNome.isEmpty()) {
+                Toast.makeText(this, R.string.error_nome_categoria_obrigatorio, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            val novoLimite = dialogBinding.editLimiteCategoria.text?.toString()?.trim()
+                ?.replace(",", ".")?.toDoubleOrNull()
 
-                lifecycleScope.launch {
-                    categoryDao.atualizar(categoria.id, novoNome, corSelecionada, iconeSelecionado, novoLimite)
-                    if (novoNome != categoria.nome) {
-                        AppDatabase.getInstance(applicationContext).entryDao()
-                            .renomearCategoriaEmTodosLancamentos(categoria.nome, novoNome)
-                        WidgetUpdater.atualizarTodos(applicationContext)
-                    }
-                    if (novoLimite != categoria.limite && SubscriptionPrefs.podeFazerBackup(this@CategoriasActivity)) {
-                        val atualizada = categoria.copy(limite = novoLimite)
-                        if (atualizada.remoteId != null) {
-                            SyncManager.enviarLimiteCategoria(applicationContext, atualizada)
-                        } else {
-                            SyncWorker.agendar(applicationContext)
-                        }
+            lifecycleScope.launch {
+                categoryDao.atualizar(categoria.id, novoNome, corSelecionada, iconeSelecionado, novoLimite)
+                if (novoNome != categoria.nome) {
+                    AppDatabase.getInstance(applicationContext).entryDao()
+                        .renomearCategoriaEmTodosLancamentos(categoria.nome, novoNome)
+                    WidgetUpdater.atualizarTodos(applicationContext)
+                }
+                if (novoLimite != categoria.limite && SubscriptionPrefs.podeFazerBackup(this@CategoriasActivity)) {
+                    val atualizada = categoria.copy(limite = novoLimite)
+                    if (atualizada.remoteId != null) {
+                        SyncManager.enviarLimiteCategoria(applicationContext, atualizada)
+                    } else {
+                        SyncWorker.agendar(applicationContext)
                     }
                 }
             }
-            .setNegativeButton(R.string.btn_cancelar, null)
-            .show()
+            dialog.dismiss()
+        }
+        dialog.show()
     }
 
     // Redesenha a lista inteira de swatches a cada toque (paleta é pequena,

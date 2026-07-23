@@ -16,11 +16,11 @@ import com.guilherme.anotaplus.data.SessionPrefs
 import com.guilherme.anotaplus.data.SubscriptionPrefs
 import com.guilherme.anotaplus.databinding.ActivitySettingsBinding
 import com.guilherme.anotaplus.databinding.DialogAjustarObjetivosBinding
+import com.guilherme.anotaplus.databinding.DialogConfirmacaoFlatBinding
 import com.guilherme.anotaplus.databinding.DialogDadosSalariaisBinding
 import com.guilherme.anotaplus.databinding.DialogTipoPadraoBinding
 import com.guilherme.anotaplus.network.ApiClient
 import com.guilherme.anotaplus.network.dto.BillingSyncRequest
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 
 class SettingsActivity : AppCompatActivity() {
@@ -144,21 +144,13 @@ class SettingsActivity : AppCompatActivity() {
         binding.rowPrivacidade.iconRow.setImageResource(R.drawable.ic_shield)
         binding.rowPrivacidade.textRowTitle.text = getString(R.string.row_titulo_privacidade)
         binding.rowPrivacidade.root.setOnClickListener {
-            MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.titulo_privacidade_stub)
-                .setMessage(R.string.conteudo_privacidade_stub)
-                .setPositiveButton(R.string.btn_fechar_dialog, null)
-                .show()
+            mostrarDialogoStub(R.string.titulo_privacidade_stub, R.string.conteudo_privacidade_stub)
         }
 
         binding.rowTermos.iconRow.setImageResource(R.drawable.ic_document)
         binding.rowTermos.textRowTitle.text = getString(R.string.row_titulo_termos)
         binding.rowTermos.root.setOnClickListener {
-            MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.titulo_termos_stub)
-                .setMessage(R.string.conteudo_termos_stub)
-                .setPositiveButton(R.string.btn_fechar_dialog, null)
-                .show()
+            mostrarDialogoStub(R.string.titulo_termos_stub, R.string.conteudo_termos_stub)
         }
 
         binding.rowTutorial.iconRow.setImageResource(R.drawable.ic_help)
@@ -197,11 +189,9 @@ class SettingsActivity : AppCompatActivity() {
             }
             Prefs.setTipoPadrao(this, tipo)
         }
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.row_titulo_tipo_padrao)
-            .setView(dialogBinding.root)
-            .setPositiveButton(R.string.btn_fechar_dialog, null)
-            .show()
+        val dialog = criarDialogoFlat(dialogBinding.root)
+        dialogBinding.btnFecharTipoPadrao.setOnClickListener { dialog.dismiss() }
+        dialog.show()
     }
 
     private fun abrirDialogAjustarObjetivos() {
@@ -210,16 +200,15 @@ class SettingsActivity : AppCompatActivity() {
         if (valorAtual > 0) {
             dialogBinding.editMetaEconomiaValor.setText("%.2f".format(valorAtual))
         }
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.titulo_ajustar_objetivos)
-            .setView(dialogBinding.root)
-            .setPositiveButton(R.string.btn_salvar_meta) { _, _ ->
-                val valor = dialogBinding.editMetaEconomiaValor.text.toString()
-                    .replace(",", ".").toFloatOrNull() ?: 0f
-                Prefs.setMetaEconomiaValor(this, valor)
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
+        val dialog = criarDialogoFlat(dialogBinding.root)
+        dialogBinding.btnCancelarObjetivos.setOnClickListener { dialog.dismiss() }
+        dialogBinding.btnSalvarObjetivos.setOnClickListener {
+            val valor = dialogBinding.editMetaEconomiaValor.text.toString()
+                .replace(",", ".").toFloatOrNull() ?: 0f
+            Prefs.setMetaEconomiaValor(this, valor)
+            dialog.dismiss()
+        }
+        dialog.show()
     }
 
     private fun abrirDialogDadosSalariais() {
@@ -231,20 +220,30 @@ class SettingsActivity : AppCompatActivity() {
         if (horasPorDia > 0) dialogBinding.editHorasPorDia.setText("%.1f".format(horasPorDia))
         if (diasPorSemana > 0) dialogBinding.editDiasPorSemana.setText("%.0f".format(diasPorSemana))
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.titulo_dados_salariais)
-            .setView(dialogBinding.root)
-            .setPositiveButton(R.string.btn_salvar_meta) { _, _ ->
-                val novoSalario = dialogBinding.editSalarioMensal.text.toString()
-                    .replace(",", ".").toFloatOrNull() ?: 0f
-                val novasHoras = dialogBinding.editHorasPorDia.text.toString()
-                    .replace(",", ".").toFloatOrNull() ?: 0f
-                val novosDias = dialogBinding.editDiasPorSemana.text.toString()
-                    .replace(",", ".").toFloatOrNull() ?: 0f
-                Prefs.setDadosSalariais(this, novoSalario, novasHoras, novosDias)
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
+        val dialog = criarDialogoFlat(dialogBinding.root)
+        dialogBinding.btnCancelarDadosSalariais.setOnClickListener { dialog.dismiss() }
+        dialogBinding.btnSalvarDadosSalariais.setOnClickListener {
+            val novoSalario = dialogBinding.editSalarioMensal.text.toString()
+                .replace(",", ".").toFloatOrNull() ?: 0f
+            val novasHoras = dialogBinding.editHorasPorDia.text.toString()
+                .replace(",", ".").toFloatOrNull() ?: 0f
+            val novosDias = dialogBinding.editDiasPorSemana.text.toString()
+                .replace(",", ".").toFloatOrNull() ?: 0f
+            Prefs.setDadosSalariais(this, novoSalario, novasHoras, novosDias)
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+
+    private fun mostrarDialogoStub(titulo: Int, conteudo: Int) {
+        val dialogBinding = DialogConfirmacaoFlatBinding.inflate(layoutInflater)
+        dialogBinding.textTituloConfirmacao.text = getString(titulo)
+        dialogBinding.textMensagemConfirmacao.text = getString(conteudo)
+        dialogBinding.btnCancelarConfirmacao.visibility = View.GONE
+        dialogBinding.btnConfirmarConfirmacao.text = getString(R.string.btn_fechar_dialog)
+        val dialog = criarDialogoFlat(dialogBinding.root)
+        dialogBinding.btnConfirmarConfirmacao.setOnClickListener { dialog.dismiss() }
+        dialog.show()
     }
 
     private fun atualizarUiConta() {

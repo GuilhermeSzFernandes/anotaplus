@@ -4,14 +4,20 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingHorizontal="24dp"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp">
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/row_titulo_tipo_padrao"
+        android:textAppearance="@style/TextAppearance.AnotaPlus.Heading"
+        android:textSize="20sp" />
 
     <com.google.android.material.button.MaterialButtonToggleGroup
         android:id="@+id/toggle_tipo_padrao"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         app:singleSelection="true"
         app:selectionRequired="true">
 
@@ -40,5 +46,13 @@
             android:text="@string/btn_toggle_recebimento" />
 
     </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_fechar_tipo_padrao"
+        style="@style/Widget.AnotaPlus.Button.Primary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/btn_fechar_dialog" />
 
 </LinearLayout>

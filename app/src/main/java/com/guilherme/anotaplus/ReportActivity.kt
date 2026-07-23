@@ -21,7 +21,6 @@ import com.guilherme.anotaplus.databinding.ActivityReportBinding
 import com.guilherme.anotaplus.databinding.DialogNovaMetaBinding
 import com.guilherme.anotaplus.databinding.ItemMetaBinding
 import com.guilherme.anotaplus.databinding.ItemReportCategoriaBinding
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -314,19 +313,18 @@ class ReportActivity : AppCompatActivity() {
 
     private fun abrirDialogNovaMeta(metaDao: MetaDao) {
         val dialogBinding = DialogNovaMetaBinding.inflate(layoutInflater)
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.titulo_nova_meta)
-            .setView(dialogBinding.root)
-            .setPositiveButton(R.string.btn_salvar_meta) { _, _ ->
-                val nome = dialogBinding.editNomeMeta.text.toString().trim()
-                val valorAlvo = dialogBinding.editValorAlvoMeta.text.toString()
-                    .replace(",", ".").toDoubleOrNull()
-                if (nome.isNotEmpty() && valorAlvo != null && valorAlvo > 0) {
-                    lifecycleScope.launch { metaDao.insert(Meta(nome = nome, valorAlvo = valorAlvo)) }
-                }
+        val dialog = criarDialogoFlat(dialogBinding.root)
+        dialogBinding.btnCancelarMeta.setOnClickListener { dialog.dismiss() }
+        dialogBinding.btnSalvarNovaMeta.setOnClickListener {
+            val nome = dialogBinding.editNomeMeta.text.toString().trim()
+            val valorAlvo = dialogBinding.editValorAlvoMeta.text.toString()
+                .replace(",", ".").toDoubleOrNull()
+            if (nome.isNotEmpty() && valorAlvo != null && valorAlvo > 0) {
+                lifecycleScope.launch { metaDao.insert(Meta(nome = nome, valorAlvo = valorAlvo)) }
+                dialog.dismiss()
             }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
+        }
+        dialog.show()
     }
 
     private fun nomeDiaSemana(codigo: String): String = when (codigo) {

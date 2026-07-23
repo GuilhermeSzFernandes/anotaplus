@@ -111,6 +111,7 @@
                 android:cursorVisible="false"
                 android:drawableEnd="@drawable/ic_chevron_down"
                 android:drawablePadding="6dp"
+                android:popupBackground="@drawable/bg_dialog_flat"
                 android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
 
             <!-- Combobox: mesmo padrão de categoria, pra escolher a carteira/forma de pagamento -->
@@ -129,6 +130,7 @@
                 android:cursorVisible="false"
                 android:drawableEnd="@drawable/ic_chevron_down"
                 android:drawablePadding="6dp"
+                android:popupBackground="@drawable/bg_dialog_flat"
                 android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
 
             <EditText

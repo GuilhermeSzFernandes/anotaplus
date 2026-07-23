@@ -3,13 +3,19 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingHorizontal="24dp"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp">
+    android:padding="24dp">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="@string/titulo_dados_salariais"
+        android:textAppearance="@style/TextAppearance.AnotaPlus.Heading"
+        android:textSize="20sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:text="@string/desc_dados_salariais"
         android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
         android:textColor="@color/ink_soft" />
@@ -18,7 +24,7 @@
         android:id="@+id/edit_salario_mensal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/bg_underline_field"
         android:hint="@string/hint_salario_mensal"
         android:inputType="numberDecimal"
@@ -30,7 +36,7 @@
         android:id="@+id/edit_horas_por_dia"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/bg_underline_field"
         android:hint="@string/hint_horas_por_dia"
         android:inputType="numberDecimal"
@@ -42,12 +48,37 @@
         android:id="@+id/edit_dias_por_semana"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/bg_underline_field"
         android:hint="@string/hint_dias_por_semana"
         android:inputType="numberDecimal"
         android:textColor="@color/ink"
         android:textColorHint="@color/ink_soft"
         android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_cancelar_dados_salariais"
+            style="@style/Widget.AnotaPlus.Button.Link"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_cancelar" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_salvar_dados_salariais"
+            style="@style/Widget.AnotaPlus.Button.Primary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:text="@string/btn_salvar_meta" />
+
+    </LinearLayout>
 
 </LinearLayout>

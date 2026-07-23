@@ -157,6 +157,7 @@
                 android:cursorVisible="false"
                 android:drawableEnd="@drawable/ic_chevron_down"
                 android:drawablePadding="6dp"
+                android:popupBackground="@drawable/bg_card_free"
                 android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
                 tools:visibility="visible" />
 
@@ -177,6 +178,7 @@
                 android:cursorVisible="false"
                 android:drawableEnd="@drawable/ic_chevron_down"
                 android:drawablePadding="6dp"
+                android:popupBackground="@drawable/bg_card_free"
                 android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
                 tools:visibility="visible" />
 

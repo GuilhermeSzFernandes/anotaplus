@@ -3,7 +3,6 @@ package com.guilherme.anotaplus
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.guilherme.anotaplus.data.AppDatabase
 import com.guilherme.anotaplus.data.Entry
 import com.guilherme.anotaplus.data.EntryType
@@ -77,21 +76,20 @@ class CalculadoraCompraActivity : AppCompatActivity() {
 
     private fun abrirDialogDadosSalariais(aoSalvar: () -> Unit) {
         val dialogBinding = DialogDadosSalariaisBinding.inflate(layoutInflater)
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.titulo_dados_salariais)
-            .setView(dialogBinding.root)
-            .setPositiveButton(R.string.btn_salvar_meta) { _, _ ->
-                val salario = dialogBinding.editSalarioMensal.text.toString()
-                    .replace(",", ".").toFloatOrNull() ?: 0f
-                val horasPorDia = dialogBinding.editHorasPorDia.text.toString()
-                    .replace(",", ".").toFloatOrNull() ?: 0f
-                val diasPorSemana = dialogBinding.editDiasPorSemana.text.toString()
-                    .replace(",", ".").toFloatOrNull() ?: 0f
-                Prefs.setDadosSalariais(this, salario, horasPorDia, diasPorSemana)
-                if (Prefs.temDadosSalariais(this)) aoSalvar()
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
+        val dialog = criarDialogoFlat(dialogBinding.root)
+        dialogBinding.btnCancelarDadosSalariais.setOnClickListener { dialog.dismiss() }
+        dialogBinding.btnSalvarDadosSalariais.setOnClickListener {
+            val salario = dialogBinding.editSalarioMensal.text.toString()
+                .replace(",", ".").toFloatOrNull() ?: 0f
+            val horasPorDia = dialogBinding.editHorasPorDia.text.toString()
+                .replace(",", ".").toFloatOrNull() ?: 0f
+            val diasPorSemana = dialogBinding.editDiasPorSemana.text.toString()
+                .replace(",", ".").toFloatOrNull() ?: 0f
+            Prefs.setDadosSalariais(this, salario, horasPorDia, diasPorSemana)
+            dialog.dismiss()
+            if (Prefs.temDadosSalariais(this)) aoSalvar()
+        }
+        dialog.show()
     }
 
     private fun mostrarResultado(valor: Double) {
@@ -110,10 +108,7 @@ class CalculadoraCompraActivity : AppCompatActivity() {
         val dialogBinding = DialogValeAPenaBinding.inflate(layoutInflater)
         dialogBinding.textTempoTrabalho.text = getString(R.string.format_tempo_trabalho, dias, horasRestantes)
 
-        val dialog = MaterialAlertDialogBuilder(this)
-            .setView(dialogBinding.root)
-            .setCancelable(true)
-            .create()
+        val dialog = criarDialogoFlat(dialogBinding.root)
 
         dialogBinding.btnNaoComprar.setOnClickListener {
             dialog.dismiss()

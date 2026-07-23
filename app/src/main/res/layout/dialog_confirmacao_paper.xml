@@ -1,40 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="24dp">
 
     <TextView
+        android:id="@+id/text_titulo_confirmacao"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/titulo_nova_meta"
-        android:textAppearance="@style/TextAppearance.AnotaPlus.Heading"
-        android:textSize="20sp" />
-
-    <EditText
-        android:id="@+id/edit_nome_meta"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/bg_underline_field"
-        android:hint="@string/hint_nome_meta"
-        android:inputType="text"
+        android:fontFamily="sans-serif-black"
         android:textColor="@color/ink"
-        android:textColorHint="@color/ink_soft"
-        android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
+        android:textSize="19sp"
+        tools:text="Excluir?" />
 
-    <EditText
-        android:id="@+id/edit_valor_alvo_meta"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/bg_underline_field"
-        android:hint="@string/hint_valor_alvo_meta"
-        android:inputType="numberDecimal"
-        android:textColor="@color/ink"
-        android:textColorHint="@color/ink_soft"
-        android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
+        android:maxHeight="280dp"
+        android:layout_marginTop="14dp">
+
+        <TextView
+            android:id="@+id/text_mensagem_confirmacao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
+            android:textColor="@color/ink_soft"
+            tools:text="Essa ação não pode ser desfeita." />
+
+    </ScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -43,7 +38,7 @@
         android:orientation="horizontal">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_cancelar_meta"
+            android:id="@+id/btn_cancelar_confirmacao"
             style="@style/Widget.AnotaPlus.Button.Link"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -51,13 +46,13 @@
             android:text="@string/btn_cancelar" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_salvar_nova_meta"
-            style="@style/Widget.AnotaPlus.Button.Primary"
+            android:id="@+id/btn_confirmar_confirmacao"
+            style="@style/Widget.AnotaPlus.Button.Stamp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="12dp"
-            android:text="@string/btn_salvar_meta" />
+            android:text="@string/btn_excluir" />
 
     </LinearLayout>
 

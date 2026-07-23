@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.guilherme.anotaplus.databinding.DialogConfirmacaoFlatBinding
 import com.guilherme.anotaplus.data.AppDatabase
 import com.guilherme.anotaplus.data.Entry
 import com.guilherme.anotaplus.data.EntryType
@@ -57,7 +57,7 @@ class EditEntryActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val nomes = AppDatabase.getInstance(applicationContext).categoryDao().getNomesOnce()
             binding.editCategoria.setAdapter(
-                ArrayAdapter(this@EditEntryActivity, android.R.layout.simple_dropdown_item_1line, nomes)
+                ArrayAdapter(this@EditEntryActivity, R.layout.item_dropdown_flat, R.id.text_item, nomes)
             )
         }
 
@@ -65,7 +65,7 @@ class EditEntryActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val nomes = AppDatabase.getInstance(applicationContext).carteiraDao().getNomesOnce()
             binding.editCarteira.setAdapter(
-                ArrayAdapter(this@EditEntryActivity, android.R.layout.simple_dropdown_item_1line, nomes)
+                ArrayAdapter(this@EditEntryActivity, R.layout.item_dropdown_flat, R.id.text_item, nomes)
             )
         }
 
@@ -179,11 +179,16 @@ class EditEntryActivity : AppCompatActivity() {
     }
 
     private fun confirmarExclusao() {
-        MaterialAlertDialogBuilder(this)
-            .setMessage(R.string.confirmar_exclusao)
-            .setPositiveButton(R.string.btn_excluir) { _, _ -> lifecycleScope.launch { excluir() } }
-            .setNegativeButton(R.string.btn_cancelar, null)
-            .show()
+        val dialogBinding = DialogConfirmacaoFlatBinding.inflate(layoutInflater)
+        dialogBinding.textTituloConfirmacao.text = getString(R.string.title_confirmar_exclusao)
+        dialogBinding.textMensagemConfirmacao.text = getString(R.string.confirmar_exclusao)
+        val dialog = criarDialogoFlat(dialogBinding.root)
+        dialogBinding.btnCancelarConfirmacao.setOnClickListener { dialog.dismiss() }
+        dialogBinding.btnConfirmarConfirmacao.setOnClickListener {
+            lifecycleScope.launch { excluir() }
+            dialog.dismiss()
+        }
+        dialog.show()
     }
 
     private suspend fun excluir() {

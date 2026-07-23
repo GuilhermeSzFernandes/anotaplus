@@ -12,7 +12,7 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.guilherme.anotaplus.databinding.DialogConfirmacaoPaperBinding
 import com.guilherme.anotaplus.data.AppDatabase
 import com.guilherme.anotaplus.data.Entry
 import com.guilherme.anotaplus.data.EntryType
@@ -125,7 +125,7 @@ class QuickCaptureActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val nomes = AppDatabase.getInstance(applicationContext).categoryDao().getNomesOnce()
             binding.editCategoria.setAdapter(
-                ArrayAdapter(this@QuickCaptureActivity, android.R.layout.simple_dropdown_item_1line, nomes)
+                ArrayAdapter(this@QuickCaptureActivity, R.layout.item_dropdown_paper, R.id.text_item, nomes)
             )
         }
 
@@ -141,7 +141,7 @@ class QuickCaptureActivity : AppCompatActivity() {
         lifecycleScope.launch {
             nomesCarteiras = AppDatabase.getInstance(applicationContext).carteiraDao().getNomesOnce()
             binding.editCarteira.setAdapter(
-                ArrayAdapter(this@QuickCaptureActivity, android.R.layout.simple_dropdown_item_1line, nomesCarteiras)
+                ArrayAdapter(this@QuickCaptureActivity, R.layout.item_dropdown_paper, R.id.text_item, nomesCarteiras)
             )
         }
 
@@ -249,17 +249,23 @@ class QuickCaptureActivity : AppCompatActivity() {
     }
 
     private fun mostrarDialogoCrash(stacktrace: String) {
-        MaterialAlertDialogBuilder(this)
-            .setTitle("O app crashou da última vez")
-            .setMessage(stacktrace)
-            .setCancelable(false)
-            .setPositiveButton("Copiar") { _, _ ->
-                val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                clipboard.setPrimaryClip(ClipData.newPlainText("crash", stacktrace))
-                Toast.makeText(this, "Copiado", Toast.LENGTH_SHORT).show()
-                finish()
-            }
-            .setNegativeButton("Fechar") { _, _ -> finish() }
-            .show()
+        val dialogBinding = DialogConfirmacaoPaperBinding.inflate(layoutInflater)
+        dialogBinding.textTituloConfirmacao.text = getString(R.string.titulo_crash)
+        dialogBinding.textMensagemConfirmacao.text = stacktrace
+        dialogBinding.btnCancelarConfirmacao.text = getString(R.string.btn_fechar_dialog)
+        dialogBinding.btnConfirmarConfirmacao.text = getString(R.string.btn_copiar)
+        val dialog = criarDialogoPaper(dialogBinding.root, cancelavel = false)
+        dialogBinding.btnCancelarConfirmacao.setOnClickListener {
+            dialog.dismiss()
+            finish()
+        }
+        dialogBinding.btnConfirmarConfirmacao.setOnClickListener {
+            val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+            clipboard.setPrimaryClip(ClipData.newPlainText("crash", stacktrace))
+            Toast.makeText(this, R.string.texto_copiado, Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+            finish()
+        }
+        dialog.show()
     }
 }
