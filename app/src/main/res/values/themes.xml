@@ -167,13 +167,19 @@
         <item name="elevation">0dp</item>
     </style>
 
-    <style name="Widget.AnotaPlus.LinhaTeclado">
+    <!-- Sem prefixo "Widget.AnotaPlus." de propósito: um nome com pontos e
+         sem "parent" explícito faz o AAPT inferir o pai removendo o último
+         segmento (ex.: "Widget.AnotaPlus.TeclaCalculadora" -> implícito
+         "Widget.AnotaPlus", que não existe como estilo próprio) e falha o
+         build ("resource style/Widget.AnotaPlus not found"). Mesmo motivo
+         de "TextDiaSemana" acima não ter pontos no nome. -->
+    <style name="LinhaTeclado">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">horizontal</item>
     </style>
 
-    <style name="Widget.AnotaPlus.TeclaCalculadora">
+    <style name="TeclaCalculadora">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
