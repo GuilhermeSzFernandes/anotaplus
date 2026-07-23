@@ -209,6 +209,13 @@
                     android:text="@string/link_ver_planos" />
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/link_escolher_atalho"
+                    style="@style/Widget.AnotaPlus.Button.Link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/link_escolher_atalho" />
+
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/link_guia_gesto"
                     style="@style/Widget.AnotaPlus.Button.Link"
                     android:layout_width="wrap_content"
@@ -311,55 +318,6 @@
                     android:text="@string/desc_notificacao_captura"
                     android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
                     android:textColor="@color/ink_soft" />
-
-            </LinearLayout>
-
-            <!-- GESTO DE TOQUE DUPLO (ACELERÔMETRO) — escondido em código
-                 (SettingsActivity) se o aparelho não tiver acelerômetro. -->
-            <LinearLayout
-                android:id="@+id/card_gesto_acelerometro"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="vertical"
-                android:background="@drawable/bg_card_free"
-                android:padding="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/label_gesto_acelerometro"
-                        android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/switch_gesto_acelerometro"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="@string/desc_gesto_acelerometro"
-                    android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
-                    android:textColor="@color/ink_soft" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/link_calibrar_gesto"
-                    style="@style/Widget.AnotaPlus.Button.Link"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/link_calibrar_gesto" />
 
             </LinearLayout>
 

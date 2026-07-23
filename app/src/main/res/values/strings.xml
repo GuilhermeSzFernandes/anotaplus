@@ -57,28 +57,6 @@
     <string name="desc_notificacao_captura">Fica fixa na barra de notificações com atalhos pra Gasto/Anotação/Recebimento — útil se seu aparelho não tem o gesto de tocar duas vezes na traseira.</string>
     <string name="aviso_notificacao_permissao_negada">Sem permissão de notificação, o Android não deixa mostrar. Ative em Configurações do aparelho → Apps → Anota+ → Notificações.</string>
 
-    <!-- Gesto de toque duplo via acelerômetro (TapBackGestureService.kt) -->
-    <string name="canal_gesto_toque_duplo_nome">Gesto de toque duplo</string>
-    <string name="canal_gesto_toque_duplo_descricao">Notificação fixa que indica que o Anota+ está escutando o acelerômetro pra detectar toque duplo na traseira.</string>
-    <string name="notificacao_gesto_toque_duplo_titulo">Toque duplo ativo</string>
-    <string name="notificacao_gesto_toque_duplo_texto">Toque duas vezes na traseira do aparelho pra abrir a Captura Rápida</string>
-    <string name="label_gesto_acelerometro">Toque duplo na traseira (via sensor)</string>
-    <string name="desc_gesto_acelerometro">Sugerido pra quem não tem esse gesto pelo sistema (Xiaomi e outros). Usa o acelerômetro em segundo plano — consome mais bateria, por isso vem desligado; ligue só se quiser essa alternativa.</string>
-    <string name="link_calibrar_gesto">calibrar sensibilidade →</string>
-
-    <!-- Calibração do gesto (CalibrarGestoActivity.kt) -->
-    <string name="title_calibrar_gesto">Calibrar sensibilidade</string>
-    <string name="calibrar_gesto_intro">Se o toque duplo não estiver disparando (ou disparando sozinho andando/no bolso), ajuste o limiar abaixo. A leitura mostra o que o sensor está captando agora — bata na traseira do aparelho pra ver o pico subir, e teste o toque duplo com o limiar atual antes de salvar.</string>
-    <string name="label_calibrar_leitura">Leitura ao vivo</string>
-    <string name="format_calibrar_leitura">%.1f m/s²</string>
-    <string name="label_calibrar_sensibilidade">Sensibilidade (limiar)</string>
-    <string name="calibrar_dica_sensibilidade">Quanto menor, mais fácil de disparar — mas mais chance de confundir com andar ou o aparelho balançando no bolso. Quanto maior, mais difícil de acionar sem querer, mas pode exigir bater mais forte.</string>
-    <string name="label_calibrar_teste">Teste ao vivo (com o limiar acima, ainda não salvo)</string>
-    <string name="calibrar_teste_instrucao">Bata duas vezes, rapidinho, na parte de trás do aparelho</string>
-    <string name="calibrar_teste_detectado">✓ Toque duplo detectado!</string>
-    <string name="btn_calibrar_salvar">Salvar sensibilidade</string>
-    <string name="btn_calibrar_restaurar">Restaurar padrão</string>
-    <string name="calibrar_salvo_toast">Sensibilidade salva</string>
     <string name="btn_empty_adicionar">Adicionar lançamento</string>
     <string name="btn_empty_adicionar_anotacao">Adicionar anotação</string>
     <string name="btn_financeiro">Financeiro</string>
@@ -237,7 +215,7 @@
          nem Xiaomi/HyperOS libera isso. Pra qualquer outro aparelho, o
          caminho garantido é o ladrilho de Configurações Rápidas em vez de
          torcer pra existir um gesto configurável. -->
-    <string name="guia_gesto_intro_generico">Seu aparelho provavelmente não deixa nenhum app de terceiros usar um gesto (toque na traseira, botão de energia etc.) — isso costuma ser exclusivo de apps do próprio fabricante. O jeito garantido de abrir o Anota+ na hora aqui é um ladrilho nas Configurações Rápidas (o painel que abre arrastando a barra de notificações pra baixo). Se mesmo assim quiser o toque duplo na traseira, tem uma alternativa via sensor em Configurações → Conta (consome mais bateria, por isso vem desligada).</string>
+    <string name="guia_gesto_intro_generico">Seu aparelho provavelmente não deixa nenhum app de terceiros usar um gesto (toque na traseira, botão de energia etc.) — isso costuma ser exclusivo de apps do próprio fabricante. O jeito garantido de abrir o Anota+ na hora aqui é um ladrilho nas Configurações Rápidas (o painel que abre arrastando a barra de notificações pra baixo).</string>
     <string name="guia_gesto_passo_1_moto">1. Abra as Configurações do celular</string>
     <string name="guia_gesto_passo_2_moto">2. Procure por \"Moto\" ou \"Gestos\"</string>
     <string name="guia_gesto_passo_3_moto">3. Ative \"Toque duas vezes na traseira\"</string>
@@ -250,6 +228,26 @@
     <string name="btn_entendi">Entendi</string>
     <string name="link_guia_gesto">como configurar o gesto →</string>
     <string name="tile_captura_rapida">Anota+</string>
+
+    <!-- Escolha de atalhos rápidos, logo após o login (QuickAccessChooserActivity) -->
+    <string name="title_atalho_rapido">Como você quer abrir o Anota+ rápido?</string>
+    <string name="subtitulo_atalho_rapido">Escolha um ou mais — dá pra mudar depois em Conta.</string>
+    <string name="label_atalho_gestos">Gestos</string>
+    <string name="desc_atalho_gestos_moto">Toque duas vezes na traseira do aparelho — mesmo com a tela bloqueada.</string>
+    <string name="desc_atalho_gestos_generico">Ladrilho nas Configurações Rápidas — jeito garantido de abrir o Anota+ na hora.</string>
+    <string name="label_atalho_notificacao">Notificação</string>
+    <string name="desc_atalho_notificacao">Notificação fixa com atalhos pra Gasto, Anotação e Recebimento.</string>
+    <string name="label_atalho_widget">Widget</string>
+    <string name="desc_atalho_widget">Atalho fixo na tela inicial do celular, do lado dos outros apps.</string>
+    <string name="btn_continuar">Continuar</string>
+    <string name="link_pular_atalho">Agora não</string>
+    <string name="link_escolher_atalho">escolher atalhos rápidos →</string>
+
+    <!-- Sugestão de widget na tela inicial (WidgetSuggestionActivity) -->
+    <string name="title_widget_sugestao">Adicionar widget</string>
+    <string name="texto_widget_sugestao_intro">Esse atalho fica fixo na tela inicial do celular — um toque já abre a Captura Rápida.</string>
+    <string name="btn_adicionar_widget_tela">Adicionar à tela inicial</string>
+    <string name="texto_widget_sugestao_fallback">Seu aparelho não deixa adicionar direto por aqui: segure um espaço vazio na tela inicial, toque em Widgets e procure por Anota+.</string>
 
     <!-- Tutorial de funções (páginas simples, avançar/voltar) -->
     <string name="link_ver_tutorial">ver tutorial do app →</string>

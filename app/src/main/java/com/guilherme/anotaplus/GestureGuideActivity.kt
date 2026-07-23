@@ -11,9 +11,6 @@ import com.guilherme.anotaplus.databinding.ActivityGestureGuideBinding
 class GestureGuideActivity : AppCompatActivity() {
 
     companion object {
-        const val EXTRA_ONBOARDING = "onboarding"
-        const val EXTRA_ABRIR_HISTORICO = "abrir_historico"
-
         // Package do app "Moto" (gestos/ações) nos aparelhos Motorola. Não
         // existe um jeito público/oficial de linkar direto pra tela
         // específica do gesto em qualquer fabricante — o nome e o caminho
@@ -76,13 +73,18 @@ class GestureGuideActivity : AppCompatActivity() {
         }
     }
 
+    // Aberta de dois jeitos diferentes: como parte da fila de tutoriais de
+    // QuickAccessFlow (onboarding pós-login ou reaberta a partir de Conta,
+    // sempre com EXTRA_FILA_METODOS no intent) ou avulsa, pelo link "como
+    // configurar o gesto" em Conta (sem esse extra) — nesse segundo caso só
+    // fecha a tela.
     private fun continuar() {
-        if (intent.getBooleanExtra(EXTRA_ONBOARDING, false)) {
-            val abrirHistorico = intent.getBooleanExtra(EXTRA_ABRIR_HISTORICO, false)
-            startActivity(
-                Intent(this, LoginActivity::class.java)
-                    .putExtra(EXTRA_ONBOARDING, true)
-                    .putExtra(EXTRA_ABRIR_HISTORICO, abrirHistorico)
+        if (QuickAccessFlow.temFilaNoIntent(this)) {
+            QuickAccessFlow.avancar(
+                this,
+                QuickAccessFlow.proximaFila(this),
+                intent.getBooleanExtra(QuickAccessFlow.EXTRA_ONBOARDING, false),
+                intent.getBooleanExtra(QuickAccessFlow.EXTRA_ABRIR_HISTORICO, false)
             )
         }
         finish()

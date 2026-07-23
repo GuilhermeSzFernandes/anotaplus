@@ -9,17 +9,6 @@
          quando o usuário liga o atalho em Conta. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- Serviço opcional que detecta toque duplo na traseira via
-         acelerômetro (ver TapBackGestureService.kt) — precisa rodar em
-         foreground pra continuar recebendo eventos do sensor com a tela
-         apagada. "specialUse" porque nenhum dos tipos pré-definidos
-         (location, mediaPlayback, etc.) descreve esse caso. -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
-
-    <!-- Feedback tátil ao detectar o gesto em CalibrarGestoActivity -->
-    <uses-permission android:name="android.permission.VIBRATE" />
-
     <application
         android:name=".AnotaPlusApplication"
         android:allowBackup="true"
@@ -132,8 +121,11 @@
         <!--
             Sequência de onboarding (só aparece na primeiríssima abertura do
             app, controlado por Prefs.isOnboardingConcluido):
-            QuickCaptureActivity -> GestureGuideActivity -> LoginActivity -> AnotacoesActivity
-            (com o tour de tutorial "spotlight" ativo, ver TutorialTourManager.kt).
+            QuickCaptureActivity -> LoginActivity -> QuickAccessChooserActivity ->
+            tutorial de cada método escolhido (GestureGuideActivity e/ou
+            WidgetSuggestionActivity, encadeados por QuickAccessFlow.kt) ->
+            AnotacoesActivity (com o tour de tutorial "spotlight" ativo, ver
+            TutorialTourManager.kt).
             Cada uma também pode ser aberta isoladamente depois (fora do
             onboarding) a partir de Configurações.
         -->
@@ -142,16 +134,18 @@
             android:exported="false"
             android:theme="@style/Theme.AnotaPlus" />
 
-        <!-- Calibração do limiar do gesto por acelerômetro (ver
-             TapBackGestureService e CalibrarGestoActivity.kt) — aberta a
-             partir do card do gesto em Configurações. -->
         <activity
-            android:name=".CalibrarGestoActivity"
+            android:name=".LoginActivity"
             android:exported="false"
             android:theme="@style/Theme.AnotaPlus" />
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".QuickAccessChooserActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AnotaPlus" />
+
+        <activity
+            android:name=".WidgetSuggestionActivity"
             android:exported="false"
             android:theme="@style/Theme.AnotaPlus" />
 
@@ -185,20 +179,6 @@
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
-        </service>
-
-        <!-- Serviço opt-in (switch em Conta) que detecta toque duplo na
-             traseira via acelerômetro, alternativa ao gesto de fabricante
-             pra quem não tem essa opção pelo sistema (ex: Xiaomi). Nunca
-             inicia sozinho — só quando Prefs.isGestoAcelerometroAtivo diz
-             que o usuário ligou. -->
-        <service
-            android:name=".TapBackGestureService"
-            android:exported="false"
-            android:foregroundServiceType="specialUse">
-            <property
-                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="Detecta toque duplo na traseira via acelerômetro para abrir a captura rápida, alternativa em aparelhos sem esse gesto nativo" />
         </service>
 
         <!-- Widget de tela inicial: mostra o total gasto hoje e no mês,

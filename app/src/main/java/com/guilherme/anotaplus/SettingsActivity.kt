@@ -2,8 +2,6 @@ package com.guilherme.anotaplus
 
 import android.Manifest
 import android.content.Intent
-import android.hardware.Sensor
-import android.hardware.SensorManager
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -57,8 +55,8 @@ class SettingsActivity : AppCompatActivity() {
         binding.linkGuiaGesto.setOnClickListener {
             startActivity(Intent(this, GestureGuideActivity::class.java))
         }
-        binding.linkCalibrarGesto.setOnClickListener {
-            startActivity(Intent(this, CalibrarGestoActivity::class.java))
+        binding.linkEscolherAtalho.setOnClickListener {
+            startActivity(Intent(this, QuickAccessChooserActivity::class.java))
         }
         binding.linkVerTutorial.setOnClickListener {
             TutorialTourManager.iniciar(onboarding = false)
@@ -128,31 +126,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        configurarGestoAcelerometro()
-
         TutorialTourManager.processar(this, TelaTutorial.CONTA)
-    }
-
-    // Alternativa opt-in ao gesto de fabricante (ver GestureGuideActivity e
-    // TapBackGestureService) — escondida de vez se o aparelho nem tem
-    // acelerômetro, já que nesse caso não tem o que oferecer.
-    private fun configurarGestoAcelerometro() {
-        val temAcelerometro = (getSystemService(SENSOR_SERVICE) as? SensorManager)
-            ?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null
-        if (!temAcelerometro) {
-            binding.cardGestoAcelerometro.visibility = View.GONE
-            return
-        }
-
-        binding.switchGestoAcelerometro.isChecked = Prefs.isGestoAcelerometroAtivo(this)
-        binding.switchGestoAcelerometro.setOnCheckedChangeListener { _, ativo ->
-            Prefs.setGestoAcelerometroAtivo(this, ativo)
-            if (ativo) {
-                TapBackGestureService.iniciar(this)
-            } else {
-                TapBackGestureService.parar(this)
-            }
-        }
     }
 
     private fun atualizarUiConta() {

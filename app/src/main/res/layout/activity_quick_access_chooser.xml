@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/paper"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="28dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/title_atalho_rapido"
+            android:textAppearance="@style/TextAppearance.AnotaPlus.Wordmark"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/subtitulo_atalho_rapido"
+            android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
+            android:textColor="@color/ink_soft" />
+
+        <!-- GESTOS -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card_free"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/label_atalho_gestos"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switch_atalho_gestos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/text_desc_atalho_gestos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/desc_atalho_gestos_generico"
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
+                android:textColor="@color/ink_soft"
+                tools:text="@string/desc_atalho_gestos_moto" />
+
+        </LinearLayout>
+
+        <!-- NOTIFICAÇÃO -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card_free"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/label_atalho_notificacao"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switch_atalho_notificacao"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/desc_atalho_notificacao"
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
+                android:textColor="@color/ink_soft" />
+
+        </LinearLayout>
+
+        <!-- WIDGET -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card_free"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/label_atalho_widget"
+                    android:textAppearance="@style/TextAppearance.AnotaPlus.Body" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switch_atalho_widget"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/desc_atalho_widget"
+                android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
+                android:textColor="@color/ink_soft" />
+
+        </LinearLayout>
+
+        <com.guilherme.anotaplus.ui.PerforationView
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:layout_marginTop="24dp"
+            app:toothWidth="8dp"
+            app:toothHeight="4dp"
+            app:toothGap="3dp"
+            app:toothColor="@color/ink_soft" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_continuar"
+            style="@style/Widget.AnotaPlus.Button.Stamp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/btn_continuar" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/link_pular_atalho"
+            style="@style/Widget.AnotaPlus.Button.Link"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:text="@string/link_pular_atalho" />
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

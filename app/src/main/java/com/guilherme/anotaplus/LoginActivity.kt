@@ -57,11 +57,14 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun concluir() {
-        if (intent.getBooleanExtra(GestureGuideActivity.EXTRA_ONBOARDING, false)) {
+        if (intent.getBooleanExtra(QuickAccessFlow.EXTRA_ONBOARDING, false)) {
             Prefs.marcarOnboardingConcluido(this)
-            val abrirHistorico = intent.getBooleanExtra(GestureGuideActivity.EXTRA_ABRIR_HISTORICO, false)
-            TutorialTourManager.iniciar(onboarding = true, abrirHistorico = abrirHistorico)
-            startActivity(Intent(this, AnotacoesActivity::class.java))
+            val abrirHistorico = intent.getBooleanExtra(QuickAccessFlow.EXTRA_ABRIR_HISTORICO, false)
+            startActivity(
+                Intent(this, QuickAccessChooserActivity::class.java)
+                    .putExtra(QuickAccessFlow.EXTRA_ONBOARDING, true)
+                    .putExtra(QuickAccessFlow.EXTRA_ABRIR_HISTORICO, abrirHistorico)
+            )
         }
         finish()
     }

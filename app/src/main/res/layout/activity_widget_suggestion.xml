@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/paper"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="28dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/title_widget_sugestao"
+            android:textAppearance="@style/TextAppearance.AnotaPlus.Wordmark"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/texto_widget_sugestao_intro"
+            android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
+            android:textColor="@color/ink_soft" />
+
+        <TextView
+            android:id="@+id/text_widget_fallback"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/texto_widget_sugestao_fallback"
+            android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <com.guilherme.anotaplus.ui.PerforationView
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:layout_marginTop="20dp"
+            app:toothWidth="8dp"
+            app:toothHeight="4dp"
+            app:toothGap="3dp"
+            app:toothColor="@color/ink_soft" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_adicionar_widget"
+            style="@style/Widget.AnotaPlus.Button.Stamp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/btn_adicionar_widget_tela" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_concluir_widget"
+            style="@style/Widget.AnotaPlus.Button.Link"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:text="@string/btn_concluir" />
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

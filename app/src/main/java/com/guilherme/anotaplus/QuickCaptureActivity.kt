@@ -61,13 +61,14 @@ class QuickCaptureActivity : AppCompatActivity() {
         val abrirHistorico = intent.sourceBounds != null
 
         // Primeiríssima vez que o app é aberto (ícone ou gesto, o que vier
-        // primeiro): manda pro guia do gesto + tela de login/planos antes de
-        // seguir pro destino normal. Depois disso nunca mais aparece.
+        // primeiro): manda pra tela de login e, depois de logar, pra escolha
+        // de atalhos rápidos (ver QuickAccessFlow.kt) antes de seguir pro
+        // destino normal. Depois disso nunca mais aparece.
         if (!Prefs.isOnboardingConcluido(this)) {
             startActivity(
-                Intent(this, GestureGuideActivity::class.java)
-                    .putExtra(GestureGuideActivity.EXTRA_ONBOARDING, true)
-                    .putExtra(GestureGuideActivity.EXTRA_ABRIR_HISTORICO, abrirHistorico)
+                Intent(this, LoginActivity::class.java)
+                    .putExtra(QuickAccessFlow.EXTRA_ONBOARDING, true)
+                    .putExtra(QuickAccessFlow.EXTRA_ABRIR_HISTORICO, abrirHistorico)
             )
             finish()
             return
