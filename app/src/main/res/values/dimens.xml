@@ -7,4 +7,13 @@
     <dimen name="radius_chip">14dp</dimen>
     <dimen name="radius_pill">100dp</dimen>
     <dimen name="radius_button">16dp</dimen>
+
+    <!-- Escala de espaçamento (sessão de design 2026-07-23) — consolida os
+         5 valores hoje espalhados (12/16/18/20/28dp) pro mesmo tipo de
+         elemento visual. Ver docs/superpowers/specs/2026-07-23-refino-
+         visual-fintech-mascote-design.md, item 2. -->
+    <dimen name="spacing_xs">8dp</dimen>
+    <dimen name="spacing_sm">12dp</dimen>
+    <dimen name="spacing_md">16dp</dimen>
+    <dimen name="spacing_lg">20dp</dimen>
 </resources>
