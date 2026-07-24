@@ -76,8 +76,9 @@ class LoginActivity : AppCompatActivity() {
                     .putExtra(QuickAccessFlow.EXTRA_ONBOARDING, true)
                     .putExtra(QuickAccessFlow.EXTRA_ABRIR_HISTORICO, abrirHistorico)
             )
+        } else {
+            finish()
         }
-        finish()
     }
 
     override fun onDestroy() {

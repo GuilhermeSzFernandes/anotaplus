@@ -42,7 +42,7 @@ object QuickAccessFlow {
                 .putExtra(EXTRA_ONBOARDING, onboarding)
                 .putExtra(EXTRA_ABRIR_HISTORICO, abrirHistorico)
         )
-        activity.finish()
+        if (!onboarding) activity.finish()
     }
 
     // Só existe quando a Activity foi aberta como parte desse fluxo — usado
@@ -60,7 +60,10 @@ object QuickAccessFlow {
     private fun concluir(activity: Activity, onboarding: Boolean, abrirHistorico: Boolean) {
         if (onboarding) {
             TutorialTourManager.iniciar(onboarding = true, abrirHistorico = abrirHistorico)
-            activity.startActivity(Intent(activity, AnotacoesActivity::class.java))
+            activity.startActivity(
+                Intent(activity, AnotacoesActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
         }
         activity.finish()
     }

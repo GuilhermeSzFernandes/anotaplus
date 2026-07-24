@@ -109,6 +109,5 @@ class MetaOnboardingActivity : AppCompatActivity() {
                 .putExtra(QuickAccessFlow.EXTRA_ONBOARDING, intent.getBooleanExtra(QuickAccessFlow.EXTRA_ONBOARDING, false))
                 .putExtra(QuickAccessFlow.EXTRA_ABRIR_HISTORICO, intent.getBooleanExtra(QuickAccessFlow.EXTRA_ABRIR_HISTORICO, false))
         )
-        finish()
     }
 }

@@ -85,14 +85,15 @@ class GestureGuideActivity : AppCompatActivity() {
     // configurar o gesto" em Conta (sem esse extra) — nesse segundo caso só
     // fecha a tela.
     private fun continuar() {
+        val onboarding = intent.getBooleanExtra(QuickAccessFlow.EXTRA_ONBOARDING, false)
         if (QuickAccessFlow.temFilaNoIntent(this)) {
             QuickAccessFlow.avancar(
                 this,
                 QuickAccessFlow.proximaFila(this),
-                intent.getBooleanExtra(QuickAccessFlow.EXTRA_ONBOARDING, false),
+                onboarding,
                 intent.getBooleanExtra(QuickAccessFlow.EXTRA_ABRIR_HISTORICO, false)
             )
         }
-        finish()
+        if (!onboarding) finish()
     }
 }

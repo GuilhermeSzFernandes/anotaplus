@@ -3,6 +3,7 @@ package com.guilherme.anotaplus
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.guilherme.anotaplus.data.Prefs
 import com.guilherme.anotaplus.databinding.ActivitySalarioOnboardingBinding
@@ -32,6 +33,18 @@ class SalarioOnboardingActivity : AppCompatActivity() {
 
         binding.btnProximoOnboarding.setOnClickListener { avancar() }
         binding.btnPularOnboardingSalario.setOnClickListener { concluir() }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (passo > 0) {
+                    passo -= 1
+                    atualizarPasso()
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
 
         atualizarPasso()
     }
@@ -95,6 +108,5 @@ class SalarioOnboardingActivity : AppCompatActivity() {
                 .putExtra(QuickAccessFlow.EXTRA_ONBOARDING, onboarding)
                 .putExtra(QuickAccessFlow.EXTRA_ABRIR_HISTORICO, abrirHistorico)
         )
-        finish()
     }
 }
