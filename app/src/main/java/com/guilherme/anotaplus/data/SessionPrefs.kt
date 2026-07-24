@@ -25,6 +25,8 @@ object SessionPrefs {
 
     fun getEmail(context: Context): String? = prefs(context).getString(KEY_EMAIL, null)
 
+    fun getName(context: Context): String? = prefs(context).getString(KEY_NAME, null)
+
     fun estaLogado(context: Context): Boolean = getAccessToken(context) != null
 
     private fun prefs(context: Context) = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)

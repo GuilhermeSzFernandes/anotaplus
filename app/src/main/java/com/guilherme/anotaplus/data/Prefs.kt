@@ -13,6 +13,7 @@ object Prefs {
     private const val KEY_SALARIO_MENSAL = "salario_mensal"
     private const val KEY_HORAS_POR_DIA = "horas_por_dia"
     private const val KEY_DIAS_POR_SEMANA = "dias_por_semana"
+    private const val KEY_NOME_EXIBICAO = "nome_exibicao"
 
     fun getTipoPadrao(context: Context): EntryType {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -108,5 +109,17 @@ object Prefs {
         val diasPorSemana = getDiasPorSemana(context)
         val horasPorMes = diasPorSemana * 4.345f * horasPorDia
         return if (horasPorMes > 0f) salario / horasPorMes else 0f
+    }
+
+    // Apelido escolhido no onboarding ("Como quer ser chamado") — distinto
+    // do nome da conta Google (SessionPrefs.getName), que só serve de
+    // sugestão inicial pra esse campo. Usado nas saudações do mascote.
+    fun getNomeExibicao(context: Context): String? =
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getString(KEY_NOME_EXIBICAO, null)
+
+    fun setNomeExibicao(context: Context, nome: String) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit {
+            putString(KEY_NOME_EXIBICAO, nome)
+        }
     }
 }
