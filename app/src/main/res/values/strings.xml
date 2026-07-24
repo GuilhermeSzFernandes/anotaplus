@@ -389,4 +389,12 @@
 
     <!-- Cabeçalho compartilhado de onboarding (mascote + balão + progresso) -->
     <string name="mascote_content_description">Mascote do Anota+</string>
+
+    <!-- Card de saudação com mascote no Início -->
+    <string name="saudacao_bom_dia">Bom dia</string>
+    <string name="saudacao_boa_tarde">Boa tarde</string>
+    <string name="saudacao_boa_noite">Boa noite</string>
+    <string name="formato_saudacao_com_nome">%1$s, %2$s!</string>
+    <string name="formato_saudacao_guardou">Você guardou %s esse mês 🎉</string>
+    <string name="saudacao_neutra">Vamos economizar esse mês?</string>
 </resources>

@@ -157,6 +157,33 @@ class ReportActivity : AppCompatActivity() {
         }
         binding.textMetaEconomiaPercentual.text = getString(R.string.format_percentual, percentual)
         binding.progressMetaEconomia.progress = percentual
+
+        atualizarSaudacao(poupanca)
+    }
+
+    private fun atualizarSaudacao(poupanca: Double) {
+        val nome = Prefs.getNomeExibicao(this)
+        val hora = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        val saudacao = when {
+            hora < 12 -> getString(R.string.saudacao_bom_dia)
+            hora < 18 -> getString(R.string.saudacao_boa_tarde)
+            else -> getString(R.string.saudacao_boa_noite)
+        }
+        binding.textSaudacaoTitulo.text = if (nome.isNullOrBlank()) {
+            saudacao
+        } else {
+            getString(R.string.formato_saudacao_com_nome, saudacao, nome)
+        }
+        if (poupanca > 0) {
+            binding.imageMascoteSaudacao.setImageResource(R.drawable.ic_mascote_feliz)
+            binding.textSaudacaoSub.text = getString(
+                R.string.formato_saudacao_guardou,
+                "R$ %.2f".format(locale, poupanca)
+            )
+        } else {
+            binding.imageMascoteSaudacao.setImageResource(R.drawable.ic_mascote_neutro)
+            binding.textSaudacaoSub.text = getString(R.string.saudacao_neutra)
+        }
     }
 
     private fun renderComparativo(atual: Double, anterior: Double) {
