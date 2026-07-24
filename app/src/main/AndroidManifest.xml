@@ -123,16 +123,20 @@
         <!--
             Sequência de onboarding (só aparece na primeiríssima abertura do
             app, controlado por Prefs.isOnboardingConcluido):
-            QuickCaptureActivity -> LoginActivity -> SalarioOnboardingActivity
-            (dados salariais, só na criação da conta) -> QuickAccessChooserActivity ->
+            QuickCaptureActivity -> LoginActivity -> NomeOnboardingActivity
+            (como quer ser chamado) -> SalarioOnboardingActivity (dados
+            salariais, só na criação da conta) -> MetaOnboardingActivity
+            (primeira Meta, pulável) -> QuickAccessChooserActivity ->
             tutorial de cada método escolhido (GestureGuideActivity e/ou
             WidgetSuggestionActivity, encadeados por QuickAccessFlow.kt) ->
             AnotacoesActivity (com o tour de tutorial "spotlight" ativo, ver
             TutorialTourManager.kt).
             Cada uma também pode ser aberta isoladamente depois (fora do
             onboarding) a partir de Configurações — SalarioOnboardingActivity
-            é exceção: a edição posterior usa um dialog em SettingsActivity,
-            não reabre esta Activity.
+            e MetaOnboardingActivity são exceção: não são reabertas fora do
+            onboarding (dados salariais reabrem via dialog em
+            SettingsActivity; novas Metas depois se criam por
+            ReportActivity.abrirDialogNovaMeta).
         -->
         <activity
             android:name=".GestureGuideActivity"
@@ -141,6 +145,11 @@
 
         <activity
             android:name=".LoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AnotaPlus" />
+
+        <activity
+            android:name=".NomeOnboardingActivity"
             android:exported="false"
             android:theme="@style/Theme.AnotaPlus" />
 

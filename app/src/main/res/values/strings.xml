@@ -156,6 +156,10 @@
     <string name="hint_horas_por_dia">Horas trabalhadas por dia</string>
     <string name="hint_dias_por_semana">Dias trabalhados por semana</string>
 
+    <string name="titulo_nome_onboarding">Como você quer ser chamado?</string>
+    <string name="hint_nome_exibicao">Seu nome</string>
+    <string name="desc_nome_sugerido">sugerido a partir da sua conta Google — edite se quiser</string>
+
     <string name="titulo_onboarding_salario_1">Quanto você ganha por mês?</string>
     <string name="desc_onboarding_salario">Isso fica só no seu aparelho e serve pra calcular quanto vale sua hora de trabalho.</string>
     <string name="titulo_onboarding_salario_2">Quantas horas você trabalha por dia?</string>

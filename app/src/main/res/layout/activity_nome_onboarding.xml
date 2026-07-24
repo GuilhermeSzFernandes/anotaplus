@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/paper"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_lg">
+
+    <include
+        android:id="@+id/onboarding_header"
+        layout="@layout/onboarding_header" />
+
+    <EditText
+        android:id="@+id/edit_nome_exibicao"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_lg"
+        android:background="@drawable/bg_underline_field"
+        android:hint="@string/hint_nome_exibicao"
+        android:inputType="textPersonName|textCapWords"
+        android:textColor="@color/ink"
+        android:textColorHint="@color/ink_soft"
+        android:textAppearance="@style/TextAppearance.AnotaPlus.AmountBold" />
+
+    <TextView
+        android:id="@+id/text_nome_sugerido"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="@string/desc_nome_sugerido"
+        android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_continuar_nome"
+        style="@style/Widget.AnotaPlus.Button.Primary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_continuar" />
+
+</LinearLayout>
