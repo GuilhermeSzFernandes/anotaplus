@@ -29,6 +29,12 @@ class GestureGuideActivity : AppCompatActivity() {
         binding = ActivityGestureGuideBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.onboardingHeader.bind(
+            activity = this,
+            progresso = 0.90f,
+            pergunta = getString(R.string.title_guia_gesto)
+        )
+
         if (isMotorola) {
             binding.textIntro.text = getString(R.string.guia_gesto_intro_moto)
             binding.textPasso1.text = getString(R.string.guia_gesto_passo_1_moto)

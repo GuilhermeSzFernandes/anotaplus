@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,40 +8,27 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="28dp"
-        android:gravity="center_vertical">
+        android:padding="@dimen/spacing_lg">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/title_guia_gesto"
-            android:textAppearance="@style/TextAppearance.AnotaPlus.Wordmark"
-            android:textSize="20sp" />
+        <include
+            android:id="@+id/onboarding_header"
+            layout="@layout/onboarding_header" />
 
         <TextView
             android:id="@+id/text_intro"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="@dimen/spacing_lg"
             android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
             android:textColor="@color/ink_soft"
             tools:text="@string/guia_gesto_intro_moto" />
 
-        <com.guilherme.anotaplus.ui.PerforationView
-            android:layout_width="match_parent"
-            android:layout_height="6dp"
-            android:layout_marginTop="20dp"
-            app:toothWidth="8dp"
-            app:toothHeight="4dp"
-            app:toothGap="3dp"
-            app:toothColor="@color/ink_soft" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="@dimen/spacing_lg"
             android:orientation="vertical">
 
             <TextView
@@ -78,31 +64,21 @@
 
         </LinearLayout>
 
-        <com.guilherme.anotaplus.ui.PerforationView
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_entendi"
+            style="@style/Widget.AnotaPlus.Button.Primary"
             android:layout_width="match_parent"
-            android:layout_height="6dp"
-            android:layout_marginTop="20dp"
-            app:toothWidth="8dp"
-            app:toothHeight="4dp"
-            app:toothGap="3dp"
-            app:toothColor="@color/ink_soft" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_lg"
+            android:text="@string/btn_entendi" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_abrir_config_moto"
-            style="@style/Widget.AnotaPlus.Button.Stamp"
+            style="@style/Widget.AnotaPlus.Button.Link"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="@dimen/spacing_xs"
             android:text="@string/btn_abrir_config_moto" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_entendi"
-            style="@style/Widget.AnotaPlus.Button.Link"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
-            android:text="@string/btn_entendi" />
 
     </LinearLayout>
 
