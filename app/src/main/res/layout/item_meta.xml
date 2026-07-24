@@ -67,4 +67,31 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/layout_meta_celebracao"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ImageView
+            android:id="@+id/image_mascote_meta"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_mascote_feliz"
+            android:contentDescription="@string/mascote_content_description" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:text="@string/texto_meta_batida"
+            android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
+            android:textColor="@color/verde_destaque" />
+
+    </LinearLayout>
+
 </LinearLayout>

@@ -397,4 +397,7 @@
     <string name="formato_saudacao_com_nome">%1$s, %2$s!</string>
     <string name="formato_saudacao_guardou">Você guardou %s esse mês 🎉</string>
     <string name="saudacao_neutra">Vamos economizar esse mês?</string>
+
+    <!-- Meta-row: celebração ao bater 100% -->
+    <string name="texto_meta_batida">Meta batida! 🎉</string>
 </resources>

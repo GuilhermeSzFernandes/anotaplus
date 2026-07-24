@@ -333,6 +333,7 @@ class ReportActivity : AppCompatActivity() {
             val trackParams = row.barTrackMeta.layoutParams as LinearLayout.LayoutParams
             trackParams.weight = 100f - percentual
             row.barTrackMeta.layoutParams = trackParams
+            row.layoutMetaCelebracao.visibility = if (percentual >= 100) View.VISIBLE else View.GONE
             row.btnExcluirMeta.setOnClickListener {
                 lifecycleScope.launch { metaDao.deleteById(meta.id) }
             }
