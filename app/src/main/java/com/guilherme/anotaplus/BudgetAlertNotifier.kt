@@ -5,8 +5,11 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import com.guilherme.anotaplus.data.AppDatabase
 import java.util.Calendar
 
@@ -59,6 +62,7 @@ object BudgetAlertNotifier {
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_wallet)
+            .setLargeIcon(vetorParaBitmap(context, R.drawable.ic_mascote_preocupado))
             .setContentTitle(context.getString(R.string.alerta_orcamento_titulo, categoria))
             .setContentText(
                 context.getString(
@@ -75,6 +79,18 @@ object BudgetAlertNotifier {
         runCatching {
             NotificationManagerCompat.from(context).notify(categoria.hashCode(), notification)
         }
+    }
+
+    // A pequena silhueta branca de setSmallIcon() é a única exigida pelo
+    // Android na barra de status — setLargeIcon() aceita um Bitmap de
+    // verdade e é o que mostra o mascote colorido na notificação expandida.
+    private fun vetorParaBitmap(context: Context, drawableRes: Int): Bitmap {
+        val drawable = ContextCompat.getDrawable(context, drawableRes)!!
+        val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.draw(canvas)
+        return bitmap
     }
 
     private fun criarCanalSeNecessario(context: Context) {
