@@ -130,6 +130,11 @@
     <string name="titulo_nova_meta">Nova meta</string>
     <string name="hint_nome_meta">Nome da meta</string>
     <string name="hint_valor_alvo_meta">Valor alvo</string>
+    <string name="label_prazo_meta">Prazo (opcional)</string>
+    <string name="chip_prazo_6_meses">6 meses</string>
+    <string name="chip_prazo_1_ano">1 ano</string>
+    <string name="chip_prazo_escolher">Escolher</string>
+    <string name="formato_valor_mensal_meta">≈ %s/mês pra chegar lá</string>
     <string name="btn_salvar_meta">Salvar</string>
     <string name="btn_excluir_meta">Excluir</string>
     <string name="format_meta_progresso">%1$s / %2$s</string>

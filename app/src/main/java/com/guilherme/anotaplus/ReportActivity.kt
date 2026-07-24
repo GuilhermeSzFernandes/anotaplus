@@ -1,11 +1,13 @@
 package com.guilherme.anotaplus
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import com.guilherme.anotaplus.data.AppDatabase
 import com.guilherme.anotaplus.data.CategoriaContagem
@@ -314,13 +316,73 @@ class ReportActivity : AppCompatActivity() {
     private fun abrirDialogNovaMeta(metaDao: MetaDao) {
         val dialogBinding = DialogNovaMetaBinding.inflate(layoutInflater)
         val dialog = criarDialogoFlat(dialogBinding.root)
+        var prazoSelecionado: Long? = null
+
+        fun chips() = listOf(
+            dialogBinding.chipPrazo6Meses,
+            dialogBinding.chipPrazo1Ano,
+            dialogBinding.chipPrazoEscolher
+        )
+
+        fun atualizarPreview() {
+            val valorAlvo = dialogBinding.editValorAlvoMeta.text.toString()
+                .replace(",", ".").toDoubleOrNull()
+            val valorMensal = if (valorAlvo != null) {
+                MetaCalculo.valorMensalNecessario(valorAlvo, 0.0, prazoSelecionado, System.currentTimeMillis())
+            } else {
+                null
+            }
+            if (valorMensal != null) {
+                dialogBinding.textPreviewValorMensal.text = getString(
+                    R.string.formato_valor_mensal_meta,
+                    "R$ %.2f".format(locale, valorMensal)
+                )
+                dialogBinding.textPreviewValorMensal.visibility = View.VISIBLE
+            } else {
+                dialogBinding.textPreviewValorMensal.visibility = View.GONE
+            }
+        }
+
+        fun selecionar(chipSelecionado: View) {
+            chips().forEach { it.isSelected = it == chipSelecionado }
+        }
+
+        dialogBinding.chipPrazo6Meses.setOnClickListener {
+            prazoSelecionado = MetaCalculo.prazoEmMeses(System.currentTimeMillis(), 6)
+            selecionar(dialogBinding.chipPrazo6Meses)
+            atualizarPreview()
+        }
+        dialogBinding.chipPrazo1Ano.setOnClickListener {
+            prazoSelecionado = MetaCalculo.prazoEmMeses(System.currentTimeMillis(), 12)
+            selecionar(dialogBinding.chipPrazo1Ano)
+            atualizarPreview()
+        }
+        dialogBinding.chipPrazoEscolher.setOnClickListener {
+            val agora = Calendar.getInstance()
+            DatePickerDialog(
+                this,
+                { _, ano, mes, dia ->
+                    val escolhido = Calendar.getInstance().apply { set(ano, mes, dia, 0, 0, 0) }
+                    prazoSelecionado = escolhido.timeInMillis
+                    selecionar(dialogBinding.chipPrazoEscolher)
+                    atualizarPreview()
+                },
+                agora.get(Calendar.YEAR),
+                agora.get(Calendar.MONTH),
+                agora.get(Calendar.DAY_OF_MONTH)
+            ).show()
+        }
+        dialogBinding.editValorAlvoMeta.addTextChangedListener(afterTextChanged = { atualizarPreview() })
+
         dialogBinding.btnCancelarMeta.setOnClickListener { dialog.dismiss() }
         dialogBinding.btnSalvarNovaMeta.setOnClickListener {
             val nome = dialogBinding.editNomeMeta.text.toString().trim()
             val valorAlvo = dialogBinding.editValorAlvoMeta.text.toString()
                 .replace(",", ".").toDoubleOrNull()
             if (nome.isNotEmpty() && valorAlvo != null && valorAlvo > 0) {
-                lifecycleScope.launch { metaDao.insert(Meta(nome = nome, valorAlvo = valorAlvo)) }
+                lifecycleScope.launch {
+                    metaDao.insert(Meta(nome = nome, valorAlvo = valorAlvo, prazo = prazoSelecionado))
+                }
                 dialog.dismiss()
             }
         }
