@@ -205,7 +205,7 @@
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
                 android:background="@drawable/bg_card_flat"
-                android:paddingHorizontal="12dp">
+                android:paddingHorizontal="@dimen/spacing_md">
 
                 <include
                     android:id="@+id/row_estatisticas"
@@ -236,7 +236,7 @@
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
                 android:background="@drawable/bg_card_flat"
-                android:paddingHorizontal="12dp">
+                android:paddingHorizontal="@dimen/spacing_md">
 
                 <include
                     android:id="@+id/row_meu_plano"
@@ -294,7 +294,7 @@
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
                 android:background="@drawable/bg_card_flat"
-                android:paddingHorizontal="12dp">
+                android:paddingHorizontal="@dimen/spacing_md">
 
                 <include
                     android:id="@+id/row_privacidade"
@@ -325,7 +325,7 @@
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
                 android:background="@drawable/bg_card_flat"
-                android:paddingHorizontal="12dp">
+                android:paddingHorizontal="@dimen/spacing_md">
 
                 <include
                     android:id="@+id/row_tutorial"
