@@ -2669,6 +2669,160 @@ Confirm GitHub Actions build is green. Manual QA: set a low limite on a category
 
 ---
 
+### Task 22: Navegação "voltar" real dentro da cadeia de onboarding
+
+Adicionada após a revisão final de branch: o cabeçalho compartilhado de onboarding (Task 9) mostra uma seta de "voltar" em 6 telas, mas como cada tela chama `finish()` ao avançar, a pilha de activities nunca acumula — apertar "voltar" (ou o botão físico) sai do onboarding inteiro em vez de retornar à pergunta anterior. Esta tarefa corrige isso SOMENTE dentro do fluxo de onboarding (`onboarding == true`); a reabertura avulsa de `GestureGuideActivity`/`WidgetSuggestionActivity`/`QuickAccessChooserActivity` a partir do Perfil (`onboarding == false`) continua exatamente como está hoje.
+
+**Files:**
+- Modify: `app/src/main/java/com/guilherme/anotaplus/LoginActivity.kt`
+- Modify: `app/src/main/java/com/guilherme/anotaplus/NomeOnboardingActivity.kt`
+- Modify: `app/src/main/java/com/guilherme/anotaplus/SalarioOnboardingActivity.kt`
+- Modify: `app/src/main/java/com/guilherme/anotaplus/MetaOnboardingActivity.kt`
+- Modify: `app/src/main/java/com/guilherme/anotaplus/QuickAccessFlow.kt`
+- Modify: `app/src/main/java/com/guilherme/anotaplus/GestureGuideActivity.kt`
+
+**Interfaces:** nenhuma nova — só muda quando cada Activity chama `finish()`.
+
+- [ ] **Step 1: Parar de finalizar as telas simples ao avançar (só durante onboarding)**
+
+Edit `LoginActivity.kt`, substituir `concluir()`:
+
+```kotlin
+    private fun concluir() {
+        if (intent.getBooleanExtra(QuickAccessFlow.EXTRA_ONBOARDING, false)) {
+            Prefs.marcarOnboardingConcluido(this)
+            val abrirHistorico = intent.getBooleanExtra(QuickAccessFlow.EXTRA_ABRIR_HISTORICO, false)
+            startActivity(
+                Intent(this, NomeOnboardingActivity::class.java)
+                    .putExtra(QuickAccessFlow.EXTRA_ONBOARDING, true)
+                    .putExtra(QuickAccessFlow.EXTRA_ABRIR_HISTORICO, abrirHistorico)
+            )
+        } else {
+            finish()
+        }
+    }
+```
+
+Edit `NomeOnboardingActivity.kt`, substituir `concluir()` (remove só o `finish()` final):
+
+```kotlin
+    private fun concluir() {
+        startActivity(
+            Intent(this, SalarioOnboardingActivity::class.java)
+                .putExtra(QuickAccessFlow.EXTRA_ONBOARDING, intent.getBooleanExtra(QuickAccessFlow.EXTRA_ONBOARDING, false))
+                .putExtra(QuickAccessFlow.EXTRA_ABRIR_HISTORICO, intent.getBooleanExtra(QuickAccessFlow.EXTRA_ABRIR_HISTORICO, false))
+        )
+    }
+```
+
+Edit `MetaOnboardingActivity.kt`, substituir `concluir()` (remove só o `finish()` final):
+
+```kotlin
+    private fun concluir() {
+        startActivity(
+            Intent(this, QuickAccessChooserActivity::class.java)
+                .putExtra(QuickAccessFlow.EXTRA_ONBOARDING, intent.getBooleanExtra(QuickAccessFlow.EXTRA_ONBOARDING, false))
+                .putExtra(QuickAccessFlow.EXTRA_ABRIR_HISTORICO, intent.getBooleanExtra(QuickAccessFlow.EXTRA_ABRIR_HISTORICO, false))
+        )
+    }
+```
+
+- [ ] **Step 2: `SalarioOnboardingActivity` — voltar um passo internamente antes de sair da tela**
+
+Edit `SalarioOnboardingActivity.kt`. Adicionar import:
+
+```kotlin
+import androidx.activity.OnBackPressedCallback
+```
+
+No `onCreate`, registrar o callback (logo após os dois `setOnClickListener`, antes de `atualizarPasso()`):
+
+```kotlin
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (passo > 0) {
+                    passo -= 1
+                    atualizarPasso()
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
+```
+
+Substituir `concluir()` (remove só o `finish()` final):
+
+```kotlin
+    private fun concluir() {
+        startActivity(
+            Intent(this, MetaOnboardingActivity::class.java)
+                .putExtra(QuickAccessFlow.EXTRA_ONBOARDING, onboarding)
+                .putExtra(QuickAccessFlow.EXTRA_ABRIR_HISTORICO, abrirHistorico)
+        )
+    }
+```
+
+- [ ] **Step 3: `QuickAccessFlow` — só finalizar quando não for onboarding, e limpar a pilha inteira ao concluir de verdade**
+
+Edit `QuickAccessFlow.kt`, em `avancar` trocar a linha final `activity.finish()` por:
+
+```kotlin
+        if (!onboarding) activity.finish()
+```
+
+E em `concluir` (privada), trocar o `Intent` de `AnotacoesActivity` pra limpar a task inteira quando for onboarding:
+
+```kotlin
+    private fun concluir(activity: Activity, onboarding: Boolean, abrirHistorico: Boolean) {
+        if (onboarding) {
+            TutorialTourManager.iniciar(onboarding = true, abrirHistorico = abrirHistorico)
+            activity.startActivity(
+                Intent(activity, AnotacoesActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+        }
+        activity.finish()
+    }
+```
+
+(`CLEAR_TASK`/`NEW_TASK` colapsa toda a pilha de onboarding de uma vez ao concluir — depois disso não dá pra "voltar" pro onboarding nunca mais, o que é o comportamento certo. O `activity.finish()` no fim continua ali, redundante mas inofensivo, pra manter o diff mínimo.)
+
+- [ ] **Step 4: `GestureGuideActivity` — só finalizar quando não for onboarding**
+
+Edit `GestureGuideActivity.kt`, substituir `continuar()`:
+
+```kotlin
+    private fun continuar() {
+        val onboarding = intent.getBooleanExtra(QuickAccessFlow.EXTRA_ONBOARDING, false)
+        if (QuickAccessFlow.temFilaNoIntent(this)) {
+            QuickAccessFlow.avancar(
+                this,
+                QuickAccessFlow.proximaFila(this),
+                onboarding,
+                intent.getBooleanExtra(QuickAccessFlow.EXTRA_ABRIR_HISTORICO, false)
+            )
+        }
+        if (!onboarding) finish()
+    }
+```
+
+`WidgetSuggestionActivity.kt` **não precisa mudar** — seu `continuar()` já delega inteiramente pro `finish()` condicional de dentro de `QuickAccessFlow.avancar()` (não tem um `finish()` próprio depois).
+
+- [ ] **Step 5: Commit and push**
+
+```bash
+git add app/src/main/java/com/guilherme/anotaplus/LoginActivity.kt app/src/main/java/com/guilherme/anotaplus/NomeOnboardingActivity.kt app/src/main/java/com/guilherme/anotaplus/SalarioOnboardingActivity.kt app/src/main/java/com/guilherme/anotaplus/MetaOnboardingActivity.kt app/src/main/java/com/guilherme/anotaplus/QuickAccessFlow.kt app/src/main/java/com/guilherme/anotaplus/GestureGuideActivity.kt
+git commit -m "Implementa navegacao voltar real na cadeia de onboarding"
+git push
+```
+
+- [ ] **Step 6: Verify**
+
+Confirm GitHub Actions build is green. Manual QA: re-trigger onboarding (limpar dados do app ou reinstalar), avançar até a tela de Meta, apertar "voltar" repetidamente — deve retornar Meta→Salário(passo 2)→Salário(passo 1)→Salário(passo 0)→Nome→Login, cada vez mostrando a tela anterior com o estado dela. Escolher só "Widget" na Escolha de atalho, avançar até o fim, confirmar que o tour de tutorial abre normalmente e que apertar voltar a partir de Anotações (pós-onboarding) NÃO volta pro onboarding (deve sair do app ou ir pra Início conforme o comportamento padrão do app). Separadamente, reabrir "guia de gesto" avulso a partir do Perfil e confirmar que "Entendi" ainda fecha a tela normalmente (comportamento avulso inalterado).
+
+---
+
 ## Self-Review
 
 **Spec coverage** (against `docs/superpowers/specs/2026-07-23-refino-visual-fintech-mascote-design.md`):
