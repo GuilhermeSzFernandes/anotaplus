@@ -78,9 +78,12 @@ class SalarioOnboardingActivity : AppCompatActivity() {
         binding.paginaHoras.visibility = if (passo == 1) View.VISIBLE else View.GONE
         binding.paginaDias.visibility = if (passo == 2) View.VISIBLE else View.GONE
 
-        binding.dot1.setImageResource(R.drawable.dot_tutorial_ativo)
-        binding.dot2.setImageResource(if (passo >= 1) R.drawable.dot_tutorial_ativo else R.drawable.dot_tutorial_inativo)
-        binding.dot3.setImageResource(if (passo >= 2) R.drawable.dot_tutorial_ativo else R.drawable.dot_tutorial_inativo)
+        val pergunta = when (passo) {
+            0 -> getString(R.string.titulo_onboarding_salario_1)
+            1 -> getString(R.string.titulo_onboarding_salario_2)
+            else -> getString(R.string.titulo_onboarding_salario_3)
+        }
+        binding.onboardingHeader.bind(activity = this, progresso = 0.40f, pergunta = pergunta)
 
         binding.btnProximoOnboarding.text =
             if (passo == 2) getString(R.string.btn_concluir_onboarding) else getString(R.string.btn_proximo_onboarding)
