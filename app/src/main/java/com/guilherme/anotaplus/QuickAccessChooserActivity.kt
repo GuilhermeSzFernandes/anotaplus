@@ -50,6 +50,12 @@ class QuickAccessChooserActivity : AppCompatActivity() {
         binding = ActivityQuickAccessChooserBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.onboardingHeader.bind(
+            activity = this,
+            progresso = 0.75f,
+            pergunta = getString(R.string.title_atalho_rapido)
+        )
+
         if (isMotorola) {
             binding.textDescAtalhoGestos.text = getString(R.string.desc_atalho_gestos_moto)
         }

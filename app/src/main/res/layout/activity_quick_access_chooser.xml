@@ -11,18 +11,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="28dp">
+        android:padding="@dimen/spacing_lg">
+
+        <include
+            android:id="@+id/onboarding_header"
+            layout="@layout/onboarding_header" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/title_atalho_rapido"
-            android:textAppearance="@style/TextAppearance.AnotaPlus.Heading" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="@dimen/spacing_lg"
             android:text="@string/subtitulo_atalho_rapido"
             android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
             android:textColor="@color/ink_soft" />
@@ -163,10 +161,9 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/link_pular_atalho"
             style="@style/Widget.AnotaPlus.Button.Link"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="@dimen/spacing_xs"
             android:text="@string/link_pular_atalho" />
 
     </LinearLayout>
