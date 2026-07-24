@@ -1,7 +1,7 @@
 package com.guilherme.anotaplus
 
-import android.app.Activity
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.guilherme.anotaplus.databinding.OnboardingHeaderBinding
 
 // Liga o cabeçalho compartilhado de onboarding (voltar + barra de progresso
@@ -19,7 +19,7 @@ import com.guilherme.anotaplus.databinding.OnboardingHeaderBinding
 //   Meta = 0.60f, Escolha de atalho = 0.75f, Guia de Gesto/Sugestão de
 //   Widget = 0.90f (mesmo valor pras duas — a ordem entre elas não importa).
 fun OnboardingHeaderBinding.bind(
-    activity: Activity,
+    activity: AppCompatActivity,
     progresso: Float,
     pergunta: String,
     mascote: Int = R.drawable.ic_mascote_neutro,
