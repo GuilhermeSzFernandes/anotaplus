@@ -199,7 +199,7 @@
                     android:layout_marginTop="8dp"
                     android:max="100"
                     android:progress="0"
-                    android:progressTint="@color/color_receita"
+                    android:progressTint="@color/verde_destaque"
                     android:progressBackgroundTint="@color/paper_dim" />
 
             </LinearLayout>
