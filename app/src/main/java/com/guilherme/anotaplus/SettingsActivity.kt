@@ -144,13 +144,13 @@ class SettingsActivity : AppCompatActivity() {
         binding.rowPrivacidade.iconRow.setImageResource(R.drawable.ic_shield)
         binding.rowPrivacidade.textRowTitle.text = getString(R.string.row_titulo_privacidade)
         binding.rowPrivacidade.root.setOnClickListener {
-            mostrarDialogoStub(R.string.titulo_privacidade_stub, R.string.conteudo_privacidade_stub)
+            mostrarDialogoStub(R.string.titulo_privacidade_stub, R.string.conteudo_privacidade_stub, R.drawable.ic_shield)
         }
 
         binding.rowTermos.iconRow.setImageResource(R.drawable.ic_document)
         binding.rowTermos.textRowTitle.text = getString(R.string.row_titulo_termos)
         binding.rowTermos.root.setOnClickListener {
-            mostrarDialogoStub(R.string.titulo_termos_stub, R.string.conteudo_termos_stub)
+            mostrarDialogoStub(R.string.titulo_termos_stub, R.string.conteudo_termos_stub, R.drawable.ic_document)
         }
 
         binding.rowTutorial.iconRow.setImageResource(R.drawable.ic_help)
@@ -235,8 +235,10 @@ class SettingsActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun mostrarDialogoStub(titulo: Int, conteudo: Int) {
+    private fun mostrarDialogoStub(titulo: Int, conteudo: Int, icone: Int) {
         val dialogBinding = DialogConfirmacaoFlatBinding.inflate(layoutInflater)
+        dialogBinding.layoutIconeConfirmacao.visibility = View.VISIBLE
+        dialogBinding.iconConfirmacao.setImageResource(icone)
         dialogBinding.textTituloConfirmacao.text = getString(titulo)
         dialogBinding.textMensagemConfirmacao.text = getString(conteudo)
         dialogBinding.btnCancelarConfirmacao.visibility = View.GONE
