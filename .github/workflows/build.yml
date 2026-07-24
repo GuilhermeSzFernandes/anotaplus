@@ -26,6 +26,9 @@ jobs:
         with:
           gradle-version: '8.7'
 
+      - name: Rodar testes unitários
+        run: gradle test --stacktrace
+
       - name: Compilar APK (debug)
         run: gradle assembleDebug --stacktrace
 

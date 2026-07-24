@@ -116,4 +116,9 @@ dependencies {
 
     // Gráfico de saldo do Financeiro — via JitPack (ver settings.gradle.kts)
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+    // Testes unitários JVM puros (sem Robolectric/instrumentação — este
+    // projeto não tem infraestrutura de emulador em CI, então só entram
+    // aqui testes que não dependem de Context/Android framework).
+    testImplementation("junit:junit:4.13.2")
 }
