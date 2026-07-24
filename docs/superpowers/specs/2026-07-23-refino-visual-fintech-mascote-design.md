@@ -3,8 +3,11 @@
 > Sessão de brainstorming: 2026-07-23. Continuação do redesign "fintech
 > moderno" (ver `PROJETO.md`, seção "Design system"), que introduziu cantos
 > arredondados, chips de ícone preto e cards flat fora da Captura Rápida.
-> Esta spec resolve inconsistências deixadas por aquele redesign e adiciona
-> uma cor de destaque própria + um mascote.
+> Esta spec resolve inconsistências deixadas por aquele redesign, adiciona
+> uma cor de destaque própria + um mascote, expande o onboarding com 2
+> telas novas (nome de exibição, primeira Meta com prazo) no padrão de um
+> onboarding gamificado de referência, e realinha o primeiro bloco do
+> Perfil.
 
 ## Motivação
 
@@ -49,30 +52,43 @@ personalidade ao app e acompanhar a jornada de economia do usuário.
 
 ## Decisões de design
 
-### 1. Cor de destaque (accent) da UI
+### 1. Cor de destaque (accent) da UI — verde é detalhe, não preenchimento
 
-Nova cor primária de UI: **verde-claro**, tom sugerido `#4CAF6D` (ajustável
-na implementação para bater com o miolo verde-claro do mascote quando a arte
-final existir). Usada em:
+Revisão importante desta sessão: depois de ver uma referência concreta de
+onboarding gamificado/minimalista trazida pelo usuário, a regra final é
+**verde só aparece em detalhes pontuais, nunca como cor de preenchimento de
+botão ou tela**. Isso vale pro **app inteiro**, não só onboarding.
 
-- Botões primários (substituindo o que seria `Widget.AnotaPlus.Button.Primary`)
-- Chips/pills ativos (segmentos, tabs de filtro)
-- Barra de progresso da Meta de economia
+- **Botões primários**: usam `ink` (#1B1B1D, token já existente) como
+  background, texto em `paper`. Isso substitui a ideia anterior de um botão
+  cheio em verde — `Widget.AnotaPlus.Button.Primary` deve resolver pra
+  `ink`, não pra um novo token de accent.
+- **Verde-claro** (tom de partida `#4CAF6D`, ajustável junto da arte final
+  do mascote) aparece só em: barra de progresso (fill), números/textos em
+  destaque (ex. "R$ 166,67/mês", "72% da meta"), borda de chip/card
+  selecionado ou "campeão" (ex. chip de prazo ativo, card de resultado em
+  destaque), e no próprio mascote.
+- Resto da UI continua **neutro** (`paper`/`paper_dim`/`ink`/`ink_soft` já
+  existentes). Outras cores (semânticas de dinheiro — `color_receita`,
+  `color_gasto_vivo`) continuam pontuais, exatamente como já eram.
 
-Resto da UI continua **neutro** (`paper`/`paper_dim`/`ink` já existentes).
-Outras cores (semânticas de dinheiro, dourado do mascote) aparecem só como
-**detalhes pontuais**, nunca como cor de fundo de tela ou de botão primário.
+**Por quê essa revisão:** a referência de onboarding usa exatamente esse
+padrão (botão preto "Continuar"/"Pular", verde só na barra de progresso e
+em números de destaque) e o usuário confirmou que prefere isso pro app
+inteiro — mais alinhado com o pedido original de "verde-claro e neutras +
+detalhes mínimos em outras cores" do que a versão anterior (que preenchia
+botões inteiros de verde).
 
 **Por quê verde e não a opção inicial (índigo):** a entrada do mascote
-"moeda de 1 Real" (dourado + verde) mudou a direção — o usuário preferiu
-alinhar a cor de marca do app com a cor da moeda/mascote e com as cores do
-Brasil, em vez de uma cor tech genérica sem relação com o produto.
+"moeda de 1 Real" (dourado + cinza, mirando um miolo verde-claro na versão
+final) mudou a direção — o usuário preferiu alinhar a cor de marca do app
+com a cor da moeda/mascote e com as cores do Brasil, em vez de uma cor tech
+genérica sem relação com o produto.
 
 **Risco a observar na implementação:** `#4CAF6D` precisa ficar visualmente
-distinto de `color_receita` (#1E8E3E) quando aparecem na mesma tela (ex.:
-Início mostra receita em texto E o accent verde no botão/progresso lado a
-lado) — são tons diferentes o bastante (um mais claro/vívido, outro mais
-escuro/oliva) mas vale conferir em tela real, não só no mockup.
+distinto de `color_receita` (#1E8E3E) quando aparecem na mesma tela — são
+tons diferentes o bastante (um mais claro/vívido, outro mais escuro/oliva)
+mas vale conferir em tela real, não só no mockup.
 
 ### 2. Escala de espaçamento
 
@@ -92,20 +108,82 @@ ver item 3). Aplica-se a toda tela fora da Captura Rápida (que mantém seus
 próprios raios/paddings "recibo", já hardcoded por design, sem token
 compartilhado).
 
-### 3. Migração das telas de onboarding pro visual fintech
+### 3. Onboarding: migração visual, 2 telas novas, e nova ordem completa
 
-`LoginActivity`, `GestureGuideActivity` e `WidgetSuggestionActivity` trocam
-o estilo recibo (papel + `PerforationView` + `Widget.AnotaPlus.Button.Stamp`)
-pelo visual fintech: card flat (`bg_card_flat`/`paper_dim`, `radius_card`),
-`Widget.AnotaPlus.Button.Primary` com o novo accent verde,
-`TextAppearance.AnotaPlus.Heading` pro wordmark. `QuickAccessChooserActivity`
-(já híbrida) passa a usar consistentemente os mesmos tokens fintech das
-outras três, fechando o grupo.
+> Referência visual trazida pelo usuário (onboarding de outro app, "TapDin"):
+> `docs/superpowers/specs/assets/onboarding-referencia/1.jpeg` a `12.jpeg`,
+> em ordem de fluxo. É a fonte do padrão "mascote pequeno + balão de
+> pergunta + botão preto" descrito abaixo — vale abrir pra ver o tom
+> gamificado/minimalista que se está buscando (nosso mascote substitui o
+> deles, o resto da estrutura é o que se aproveita).
 
-Direção visual acordada pro Login: fundo com **hero em gradiente** (verde
-saindo do topo, suave, com formas geométricas soltas) e o card de ação
-flutuando por cima com sombra — não um card flat "sem vida" sobre fundo
-plano liso (testado e rejeitado nesta sessão).
+**Padrão visual (revisado)**: não é mais o hero-degradê com card flutuante
+testado no meio da sessão (aprovado numa rodada, depois **substituído**
+quando o usuário trouxe uma referência real de onboarding gamificado). O
+padrão final, usado em **todas** as telas de onboarding (exceto o tour de
+tutorial "spotlight", que já usa outro mecanismo — overlay sobre as telas
+reais):
+
+- Fundo neutro liso (`paper`), sem gradiente.
+- Header: seta-voltar + barra de progresso fina (`paper_dim` de base,
+  fill em verde-claro) indicando o passo atual dentro do onboarding.
+- **Mascote em tamanho pequeno** (~32-40dp, não hero), posicionado ao lado
+  de um card de pergunta com **borda verde-clara** (não preenchido) —
+  papel de "balão de fala" do mascote guiando a pergunta da tela.
+- Inputs e cards de opção: fundo `paper`/branco, borda fina cinza
+  (`paper_dim`/`ink_soft`), cantos `radius_card`/`radius_chip`.
+- Chip/pill selecionado (ex. atalho de prazo escolhido): borda verde-clara
+  em vez de cinza — verde aqui é indicador de seleção, não preenchimento.
+- **Botão principal: `ink` preenchido** (não verde — ver item 1), pill
+  (`radius_button`), label "Continuar" (ou o verbo específico da tela, ex.
+  "Criar meta").
+- Onde há opção de pular (ver Meta abaixo), "Pular por agora" é um botão
+  secundário de largura total, não um link de texto pequeno.
+
+**Telas migradas pro padrão** (mesmo mecanismo/estado, só o visual muda):
+`LoginActivity` (troca perfuração/carimbo por esse padrão; o botão nativo
+"Entrar com Google" segue as diretrizes de marca do Google, não vira um
+pill `ink`), `GestureGuideActivity`, `WidgetSuggestionActivity`,
+`QuickAccessChooserActivity` (já híbrida, passa a ser 100% consistente com
+as outras).
+
+**Telas novas** (ver ordem completa abaixo):
+
+- **"Como quer ser chamado"** — um input de texto, pré-preenchido com o
+  nome vindo do Google (`SessionPrefs`, hoje salvo mas sem getter/uso —
+  precisa de um `getNome()` e de um novo campo pra guardar o apelido
+  editado, ex. `Prefs.nome_exibicao`). Esse nome passa a ser usado nas
+  saudações do mascote (ex. card do Início, ver item 5). Sem opção de
+  pular — é rápido e barato de preencher.
+- **"Qual sua primeira meta?"** — cria a primeira Meta nomeada (não a meta
+  de economia mensal única, que continua existindo à parte). Campos: nome,
+  valor alvo, e um **prazo opcional** (chips de atalho "6 meses"/"1 ano" +
+  opção de escolher uma data específica), com uma prévia calculada
+  ("≈ R$X/mês pra chegar lá" = valor alvo ÷ meses até o prazo, só quando
+  prazo está preenchido). **Pode ser pulada** ("Pular por agora") — nesse
+  caso nenhuma Meta é criada, e a tela Início segue mostrando o estado
+  vazio de Metas normal.
+
+**Mudança de modelo de dados**: `Meta.kt` ganha um campo `prazo: Long?`
+(epoch millis, nullable) — migração Room 8→9. **Vale pra qualquer Meta**,
+criada no onboarding ou depois pela aba Acompanhamento — mesmo formulário/
+lógica de criação nos dois lugares, campo sempre opcional. A tela/fluxo de
+criação de Meta que já existe em `ReportActivity` (fora do onboarding)
+precisa ganhar o mesmo campo de prazo pra não ficar inconsistente com a
+versão do onboarding.
+
+**Ordem completa do onboarding** (com destaque do mascote em todas, exceto
+o tour de tutorial):
+
+1. `LoginActivity` (login Google)
+2. **Como quer ser chamado** (novo)
+3. `SalarioOnboardingActivity` (já existe — só migra visual, sem mudança
+   de campos/lógica)
+4. **Qual sua primeira meta?** (novo, com prazo opcional, pulável)
+5. `QuickAccessChooserActivity` (já existe)
+6. `GestureGuideActivity` / `WidgetSuggestionActivity` (já existem, conforme
+   escolhido no passo 5)
+7. Tour de tutorial "spotlight" (sem mascote)
 
 ### 4. Diálogos "Legal" com mais estrutura
 
@@ -136,7 +214,9 @@ elas, pra manter consistência):
   confundir com `color_gasto_vivo`.
 
 **Onde aparece** (todas as opções que o usuário selecionou):
-- Tela de Login/onboarding (hero, ver item 3).
+- **Todas as 7 telas do onboarding, em destaque, exceto o tour de
+  tutorial** (ver ordem completa e padrão visual no item 3) — tamanho
+  pequeno, ao lado do balão de pergunta, não hero.
 - Saudação no Início/Acompanhamento (variante neutro, ou feliz se a meta
   do mês estiver indo bem).
 - Celebração ao bater 100% de uma Meta de economia (variante feliz).
@@ -148,6 +228,23 @@ elas, pra manter consistência):
 
 **Fora de escopo aqui:** animação/movimento do mascote — assets estáticos
 apenas nesta spec; prompts de animação são um próximo passo à parte.
+
+### 6. Perfil: realinhar o primeiro bloco (card Conta)
+
+Auditoria encontrou a causa exata da queixa "primeiro bloco não alinha com
+o resto da tela": `activity_settings.xml` usa `padding="16dp"` (todos os
+lados) no card Conta, enquanto os outros 4 blocos (Progresso/
+Personalização/Legal/Suporte) usam só `paddingHorizontal="12dp"`, com o
+espaçamento vertical vindo de dentro de cada `item_settings_row`. Resultado:
+o conteúdo do card Conta começa mais pra dentro (16dp) que o conteúdo dos
+blocos abaixo dele (12dp) — desalinhamento horizontal visível ao rolar a
+tela.
+
+**Direção da correção**: os 4 blocos que usam 12dp sobem pra
+`spacing_md`/16dp horizontal, em vez do card Conta descer pra 12dp — isso
+já é consistente com a tabela de espaçamento do item 2, que classifica
+"blocos do Perfil, card Conta" inteiros como `spacing_md`. Ou seja, a
+correção fica nos **4 blocos existentes**, não no card Conta.
 
 ## Riscos e pontos em aberto pra implementação
 
@@ -162,3 +259,11 @@ apenas nesta spec; prompts de animação são um próximo passo à parte.
   decidido em detalhe — fica a critério de quem implementar, seguindo o
   espírito "neutro/convidativo, nunca preocupado" nesses casos (empty state
   não é uma situação negativa).
+- A implementação precisa localizar exatamente onde `ReportActivity` cria
+  uma Meta nova hoje (fora do onboarding) pra adicionar o mesmo campo de
+  prazo opcional lá — não foi confirmado o file:line exato dessa tela/
+  diálogo nesta sessão.
+- `SessionPrefs` guarda `name` do Google mas não tem getter hoje — a
+  implementação precisa adicionar esse getter (ou ler direto o campo) pra
+  pré-preencher a tela "Como quer ser chamado", além do novo campo de
+  apelido editável (`Prefs.nome_exibicao` ou equivalente).
