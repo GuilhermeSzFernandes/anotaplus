@@ -159,6 +159,11 @@
             android:theme="@style/Theme.AnotaPlus" />
 
         <activity
+            android:name=".MetaOnboardingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AnotaPlus" />
+
+        <activity
             android:name=".QuickAccessChooserActivity"
             android:exported="false"
             android:theme="@style/Theme.AnotaPlus" />

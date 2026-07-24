@@ -88,7 +88,7 @@ class SalarioOnboardingActivity : AppCompatActivity() {
 
     private fun concluir() {
         startActivity(
-            Intent(this, QuickAccessChooserActivity::class.java)
+            Intent(this, MetaOnboardingActivity::class.java)
                 .putExtra(QuickAccessFlow.EXTRA_ONBOARDING, onboarding)
                 .putExtra(QuickAccessFlow.EXTRA_ABRIR_HISTORICO, abrirHistorico)
         )

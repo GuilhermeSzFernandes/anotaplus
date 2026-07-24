@@ -135,6 +135,9 @@
     <string name="chip_prazo_1_ano">1 ano</string>
     <string name="chip_prazo_escolher">Escolher</string>
     <string name="formato_valor_mensal_meta">≈ %s/mês pra chegar lá</string>
+    <string name="titulo_meta_onboarding">Qual sua primeira meta?</string>
+    <string name="btn_criar_meta_onboarding">Criar meta</string>
+    <string name="btn_pular_meta_onboarding">Pular por agora</string>
     <string name="btn_salvar_meta">Salvar</string>
     <string name="btn_excluir_meta">Excluir</string>
     <string name="format_meta_progresso">%1$s / %2$s</string>
