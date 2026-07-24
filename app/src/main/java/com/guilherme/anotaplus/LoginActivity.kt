@@ -21,6 +21,13 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.onboardingHeader.bind(
+            activity = this,
+            progresso = 0.10f,
+            pergunta = getString(R.string.titulo_login_onboarding),
+            mostrarVoltar = false
+        )
+
         binding.btnEntrarGoogle.setOnClickListener { lifecycleScope.launch { entrarComGoogle() } }
         binding.linkVerPlanos.setOnClickListener { startActivity(Intent(this, PlansActivity::class.java)) }
     }

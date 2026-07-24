@@ -252,6 +252,7 @@
     <string name="login_sucesso">Login feito: %s</string>
     <string name="login_erro">Não deu pra fazer login. Tenta de novo.</string>
     <string name="login_erro_detalhe">Erro no login: %s</string>
+    <string name="titulo_login_onboarding">Pronto pra começar?</string>
     <string name="login_tagline">GASTOS E IDEIAS, NA HORA</string>
     <string name="login_pitch">Crie sua conta grátis com o Google pra continuar — ela ativa o backup automático dos seus lançamentos na nuvem.</string>
     <string name="link_ver_planos">ver planos →</string>

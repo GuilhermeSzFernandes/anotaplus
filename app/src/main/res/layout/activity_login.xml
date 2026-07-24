@@ -1,101 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/scrim">
+    android:background="@color/paper"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="24dp"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="@drawable/bg_card_paper"
-        android:elevation="6dp">
+        android:padding="@dimen/spacing_lg"
+        android:gravity="center_vertical">
 
-        <com.guilherme.anotaplus.ui.PerforationView
-            android:layout_width="match_parent"
-            android:layout_height="9dp"
-            app:toothWidth="14dp"
-            app:toothHeight="8dp"
-            app:toothGap="5dp"
-            app:toothColor="@color/scrim" />
+        <include
+            android:id="@+id/onboarding_header"
+            layout="@layout/onboarding_header" />
 
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="24dp">
+            android:layout_marginTop="@dimen/spacing_lg"
+            android:gravity="center"
+            android:text="@string/app_name"
+            android:textAppearance="@style/TextAppearance.AnotaPlus.Heading"
+            android:textSize="26sp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/app_name"
-                android:textAppearance="@style/TextAppearance.AnotaPlus.Wordmark"
-                android:textSize="26sp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:fontFamily="monospace"
+            android:textColor="@color/ink_soft"
+            android:letterSpacing="0.04"
+            android:textSize="11sp"
+            android:text="@string/login_tagline" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:gravity="center"
-                android:fontFamily="monospace"
-                android:textColor="@color/ink_soft"
-                android:letterSpacing="0.04"
-                android:textSize="11sp"
-                android:text="@string/login_tagline" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:gravity="center"
+            android:text="@string/login_pitch"
+            android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
+            android:textColor="@color/ink_soft" />
 
-            <com.guilherme.anotaplus.ui.PerforationView
-                android:layout_width="match_parent"
-                android:layout_height="6dp"
-                android:layout_marginTop="18dp"
-                app:toothWidth="8dp"
-                app:toothHeight="4dp"
-                app:toothGap="3dp"
-                app:toothColor="@color/ink_soft" />
+        <TextView
+            android:id="@+id/text_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
+            android:visibility="gone"
+            tools:text="Entrando…"
+            tools:visibility="visible" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:gravity="center"
-                android:text="@string/login_pitch"
-                android:textAppearance="@style/TextAppearance.AnotaPlus.Body"
-                android:textColor="@color/ink_soft" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_entrar_google"
+            style="@style/Widget.AnotaPlus.Button.Stamp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/btn_entrar_google" />
 
-            <TextView
-                android:id="@+id/text_status"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:gravity="center"
-                android:textAppearance="@style/TextAppearance.AnotaPlus.Eyebrow"
-                android:visibility="gone"
-                tools:text="Entrando…"
-                tools:visibility="visible" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_entrar_google"
-                style="@style/Widget.AnotaPlus.Button.Stamp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/btn_entrar_google" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/link_ver_planos"
-                style="@style/Widget.AnotaPlus.Button.Link"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="6dp"
-                android:text="@string/link_ver_planos" />
-
-        </LinearLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/link_ver_planos"
+            style="@style/Widget.AnotaPlus.Button.Link"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="6dp"
+            android:text="@string/link_ver_planos" />
 
     </LinearLayout>
 
-</FrameLayout>
+</androidx.core.widget.NestedScrollView>
