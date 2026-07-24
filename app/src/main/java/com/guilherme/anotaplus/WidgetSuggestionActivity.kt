@@ -26,6 +26,12 @@ class WidgetSuggestionActivity : AppCompatActivity() {
         binding = ActivityWidgetSuggestionBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.onboardingHeader.bind(
+            activity = this,
+            progresso = 0.90f,
+            pergunta = getString(R.string.title_widget_sugestao)
+        )
+
         val appWidgetManager = AppWidgetManager.getInstance(this)
         val suportado = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
             appWidgetManager.isRequestPinAppWidgetSupported
