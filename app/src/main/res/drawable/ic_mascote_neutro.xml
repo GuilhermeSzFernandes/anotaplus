@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Placeholder do mascote (moeda de 1 Real) — humor neutro/padrão.
+     Substituir pela arte real (3D render, fundo transparente) quando
+     existir; manter este nome de arquivo pra não precisar mudar código. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path android:fillColor="#C9962E" android:pathData="M24,4 A20,20 0 1,1 23.99,4 Z" />
+    <path android:fillColor="#8FDA9B" android:pathData="M24,10 A14,14 0 1,1 23.99,10 Z" />
+    <path android:fillColor="#1B1B1D" android:pathData="M18,21 a2,2 0 1,1 -0.01,0 Z" />
+    <path android:fillColor="#1B1B1D" android:pathData="M30,21 a2,2 0 1,1 -0.01,0 Z" />
+    <path
+        android:strokeColor="#1B1B1D"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:pathData="M19,28 Q24,31 29,28" />
+</vector>

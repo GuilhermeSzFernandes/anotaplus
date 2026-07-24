@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Placeholder do mascote — humor feliz/comemorando (meta batida). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path android:fillColor="#C9962E" android:pathData="M24,4 A20,20 0 1,1 23.99,4 Z" />
+    <path android:fillColor="#8FDA9B" android:pathData="M24,10 A14,14 0 1,1 23.99,10 Z" />
+    <path
+        android:strokeColor="#1B1B1D"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:pathData="M16,20 Q18,17 20,20" />
+    <path
+        android:strokeColor="#1B1B1D"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:pathData="M28,20 Q30,17 32,20" />
+    <path
+        android:strokeColor="#1B1B1D"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="M17,27 Q24,33 31,27" />
+    <path android:fillColor="#E5C158" android:pathData="M8,10 l1.5,3 l3,0.5 l-2.2,2 l0.5,3 l-2.8,-1.5 l-2.8,1.5 l0.5,-3 l-2.2,-2 l3,-0.5 Z" />
+</vector>
