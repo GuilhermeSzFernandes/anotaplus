@@ -378,4 +378,7 @@
     <string name="widget_anotacao_nao_configurado">Toque pra escolher uma anotação</string>
     <string name="title_escolher_ideia">Escolha uma anotação</string>
     <string name="empty_escolher_ideia">Nenhuma anotação ainda. Crie uma no app antes de configurar o widget.</string>
+
+    <!-- Cabeçalho compartilhado de onboarding (mascote + balão + progresso) -->
+    <string name="mascote_content_description">Mascote do Anota+</string>
 </resources>
